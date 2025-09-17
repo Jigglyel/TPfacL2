@@ -158,38 +158,44 @@ maillon* recherche(element e,liste &L)
 void insere_apres(element x, element y,liste &L)
 {
     maillon* adresse=recherche(x,L);
-    if (adresse->suiv==nullptr)
+    if (adresse!=nullptr)
     {
-        insérer_fin(y,L);
-    }
-    else
-        if (adresse!=nullptr)
+        if (adresse->suiv==nullptr)
         {
-            maillon* tier=adresse->suiv;
-            adresse->suiv=new maillon;
-            adresse->suiv->element=y;
-            adresse->suiv->suiv=tier;
-            adresse->suiv->prec=adresse;
-            tier->prec=adresse->suiv;
+            insérer_fin(y,L);
         }
+        else
+            if (adresse!=nullptr)
+            {
+                maillon* tier=adresse->suiv;
+                adresse->suiv=new maillon;
+                adresse->suiv->element=y;
+                adresse->suiv->suiv=tier;
+                adresse->suiv->prec=adresse;
+                tier->prec=adresse->suiv;
+            }
+    }
 }
 void insere_avant(element x, element y,liste &L)
 {
     maillon* adresse=recherche(x,L);
-    if (adresse->prec==nullptr)
+    if (adresse!=nullptr)
     {
-        insérer_début(y,L);
-    }
-    else
-        if (adresse!=nullptr)
+        if (adresse->prec==nullptr)
         {
-            maillon* tier=adresse->prec;
-            adresse->prec=new maillon;
-            adresse->prec->element=y;
-            adresse->prec->prec=tier;
-            adresse->prec->suiv=adresse;
-            tier->suiv=adresse->prec;
+            insérer_début(y,L);
         }
+        else
+            if (adresse!=nullptr)
+            {
+                maillon* tier=adresse->prec;
+                adresse->prec=new maillon;
+                adresse->prec->element=y;
+                adresse->prec->prec=tier;
+                adresse->prec->suiv=adresse;
+                tier->suiv=adresse->prec;
+            }
+    }
 }
 void supprime_x(element x,liste &L)
 {
@@ -218,7 +224,7 @@ void supprime_x(element x,liste &L)
 void supprime_everything(liste &L)
 {
     maillon*tier=L.tete->suiv;
-    while (tier!=L.queue)
+    while (L.tete!=L.queue)
     {
         delete L.tete;
         L.tete=tier;
@@ -226,33 +232,37 @@ void supprime_everything(liste &L)
     }
     creer(L);
 }
+void supprime_a_partir(maillon *p,liste L)
+{
+    maillon*tier=p->suiv;
+    L.tete=p;
+    L.tete->suiv=nullptr;
+    while (L.tete!=L.queue)
+    {
+        delete L.tete;
+        L.tete=tier;
+        tier=L.tete->suiv;
+    }
+}
 int main(){
     liste L;
-    creer(L);insérer_fin(9,L);
-    insérer_début(1,L);
+    creer(L);
+    insérer_fin(9,L);
+    
     
     insérer_fin(10,L);
-    insérer_fin(11,L);
     insérer_début(0,L);
     insérer_début(2,L);
-    insérer_fin(2,L);
-    supprime_queue(L);
-    supprime_tete(L);
     insere_apres(11,11,L);
     insere_avant(0,-1,L);
-    affiche_it(L);
+    
     affiche_reverse_it(L);
-    supprime_x(0,L);
-    supprime_x(11,L);
-    supprime_x(11,L);
-    supprime_x(-1,L);
+
 
     affiche_it(L);
     affiche_reverse_it(L);
-    supprime_everything(L);
-    std::cout<<longueur(L)<<std::endl;
-    
-   
+    supprime_a_partir(recherche(2,L),L);
+    affiche_it(L);
 
 
 
