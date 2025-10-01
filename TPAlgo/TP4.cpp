@@ -63,6 +63,7 @@ abGen* recherche_mec(individu mec ,abGen* arbre)
     {
         if (isidentique(arbre->mec,mec))
         {
+            std::cout<<arbre->mec.prenom<<std::endl;
             return arbre;
         }
         else
@@ -91,12 +92,21 @@ void ajout_parent(individu I1,individu I2,abGen* &arbre)
     abGen* droite =recherche_mec(I2,arbre)->parent2;
     if (gauche==nullptr)
     {
-        gauche->mec=I1;
+        arbre->parent1 = new abGen;
+        arbre->parent1->mec=I1;
+        arbre->parent1->parent1=nullptr;
+        arbre->parent1->parent2=nullptr;
+
     }
     else
-    if (droite==nullptr)
     {
-        droite->mec=I2;
+        if (droite==nullptr)
+        {
+            arbre->parent2 = new abGen;
+            arbre->parent2->mec=I1;
+            arbre->parent2->parent1=nullptr;
+            arbre->parent2->parent2=nullptr;
+        }
     }
 }
 
@@ -133,10 +143,23 @@ void affiche(arbre A)
 int main(int argc, char const *argv[])
 {
     arbre A;
-    individu Jérome, adam, eve, rondoudou,minidou, toudoudou,toudoudou2;
-    Jérome=saisie();
-    adam=saisie();
-    eve=saisie();
+    individu Jérome, adam, eve;
+    Jérome.nom="Truc";
+    Jérome.prenom="Jérome";
+    Jérome.date_de_naissance.jour="03";
+    Jérome.date_de_naissance.mois="10";
+    Jérome.date_de_naissance.année="-10";
+    adam.nom="Truc";
+    adam.prenom="Adam";
+    adam.date_de_naissance.jour="06";
+    adam.date_de_naissance.mois="08";
+    adam.date_de_naissance.année="-100";
+    eve.nom="Machin";
+    eve.prenom="Eve";
+    eve.date_de_naissance.jour="06";
+    eve.date_de_naissance.mois="08";
+    eve.date_de_naissance.année="-100";
+
     A=new abGen;
     A->mec=Jérome;
     A->parent1=nullptr;

@@ -23,13 +23,12 @@
  };
  struct occLettre
  {
-    char mot;
+    char lettre;
     unsigned int occ;
  };
- struct tabLettres
- {
-    std::array<occLettre,26>tab;
- };
+
+using tabLettres= std::array<occLettre,26>;
+
 
  void initialise(listeMots&L){
     L=nullptr;
@@ -300,21 +299,81 @@ bool appartient (std::string mot, tabMots T)
 {
     return recherche_dichotomique(0,T.taille,mot,T);
 }
+void initialisel (tabLettres & T)
+{
+    char lettre='a';
+    for (size_t i = 0; i < 26; i++)
+    {
+        T[i].lettre=lettre;
+        ++lettre;
+        T[i].occ=0;
+    }
+    
+}
+void ajoute (char lettre, tabLettres & T)
+{
+    for (size_t i = 0; i < 26; i++)
+    {
+        if (T[i].lettre==lettre)
+        {
+            ++T[i].occ;
+        }
+    }
+}
+void comptabilise (tabLettres & T, listeMots L)
+{
+    while (L!=nullptr)
+    {
+        for (size_t j = 0; j <L->val.occ; j++)
+            for (size_t i = 0; i < L->val.mot.length(); i++)
+            {
+                ajoute(L->val.mot[i],T);
+            }
+        L=L->suiv;
+    }
+}
+void trie (tabLettres & T)
+{
+    unsigned int min ,tier;
+    char tierl;
+    for (size_t j = 0; j < 26; j++)
+    {
+        min=T[j].occ;
+        for (size_t i = j; i < 26; i++)
+        {
+            if (min>T[i].occ)
+            {
+                //récupération du minimum et échange en conéquence avec la bonne case
+                min=T[i].occ;
+                tierl=T[j].lettre;
+                tier=T[j].occ;
+                T[j].lettre=T[i].lettre;
+                T[i].lettre=tierl;
+                T[j].occ=min;
+                T[i].occ=tier;
+            }
+        }
+        
+    }
+}
+void affichel (tabLettres T)
+{
+    for (size_t i = 0; i < 26; i++)
+    {
+        std::cout<<T[i].lettre<<"("<<T[i].occ<<")"<<std::endl;
+    }
+    
+}
 int main(){
     listeMots L;
-    tabMots T;
+    tabLettres T;
+    
     std::string mot;
     initialise(L);
+    initialisel(T);
     construit(L,"TP1.txt");
-    afficheTriLongueur(L);
-    remplit(T,L);
-    std::cout<<"saisir un mot : ";
-    std::cin>>mot;
-    if (appartient(mot,T))
-    {
-        std::cout<<"le mot appartient au texte"<<std::endl;
-    }
-    else
-        std::cout<<"le mot n'appartient pas au texte"<<std::endl;
+    comptabilise(T,L);
+    trie(T);
+    affichel(T);
     return 0;
 }
