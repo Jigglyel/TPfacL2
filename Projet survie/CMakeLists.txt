@@ -19,6 +19,7 @@ FetchContent_MakeAvailable(SFML)
 add_executable(survie 
     ./main.cpp
     ./Calcules.cpp
+    ./game.cpp
 )
 
 target_link_libraries(survie PRIVATE sfml-graphics sfml-window sfml-system)

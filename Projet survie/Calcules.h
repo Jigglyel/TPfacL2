@@ -7,7 +7,7 @@ struct objet{
 };
 struct Perso{
     int faim;
-    float x, y,vx,vy;
+    float x, y,v;
     sf::Texture image;
     float hp;
     sf::RectangleShape hitbox;

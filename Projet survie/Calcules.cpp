@@ -18,7 +18,7 @@ sf::RectangleShape* get_cercle_faim(objet feu, int taille_cercle,sf::RenderWindo
         cercle_faim_pixels[i].setPosition(sf::Vector2f(x,y));
         cercle_faim_pixels[i].setFillColor(sf::Color::Green);
         ++i;
-        y=(2*feu.y+sqrt(delta))/2;
+        y=(2*feu.y+sqrt(delta))/2.0f;
         cercle_faim_pixels[i].setSize(sf::Vector2f(1,1));
         cercle_faim_pixels[i].setPosition(sf::Vector2f(x,y));
         cercle_faim_pixels[i].setFillColor(sf::Color::Green);
@@ -34,7 +34,7 @@ sf::RectangleShape* get_cercle_faim(objet feu, int taille_cercle,sf::RenderWindo
         cercle_faim_pixels[i].setPosition(sf::Vector2f(x,y));
         cercle_faim_pixels[i].setFillColor(sf::Color::Green);
         ++i;
-        x=(2*feu.x+sqrt(delta))/2;
+        x=(2*feu.x+sqrt(delta))/2.0f;
         cercle_faim_pixels[i].setSize(sf::Vector2f(1,1));
         cercle_faim_pixels[i].setPosition(sf::Vector2f(x,y));
         cercle_faim_pixels[i].setFillColor(sf::Color::Green);
@@ -174,19 +174,21 @@ sf::RectangleShape get_indicator_fire(objet feu,sf::RenderWindow &window,sf::Vie
     //position de l'objet par rapport au coin gauche de la camera
     sf::Vector2i pos_ObjetToCamera=window.mapCoordsToPixel(sf::Vector2f(feu.x,feu.y),camera);
     sf::Vector2i pos_ObjetToCentre;
+    camera.setSize(window.getSize().x,window.getSize().y);
+    //position de l'objet par rapport au centre de la camera
     pos_ObjetToCentre.y=pos_ObjetToCamera.y-window.getSize().y/2;
     pos_ObjetToCentre.x=pos_ObjetToCamera.x-window.getSize().x/2;
     //distance entre le coin gauche de la cam et l'objet
     float distance_centrecam_objet=sqrt(pos_ObjetToCentre.x*pos_ObjetToCentre.x+pos_ObjetToCentre.y*pos_ObjetToCentre.y);
     std::cout<<distance_centrecam_objet<<std::endl;
-    
+    //taille de l'indicateur en fonction de la distance
     indicator_base.setSize(sf::Vector2f(30+100/distance_centrecam_objet,30+100/distance_centrecam_objet));
-    //position de l'objet par rapport au centre de la camera
+    
     
     //coeff directeur de la droite entre le centre de la cam et l'objet
-   
     sf::Vector2f intersection;
     float rapport;
+    //calcule du rapport entre la longeur et la largeur de la fenetre
     float rapport_fenetre=static_cast<float>(window.getSize().y)/window.getSize().x;
     if(pos_ObjetToCamera.x!=0)
          rapport =static_cast<float>(pos_ObjetToCentre.y)/static_cast<float>(pos_ObjetToCentre.x);
