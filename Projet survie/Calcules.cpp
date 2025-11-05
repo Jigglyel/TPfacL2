@@ -54,7 +54,6 @@ void zombie_spawn(std::vector<Zombie> &zombies,Perso joueur)
     zombie.hitbox.setSize(sf::Vector2f(7,25));
     zombie.hitbox.setPosition(zombie.x-13,zombie.y-18);
     zombies.push_back(zombie);
-    std::cout<<"j'ai fait spawn un zombie en "<<zombie.x<<"   "<<zombie.y<<std::endl;
 }
 //s'occupe d'accompagner un zombie
 void zombie_accompagnement(Zombie &zombie,Perso joueur)
@@ -104,7 +103,7 @@ void balle_accompagnement(Bullet &balle)
     
 }
 //s'occuppe d'update toutes les positions et collisions 
-void update_position_collisions(std::vector<Bullet> &bullets,std::vector<Zombie>&zombies,Perso &joueur,sf::Clock &InvicibleClock )
+void update_position_collisions(std::vector<Bullet> &bullets,std::vector<Zombie>&zombies,Perso &joueur,sf::Clock &InvicibleClock,weapon arme )
 {
 
     int i=0;
@@ -126,7 +125,7 @@ void update_position_collisions(std::vector<Bullet> &bullets,std::vector<Zombie>
                 
                 bullets.erase(bullets.begin()+i);
                 bullet_destroyed=true;
-                zombies[j].hp=zombies[j].hp-2;
+                zombies[j].hp=zombies[j].hp-arme.dégats;
                 if (zombies[j].hp<=0)
                 {
                     zombies.erase(zombies.begin()+j);
@@ -166,7 +165,32 @@ void update_position_collisions(std::vector<Bullet> &bullets,std::vector<Zombie>
         }
     }
 }
-
+void update_pos_joueur(Perso & joueur, bool z,bool q,bool s,bool d,bool sprint,int vitesse_de_base)
+{
+    if (sprint)
+        {
+            joueur.v=vitesse_de_base*2;
+        }
+        else
+            joueur.v=vitesse_de_base;
+        
+        if (z)
+        {
+            joueur.y-=joueur.v;
+        }
+        if (s)
+        {
+            joueur.y+=joueur.v;
+        }
+        if (q)
+        {
+            joueur.x-=joueur.v;
+        }
+        if (d)
+        {
+            joueur.x+=joueur.v;
+        }
+}
 sf::RectangleShape get_indicator_fire(objet feu,sf::RenderWindow &window,sf::View &camera)
 {
     sf::RectangleShape indicator_base;
@@ -180,20 +204,17 @@ sf::RectangleShape get_indicator_fire(objet feu,sf::RenderWindow &window,sf::Vie
     pos_ObjetToCentre.x=pos_ObjetToCamera.x-window.getSize().x/2;
     //distance entre le coin gauche de la cam et l'objet
     float distance_centrecam_objet=sqrt(pos_ObjetToCentre.x*pos_ObjetToCentre.x+pos_ObjetToCentre.y*pos_ObjetToCentre.y);
-    std::cout<<distance_centrecam_objet<<std::endl;
     //taille de l'indicateur en fonction de la distance
     indicator_base.setSize(sf::Vector2f(30+100/distance_centrecam_objet,30+100/distance_centrecam_objet));
     
-    
+    if (pos_ObjetToCentre.x == 0) pos_ObjetToCentre.x = 0.001f;
+    if (pos_ObjetToCentre.y == 0) pos_ObjetToCentre.y = 0.001f;
     //coeff directeur de la droite entre le centre de la cam et l'objet
     sf::Vector2f intersection;
     float rapport;
     //calcule du rapport entre la longeur et la largeur de la fenetre
     float rapport_fenetre=static_cast<float>(window.getSize().y)/window.getSize().x;
-    if(pos_ObjetToCamera.x!=0)
          rapport =static_cast<float>(pos_ObjetToCentre.y)/static_cast<float>(pos_ObjetToCentre.x);
-    else
-        rapport=rapport_fenetre;
     float ordonnee_a_lorigine=pos_ObjetToCamera.y-rapport*pos_ObjetToCamera.x;
     //calcul de l'intersection 
     if (rapport>=rapport_fenetre or rapport<=-rapport_fenetre)
@@ -201,14 +222,12 @@ sf::RectangleShape get_indicator_fire(objet feu,sf::RenderWindow &window,sf::Vie
         //bas
         if (pos_ObjetToCentre.y>0)
         {
-            std::cout<<"bas"<<std::endl;
             intersection.y=window.getSize().y-indicator_base.getSize().y;
             intersection.x=(intersection.y-ordonnee_a_lorigine)/rapport;
         }
         //haut
         else
         {
-            std::cout<<"haut"<<std::endl;
             intersection.y=0;
             intersection.x=(intersection.y-ordonnee_a_lorigine)/rapport;
         }
@@ -219,14 +238,12 @@ sf::RectangleShape get_indicator_fire(objet feu,sf::RenderWindow &window,sf::Vie
         //droite
         if (pos_ObjetToCentre.x>0)
         {
-            std::cout<<"droite"<<std::endl;
             intersection.x=window.getSize().x-indicator_base.getSize().x;
             intersection.y=intersection.x*rapport+ordonnee_a_lorigine;
         }
         //gauche
         else
         {
-            std::cout<<"gauche"<<std::endl;
             intersection.x=0;
             intersection.y=intersection.x*rapport+ordonnee_a_lorigine;
         }

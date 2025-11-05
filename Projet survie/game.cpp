@@ -1,22 +1,31 @@
 #include "game.h"
 //charge les textures
-void charge(sf::Texture &mec,sf::Texture &bank,sf::Texture &feu,sf::Texture &bullet,sf::Texture &zombie)
+void charge(sf::Texture &mec,sf::Texture &bank,sf::Texture &feu,sf::Texture &bullet,sf::Texture &zombie,sf::Texture &etabli)
 {
-    mec.loadFromFile("../sprites/mec.png");
-    feu.loadFromFile("../sprites/feu_de_camp.png");
-    bank.loadFromFile("../sprites/bank.png");
-    bullet.loadFromFile("../sprites/bullet.png");
-    zombie.loadFromFile("../sprites/zombie.png");
+    mec.loadFromFile("../../sprites/mec.png");
+    feu.loadFromFile("../../sprites/feu_de_camp.png");
+    bank.loadFromFile("../../sprites/bank.png");
+    bullet.loadFromFile("../../sprites/bullet.png");
+    zombie.loadFromFile("../../sprites/zombie.png");
+    etabli.loadFromFile("../../sprites/etabli.png");
 
 }
-
-
-void dessine(Perso joueur,objet bank,objet feu,sf::RenderWindow &window,cercle_faim cercle_f,int money,std::vector<Bullet> bullets,sf::Texture image_balle,std::vector<Zombie>zombies,sf::Texture image_zombie,sf::View camera)
+void init_text_pause(sf::RenderWindow &window,sf::Text &resu)
 {
-    sf::Sprite joueurImage(joueur.image),bankImage(bank.image),feuImage(feu.image),balleImage(image_balle),zombieImage(image_zombie);
+    resu.setFillColor(sf::Color::White);
+    resu.setPosition(window.getSize().x/2.f,window.getSize().y/2.f);
+    sf::Font font;
+    if(!font.loadFromFile("../../Jersey15-Regular.ttf"))
+        std::cout<<"erreur du chargement de la police";
+    resu.setFont(font);
+    resu.setString("PAUSE");
+}
+void dessine(Perso joueur,objet bank,objet feu,objet etabli,sf::RenderWindow &window,cercle_faim cercle_f,int money,std::vector<Bullet> bullets,sf::Texture image_balle,std::vector<Zombie>zombies,sf::Texture image_zombie,sf::View &camera)
+{
+    sf::Sprite joueurImage(joueur.image),bankImage(bank.image),feuImage(feu.image),balleImage(image_balle),zombieImage(image_zombie),etabliImage(etabli.image);
     sf::Text text_faim, text_dollar,text_vie;
     sf::Font font;
-    if(!font.loadFromFile("../Jersey15-Regular.ttf"))
+    if(!font.loadFromFile("../../Jersey15-Regular.ttf"))
         std::cout<<"erreur du chargement de la police";
     text_faim.setPosition(1000,100);
     text_faim.setFillColor(sf::Color::Green);
@@ -33,6 +42,7 @@ void dessine(Perso joueur,objet bank,objet feu,sf::RenderWindow &window,cercle_f
     joueurImage.setPosition(joueur.x-16,joueur.y-16);
     bankImage.setPosition(bank.x-16,bank.y-16);
     feuImage.setPosition(feu.x-17,feu.y-20);
+    etabliImage.setPosition(etabli.x-17,etabli.y-16);
     window.clear(sf::Color::Black);
     for (Bullet balle : bullets)
     {
@@ -55,8 +65,8 @@ void dessine(Perso joueur,objet bank,objet feu,sf::RenderWindow &window,cercle_f
     }
     sf::RectangleShape indicator_base=get_indicator_fire(feu,window,camera);
     indicator_base.setTexture(feuImage.getTexture());
-    window.setView(camera);
     window.draw(bankImage);
+    window.draw(etabliImage);
     window.draw(feuImage);
     window.draw(joueurImage);  
     //window.draw(joueur.hitbox);
@@ -68,9 +78,7 @@ void dessine(Perso joueur,objet bank,objet feu,sf::RenderWindow &window,cercle_f
     window.setView(camera);
     
 }
-    
-    
-void jeu(Perso joueur ,sf::RenderWindow &window)
+void init(Perso &joueur, objet &feu,objet &bank,objet &etabli,Zombie &zombie,sf::View &camera,sf::RenderWindow &window,float &spawn_rate,cercle_faim &cercle_f,Bullet &balle,sf::Text &text_pause,weapon &arme)
 {
     joueur.invincible=false;
     joueur.x=300;
@@ -79,32 +87,55 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
     joueur.faim=100;
     joueur.v=2;
     joueur.hitbox.setSize(sf::Vector2f(7,25));
-    bool loose= false;
-    objet feu, bank;
-    std::vector<Bullet>bullets;
-    Bullet balle;
-    std::vector<Zombie>zombies;
-    Zombie zombie;
     zombie.x=200;
     zombie.y=300;
     zombie.v=1;
-    sf::View camera;
     camera.setCenter(joueur.x,joueur.y);
-    float spawn_rate=5000;
-    cercle_faim cercle_f;
+    camera.setSize(sf::Vector2f(window.getSize()));
+    window.setView(camera);
+    spawn_rate=5000;
     cercle_f.taille=100;
-    int money=0;
     feu.x=300;
     feu.y=500;
-    bank.x=100;
-    bank.y=100;
-    bool z=false,q=false,s=false,d=false,souris_pressee=false, sprint=false;
-    charge(joueur.image,bank.image,feu.image,balle.image,zombie.image);
+    bank.x=500;
+    bank.y=300;
+    etabli.x=100;
+    etabli.y=100;
+    feu.x=300;
+    feu.y=500;
+    bank.x=500;
+    bank.y=300;
+    etabli.x=100;
+    etabli.y=100;
+    arme.dégats=2;
+    arme.tear_rate=5000;
+    arme.id=0;
+    charge(joueur.image,bank.image,feu.image,balle.image,zombie.image,etabli.image);
     cercle_f.pixels=get_cercle_faim(feu,cercle_f.taille,window);
-    dessine(joueur,bank,feu,window,cercle_f,money,bullets,balle.image,zombies,zombie.image,camera);
-    window.setView(camera);
+    init_text_pause(window,text_pause);
+}
+    
+void jeu(Perso joueur ,sf::RenderWindow &window)
+{   
+    //definition des classes
+    objet feu, bank,etabli;
+    std::vector<Bullet>bullets;
+    Bullet balle;
+    Zombie zombie;
+    std::vector<Zombie>zombies; 
+    sf::View camera;
+    cercle_faim cercle_f;
+    sf::Text text_pause ;
+    //mise en place des constantes
+    float spawn_rate=5000; 
+    int money=0;
+    weapon arme;
+    bool z=false, q=false, s=false, d=false, souris_pressee=false, sprint=false, loose= false, in_crafting=false, pause=false;
+    init(joueur,feu,bank,etabli,zombie,camera,window,spawn_rate,cercle_f,balle,text_pause,arme);
+    int vitesse_de_base=joueur.v;
+    dessine(joueur,bank,feu,etabli,window,cercle_f,money,bullets,balle.image,zombies,zombie.image,camera);
     window.display();
-    sf::Clock FoodGetClock,FoodLostClock,ZombieSpawnClock,InvicibilityClock;
+    sf::Clock FoodGetClock,FoodLostClock,ZombieSpawnClock,InvicibilityClock,TearRateClock;
     while (window.isOpen() and not loose)
     {
         // Process events
@@ -116,7 +147,7 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
                 window.close();
             if (event.type==sf::Event::Resized)
             {
-                camera.setSize(window.getSize().x,window.getSize().y);
+                camera.setSize(sf::Vector2f(window.getSize()));
                 window.setView(camera);
             }
             if (event.type==sf::Event::KeyPressed)
@@ -132,8 +163,20 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
                 if(event.key.code==sf::Keyboard::LShift)
                 {
                     sprint=true;
-                    joueur.v*=2;
                 }
+                if(event.key.code==sf::Keyboard::Enter)
+                    if (sqrt(abs(joueur.x-etabli.x)*abs(joueur.x-etabli.x)+abs(joueur.y-etabli.y)*abs(joueur.y-etabli.y))<20)
+                    {
+                        if (in_crafting)
+                        {
+                            in_crafting=false;
+                        }
+                        else
+                            in_crafting=true;
+                    }
+                if(event.key.code==sf::Keyboard::P)
+                    pause=!pause;
+                    
 
             }
             if (event.type==sf::Event::KeyReleased)
@@ -149,7 +192,6 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
                 if(event.key.code==sf::Keyboard::LShift)
                 {
                     sprint=false;
-                    joueur.v/=2;
                 }
                     
             }
@@ -158,24 +200,64 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
             if(event.type==sf::Event::MouseButtonReleased)
                 souris_pressee=false;
         }
+        if (in_crafting)
+        {
+            z=false;q=false;s=false;d=false;
+            
+            while (window.pollEvent(event))
+            {
+                if (event.type == sf::Event::Closed)
+                window.close();
+
+                if (event.type==sf::Event::Resized)
+                {
+                    camera.setSize(sf::Vector2f(window.getSize()));
+                    window.setView(camera);
+                }
+
+                //truc de craft
+                if (event.type==sf::Event::KeyPressed)
+                {
+                    if(event.key.code==sf::Keyboard::Q)
+                    {
+                        if (money>=100)
+                        {
+                            std::cout<<"j'ai acheté du tear rate"<<std::endl;
+                            arme.tear_rate-=300;
+                            money-=100;
+                        }
+                        else
+                            std::cout<<"pas assez d'argent"<<std::endl;
+                        
+                        
+                    }
+                    if(event.key.code==sf::Keyboard::D)
+                    {
+                    if (money>=100)
+                        {
+                            std::cout<<"j'ai acheté des dégats rate"<<std::endl;
+                            arme.dégats+=1;
+                            money-=100;
+                        }
+                        else
+                            std::cout<<"pas assez d'argent"<<std::endl;
+                    }
+                }
+            }
+        }
+        else
+        if (pause)
+        {   window.getDefaultView();
+            window.draw(text_pause);
+            window.display();
+            window.setView(camera);
+        }
+        else
+        {
+
         //uptade de la position du joueur en fonction des touches pressées ou non
-        
-        if (z)
-        {
-            joueur.y-=joueur.v;
-        }
-        if (s)
-        {
-            joueur.y+=joueur.v;
-        }
-        if (q)
-        {
-            joueur.x-=joueur.v;
-        }
-        if (d)
-        {
-            joueur.x+=joueur.v;
-        }
+        update_pos_joueur(joueur,z,q,s,d,sprint,vitesse_de_base);
+        //update de la hitbox et de la cam
         joueur.hitbox.setPosition(joueur.x-7,joueur.y-8);
         camera.setCenter(joueur.x,joueur.y);
         //enlève l'incincibilité du joueur au bout de deux secondes
@@ -188,8 +270,9 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
             
         }
         // récupère la trajectoire de la balle quand on clic
-        if(souris_pressee)
+        if(souris_pressee and TearRateClock.getElapsedTime().asMilliseconds()>arme.tear_rate)
         {
+            TearRateClock.restart();
             get_balle(joueur.x,joueur.y,sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y,bullets,camera,window);
         }
         if (sqrt(abs(joueur.x-feu.x)*abs(joueur.x-feu.x)+abs(joueur.y-feu.y)*abs(joueur.y-feu.y))<cercle_f.taille)
@@ -211,7 +294,6 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
                 {
                     joueur.faim--;
                 }
-                
             }
             
             
@@ -225,9 +307,9 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
         window.clear(sf::Color::Black);
  
         // Draw the sprites
-        dessine(joueur,bank,feu,window,cercle_f,money,bullets,balle.image,zombies,zombie.image,camera);
+        dessine(joueur,bank,feu,etabli,window,cercle_f,money,bullets,balle.image,zombies,zombie.image,camera);
         //update les elements
-        update_position_collisions(bullets,zombies,joueur,InvicibilityClock);
+        update_position_collisions(bullets,zombies,joueur,InvicibilityClock,arme);
         if (ZombieSpawnClock.getElapsedTime().asMilliseconds()>spawn_rate)
             {
                 ZombieSpawnClock.restart();
@@ -241,6 +323,8 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
         }
         spawn_rate=spawn_rate-0.5;
     }
+}
+    //quand le joueur perd
     while (window.isOpen() and loose)
     {
         window.setView(window.getDefaultView());
@@ -264,14 +348,13 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
    
         sf::Text text_défaite;
         sf::Font font;
-        if(!font.loadFromFile("../Jersey15-Regular.ttf"))
+        if(!font.loadFromFile("../../Jersey15-Regular.ttf"))
         std::cout<<"erreur du chargement de la police";
         text_défaite.setPosition(window.getSize().x/2,window.getSize().y/2);
         text_défaite.setFillColor(sf::Color::Red);
         text_défaite.setString("mort");
         text_défaite.setFont(font);
         window.clear(sf::Color::Black);
-        
         window.draw(text_défaite);
         window.display();
     }

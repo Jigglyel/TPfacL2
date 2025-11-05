@@ -130,12 +130,11 @@ void affiche(arbre A)
     {
         affiche(A->parent1);
     }
-    std::cout<<"                    ";
     if (A->parent2!=nullptr)
     {
         affiche(A->parent2);
     }
-    std::cout<<"          "<<std::endl<<std::endl<<std::endl<<std::endl;
+    std::cout<<std::endl<<std::endl<<std::endl<<std::endl;
     affiche_Dude(A->mec);
 }
 
@@ -145,7 +144,7 @@ int main(int argc, char const *argv[])
     arbre A;
     individu Jérome, adam, eve;
     Jérome.nom="Truc";
-    Jérome.prenom="Jérome";
+    Jérome.prenom="Jerome";
     Jérome.date_de_naissance.jour="03";
     Jérome.date_de_naissance.mois="10";
     Jérome.date_de_naissance.année="-10";
@@ -163,7 +162,7 @@ int main(int argc, char const *argv[])
     A=new abGen;
     A->mec=Jérome;
     A->parent1=nullptr;
-    A->parent2=nullptr;
+    A->parent2=nullptr; 
     std::cout<<"ok"<<std::endl;
     ajout_parent(adam,Jérome,A);
     ajout_parent(eve,Jérome,A);

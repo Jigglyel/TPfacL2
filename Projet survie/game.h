@@ -6,11 +6,6 @@
 
 
 
-struct weapon{
-    float dégats;
-    float tear_rate;
-    int id;
 
-};
 
 void jeu(Perso joueur,sf::RenderWindow &window);
