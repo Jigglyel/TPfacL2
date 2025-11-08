@@ -70,11 +70,6 @@ void affiche(arbretab arbre)
     }
     std::cout<<std::endl;
 }
-void affichage_Préfixe(arbretab arbre)
-{
-    std::cout<<arbre.Tab
-    
-}
 int longueur(arbretab arbre, int indice)
 {
     if (arbre.TabPere[indice]==0)
@@ -85,10 +80,41 @@ int longueur(arbretab arbre, int indice)
         return 1+longueur(arbre,arbre.TabPere[indice]);
     
 }
+void affichage_Préfixe(arbretab arbre)
+{
+    int n=0;;
+    int i=1;
+    int* pile;
+    pile= new int[arbre.taille];
+    pile[i]=1;
+    n=pile[i];
+    while (i!=0)
+    {
+        std::cout<<" Etiquette : "<<arbre.Tab[n];
+        if (arbre.TabGauche[n]!=0)
+            std::cout<<"| fils gauche : "<<arbre.Tab[arbre.TabGauche[n]];
+
+        if (arbre.TabDroit[n]!=0)
+            std::cout<<"| fils droit : "<<arbre.Tab[arbre.TabDroit[n]];
+
+        if (arbre.TabPere[n]!=0)
+            std::cout<<"| pere : "<<arbre.Tab[arbre.TabPere[n]];
+
+        std::cout<<"| longueur : "<<longueur(arbre,n)<<std::endl;
+        
+        if (arbre.TabDroit[n]!=0)
+            pile[++i]=arbre.TabDroit[n];
+        if (arbre.TabGauche[n]!=0)
+            n=arbre.TabGauche[n];
+        else
+            n=pile[i--];
+    }
+}
+
 int main()
 {
     arbretab arbre;
     arbre=init("./TP5.txt");
     affiche(arbre);
-    std::cout<<longueur(arbre,1)<<std::endl;
+    affichage_Préfixe(arbre);
 }
