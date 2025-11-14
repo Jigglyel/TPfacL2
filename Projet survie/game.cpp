@@ -114,7 +114,47 @@ void init(Perso &joueur, objet &feu,objet &bank,objet &etabli,Zombie &zombie,sf:
     cercle_f.pixels=get_cercle_faim(feu,cercle_f.taille,window);
     init_text_pause(window,text_pause);
 }
+void dessine_craft(sf::RenderWindow &window,sf::Mouse &souris, bool &z,bool &q, bool &s, bool &d)
+{
+    sf::RectangleShape rectangleH,rectangleB,rectangleD,rectangleG,rectangleSouris;
+    rectangleH.setSize(sf::Vector2f(40,40));
+    rectangleB.setSize(sf::Vector2f(40,40));
+    rectangleG.setSize(sf::Vector2f(40,40));
+    rectangleD.setSize(sf::Vector2f(40,40));
+    rectangleB.setFillColor(sf::Color::Red);
+    rectangleG.setFillColor(sf::Color::Red);
+    rectangleD.setFillColor(sf::Color::Red);
+    rectangleH.setFillColor(sf::Color::Red);
+    rectangleH.setPosition(window.getSize().x/2-rectangleH.getSize().x/2,window.getSize().y/2 -rectangleH.getPosition().y/2-20);
+    rectangleB.setPosition(window.getSize().x/2-rectangleB.getSize().x/2,window.getSize().y/2 -rectangleB.getPosition().y/2+20);
+    rectangleG.setPosition(window.getSize().x/2-rectangleG.getSize().x/2-20,window.getSize().y/2 -rectangleG.getPosition().y/2);
+    rectangleD.setPosition(window.getSize().x/2-rectangleD.getSize().x/2+20,window.getSize().y/2 -rectangleD.getPosition().y/2);
+    if (rectangleH.getGlobalBounds().contains(souris.getPosition().x,souris.getPosition().y))
+    {
+        rectangleH.setFillColor(sf::Color::Green);
+    }
+    if (rectangleB.getGlobalBounds().contains(souris.getPosition().x,souris.getPosition().y))
+    {
+        rectangleB.setFillColor(sf::Color::Green);
+    }
+    if (rectangleG.getGlobalBounds().contains(souris.getPosition().x,souris.getPosition().y))
+    {
+        rectangleG.setFillColor(sf::Color::Green);
+    }
+    if (rectangleD.getGlobalBounds().contains(souris.getPosition().x,souris.getPosition().y))
+    {
+        rectangleD.setFillColor(sf::Color::Green);
+    }
+    window.clear(sf::Color::Black);
+    window.draw(rectangleH);
+    window.draw(rectangleB);
+    window.draw(rectangleG);
+    window.draw(rectangleD);
+    window.display();
+
+
     
+}
 void jeu(Perso joueur ,sf::RenderWindow &window)
 {   
     //definition des classes
@@ -202,6 +242,7 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
         }
         if (in_crafting)
         {
+            sf::Mouse souris;
             z=false;q=false;s=false;d=false;
             
             while (window.pollEvent(event))
@@ -220,6 +261,7 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
                 {
                     if(event.key.code==sf::Keyboard::Q)
                     {
+                        q=true;
                         if (money>=100)
                         {
                             std::cout<<"j'ai acheté du tear rate"<<std::endl;
@@ -235,6 +277,7 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
                     {
                     if (money>=100)
                         {
+                            d=true;
                             std::cout<<"j'ai acheté des dégats rate"<<std::endl;
                             arme.dégats+=1;
                             money-=100;
@@ -243,6 +286,7 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
                             std::cout<<"pas assez d'argent"<<std::endl;
                     }
                 }
+                dessine_craft(window,souris,z,q,s,d);
             }
         }
         else
