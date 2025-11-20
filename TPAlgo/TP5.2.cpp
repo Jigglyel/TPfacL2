@@ -1,9 +1,15 @@
 #include "TP5.cpp"
 
+struct maillon{
+    maillon * suiv;
+    char val;
+};
 
+using file=maillon*;
 struct Noeud{
     std::string val;
     Noeud* fd,*fg,*p;
+    file F;
 };
 using arbre = Noeud*;
 
@@ -20,6 +26,7 @@ arbre convertion(arbretab tab ,int i)
             résultat->p=nullptr;
         }
         résultat->val=tab.Tab[i];
+        résultat->F=nullptr;
         résultat->fg=convertion(tab,tab.TabGauche[i]);
         résultat->fd=convertion(tab,tab.TabDroit[i]);
         if (résultat->fg!=nullptr)
@@ -140,15 +147,4 @@ void supprime(arbre &A)
         supprime(A->fg);
         delete A;
     }
-}
-int main()
-{
-    arbretab tab;
-    arbre A,B;
-    tab=init("./TP5.txt");
-    A =convertion(tab,1);
-    affiche_feuille(A);
-    supprime(A);
-    std::cout<<"ok"<<std::endl;
-    return 0;
 }
