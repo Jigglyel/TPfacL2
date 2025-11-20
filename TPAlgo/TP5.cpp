@@ -111,10 +111,3 @@ void affichage_Préfixe(arbretab arbre)
     }
 }
 
-int main()
-{
-    arbretab arbre;
-    arbre=init("./TP5.txt");
-    affiche(arbre);
-    affichage_Préfixe(arbre);
-}

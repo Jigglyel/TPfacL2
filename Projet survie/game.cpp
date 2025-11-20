@@ -125,10 +125,10 @@ void dessine_craft(sf::RenderWindow &window,sf::Mouse &souris, bool &z,bool &q, 
     rectangleG.setFillColor(sf::Color::Red);
     rectangleD.setFillColor(sf::Color::Red);
     rectangleH.setFillColor(sf::Color::Red);
-    rectangleH.setPosition(window.getSize().x/2-rectangleH.getSize().x/2,window.getSize().y/2 -rectangleH.getPosition().y/2-20);
-    rectangleB.setPosition(window.getSize().x/2-rectangleB.getSize().x/2,window.getSize().y/2 -rectangleB.getPosition().y/2+20);
-    rectangleG.setPosition(window.getSize().x/2-rectangleG.getSize().x/2-20,window.getSize().y/2 -rectangleG.getPosition().y/2);
-    rectangleD.setPosition(window.getSize().x/2-rectangleD.getSize().x/2+20,window.getSize().y/2 -rectangleD.getPosition().y/2);
+    rectangleH.setPosition(window.getSize().x/2-rectangleH.getSize().x/2,window.getSize().y/2 -rectangleH.getSize().y/2-20);
+    rectangleB.setPosition(window.getSize().x/2-rectangleB.getSize().x/2,window.getSize().y/2 -rectangleB.getSize().y/2/2+20);
+    rectangleG.setPosition(window.getSize().x/2-rectangleG.getSize().x/2-20,window.getSize().y/2 -rectangleG.getSize().y/2);
+    rectangleD.setPosition(window.getSize().x/2-rectangleD.getSize().x/2+20,window.getSize().y/2 -rectangleD.getSize().y/2);
     if (rectangleH.getGlobalBounds().contains(souris.getPosition().x,souris.getPosition().y))
     {
         rectangleH.setFillColor(sf::Color::Green);
@@ -146,11 +146,13 @@ void dessine_craft(sf::RenderWindow &window,sf::Mouse &souris, bool &z,bool &q, 
         rectangleD.setFillColor(sf::Color::Green);
     }
     window.clear(sf::Color::Black);
+    window.getDefaultView();
     window.draw(rectangleH);
     window.draw(rectangleB);
     window.draw(rectangleG);
     window.draw(rectangleD);
     window.display();
+    
 
 
     
