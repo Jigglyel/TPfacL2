@@ -271,77 +271,101 @@ sfml-audio/fast:
 	$(MAKE) $(MAKESILENT) -f _deps\sfml-build\src\SFML\Audio\CMakeFiles\sfml-audio.dir\build.make _deps/sfml-build/src/SFML/Audio/CMakeFiles/sfml-audio.dir/build
 .PHONY : sfml-audio/fast
 
-Calcules.obj: Calcules.cpp.obj
-.PHONY : Calcules.obj
+src/Calcules.obj: src/Calcules.cpp.obj
+.PHONY : src/Calcules.obj
 
 # target to build an object file
-Calcules.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/Calcules.cpp.obj
-.PHONY : Calcules.cpp.obj
+src/Calcules.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/src/Calcules.cpp.obj
+.PHONY : src/Calcules.cpp.obj
 
-Calcules.i: Calcules.cpp.i
-.PHONY : Calcules.i
+src/Calcules.i: src/Calcules.cpp.i
+.PHONY : src/Calcules.i
 
 # target to preprocess a source file
-Calcules.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/Calcules.cpp.i
-.PHONY : Calcules.cpp.i
+src/Calcules.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/src/Calcules.cpp.i
+.PHONY : src/Calcules.cpp.i
 
-Calcules.s: Calcules.cpp.s
-.PHONY : Calcules.s
+src/Calcules.s: src/Calcules.cpp.s
+.PHONY : src/Calcules.s
 
 # target to generate assembly for a file
-Calcules.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/Calcules.cpp.s
-.PHONY : Calcules.cpp.s
+src/Calcules.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/src/Calcules.cpp.s
+.PHONY : src/Calcules.cpp.s
 
-game.obj: game.cpp.obj
-.PHONY : game.obj
+src/game.obj: src/game.cpp.obj
+.PHONY : src/game.obj
 
 # target to build an object file
-game.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/game.cpp.obj
-.PHONY : game.cpp.obj
+src/game.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/src/game.cpp.obj
+.PHONY : src/game.cpp.obj
 
-game.i: game.cpp.i
-.PHONY : game.i
+src/game.i: src/game.cpp.i
+.PHONY : src/game.i
 
 # target to preprocess a source file
-game.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/game.cpp.i
-.PHONY : game.cpp.i
+src/game.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/src/game.cpp.i
+.PHONY : src/game.cpp.i
 
-game.s: game.cpp.s
-.PHONY : game.s
+src/game.s: src/game.cpp.s
+.PHONY : src/game.s
 
 # target to generate assembly for a file
-game.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/game.cpp.s
-.PHONY : game.cpp.s
+src/game.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/src/game.cpp.s
+.PHONY : src/game.cpp.s
 
-main.obj: main.cpp.obj
-.PHONY : main.obj
+src/main.obj: src/main.cpp.obj
+.PHONY : src/main.obj
 
 # target to build an object file
-main.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/main.cpp.obj
-.PHONY : main.cpp.obj
+src/main.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/src/main.cpp.obj
+.PHONY : src/main.cpp.obj
 
-main.i: main.cpp.i
-.PHONY : main.i
+src/main.i: src/main.cpp.i
+.PHONY : src/main.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/main.cpp.i
-.PHONY : main.cpp.i
+src/main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
 
-main.s: main.cpp.s
-.PHONY : main.s
+src/main.s: src/main.cpp.s
+.PHONY : src/main.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/main.cpp.s
-.PHONY : main.cpp.s
+src/main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
+
+src/mob.obj: src/mob.cpp.obj
+.PHONY : src/mob.obj
+
+# target to build an object file
+src/mob.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/src/mob.cpp.obj
+.PHONY : src/mob.cpp.obj
+
+src/mob.i: src/mob.cpp.i
+.PHONY : src/mob.i
+
+# target to preprocess a source file
+src/mob.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/src/mob.cpp.i
+.PHONY : src/mob.cpp.i
+
+src/mob.s: src/mob.cpp.s
+.PHONY : src/mob.s
+
+# target to generate assembly for a file
+src/mob.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\survie.dir\build.make CMakeFiles/survie.dir/src/mob.cpp.s
+.PHONY : src/mob.cpp.s
 
 # Help Target
 help:
@@ -364,15 +388,18 @@ help:
 	@echo ... sfml-system
 	@echo ... sfml-window
 	@echo ... survie
-	@echo ... Calcules.obj
-	@echo ... Calcules.i
-	@echo ... Calcules.s
-	@echo ... game.obj
-	@echo ... game.i
-	@echo ... game.s
-	@echo ... main.obj
-	@echo ... main.i
-	@echo ... main.s
+	@echo ... src/Calcules.obj
+	@echo ... src/Calcules.i
+	@echo ... src/Calcules.s
+	@echo ... src/game.obj
+	@echo ... src/game.i
+	@echo ... src/game.s
+	@echo ... src/main.obj
+	@echo ... src/main.i
+	@echo ... src/main.s
+	@echo ... src/mob.obj
+	@echo ... src/mob.i
+	@echo ... src/mob.s
 .PHONY : help
 
 

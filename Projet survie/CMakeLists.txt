@@ -17,9 +17,10 @@ FetchContent_MakeAvailable(SFML)
 
 #importe la bibliothèque SFML depuis le repo github SFML
 add_executable(survie 
-    ./main.cpp
-    ./Calcules.cpp
-    ./game.cpp
+    ./src/main.cpp
+    ./src/Calcules.cpp
+    ./src/game.cpp
+    ./src/mob.cpp
 )
 
 target_link_libraries(survie PRIVATE sfml-graphics sfml-window sfml-system)

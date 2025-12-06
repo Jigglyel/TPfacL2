@@ -1,21 +1,27 @@
 [
 {
   "directory": "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build",
-  "command": "C:\\mingw32\\bin\\c++.exe -DSFML_STATIC @CMakeFiles/survie.dir/includes_CXX.rsp  -o CMakeFiles\\survie.dir\\main.cpp.obj -c \"C:\\Users\\mu37\\OneDrive\\Images\\Documents\\Code pour la fac\\TPfacL2\\Projet survie\\main.cpp\"",
-  "file": "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/main.cpp",
-  "output": "CMakeFiles/survie.dir/main.cpp.obj"
+  "command": "C:\\mingw32\\bin\\c++.exe -DSFML_STATIC @CMakeFiles/survie.dir/includes_CXX.rsp  -o CMakeFiles\\survie.dir\\src\\main.cpp.obj -c \"C:\\Users\\mu37\\OneDrive\\Images\\Documents\\Code pour la fac\\TPfacL2\\Projet survie\\src\\main.cpp\"",
+  "file": "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/src/main.cpp",
+  "output": "CMakeFiles/survie.dir/src/main.cpp.obj"
 },
 {
   "directory": "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build",
-  "command": "C:\\mingw32\\bin\\c++.exe -DSFML_STATIC @CMakeFiles/survie.dir/includes_CXX.rsp  -o CMakeFiles\\survie.dir\\Calcules.cpp.obj -c \"C:\\Users\\mu37\\OneDrive\\Images\\Documents\\Code pour la fac\\TPfacL2\\Projet survie\\Calcules.cpp\"",
-  "file": "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/Calcules.cpp",
-  "output": "CMakeFiles/survie.dir/Calcules.cpp.obj"
+  "command": "C:\\mingw32\\bin\\c++.exe -DSFML_STATIC @CMakeFiles/survie.dir/includes_CXX.rsp  -o CMakeFiles\\survie.dir\\src\\Calcules.cpp.obj -c \"C:\\Users\\mu37\\OneDrive\\Images\\Documents\\Code pour la fac\\TPfacL2\\Projet survie\\src\\Calcules.cpp\"",
+  "file": "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/src/Calcules.cpp",
+  "output": "CMakeFiles/survie.dir/src/Calcules.cpp.obj"
 },
 {
   "directory": "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build",
-  "command": "C:\\mingw32\\bin\\c++.exe -DSFML_STATIC @CMakeFiles/survie.dir/includes_CXX.rsp  -o CMakeFiles\\survie.dir\\game.cpp.obj -c \"C:\\Users\\mu37\\OneDrive\\Images\\Documents\\Code pour la fac\\TPfacL2\\Projet survie\\game.cpp\"",
-  "file": "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/game.cpp",
-  "output": "CMakeFiles/survie.dir/game.cpp.obj"
+  "command": "C:\\mingw32\\bin\\c++.exe -DSFML_STATIC @CMakeFiles/survie.dir/includes_CXX.rsp  -o CMakeFiles\\survie.dir\\src\\game.cpp.obj -c \"C:\\Users\\mu37\\OneDrive\\Images\\Documents\\Code pour la fac\\TPfacL2\\Projet survie\\src\\game.cpp\"",
+  "file": "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/src/game.cpp",
+  "output": "CMakeFiles/survie.dir/src/game.cpp.obj"
+},
+{
+  "directory": "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build",
+  "command": "C:\\mingw32\\bin\\c++.exe -DSFML_STATIC @CMakeFiles/survie.dir/includes_CXX.rsp  -o CMakeFiles\\survie.dir\\src\\mob.cpp.obj -c \"C:\\Users\\mu37\\OneDrive\\Images\\Documents\\Code pour la fac\\TPfacL2\\Projet survie\\src\\mob.cpp\"",
+  "file": "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/src/mob.cpp",
+  "output": "CMakeFiles/survie.dir/src/mob.cpp.obj"
 },
 {
   "directory": "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build/_deps/sfml-build/src/SFML/System",
