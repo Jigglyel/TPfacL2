@@ -1,6 +1,6 @@
 #include "game.h"
 //charge les textures
-void charge(sf::Texture &mec,sf::Texture &bank,sf::Texture &feu,sf::Texture &bullet,sf::Texture &zombie,sf::Texture &etabli,sf::Texture &damage_stat,sf::Texture &rate_stat)
+void charge(sf::Texture &mec,sf::Texture &bank,sf::Texture &feu,sf::Texture &bullet,sf::Texture &zombie,sf::Texture &etabli,sf::Texture &damage_stat,sf::Texture &rate_stat,sf::Texture &sorcière)
 {
     mec.loadFromFile("../../sprites/mec.png");
     feu.loadFromFile("../../sprites/feu_de_camp.png");
@@ -10,6 +10,7 @@ void charge(sf::Texture &mec,sf::Texture &bank,sf::Texture &feu,sf::Texture &bul
     etabli.loadFromFile("../../sprites/etabli.png");
     damage_stat.loadFromFile("../../sprites/tear_damage_stat.png");
     rate_stat.loadFromFile("../../sprites/tear_rate_stat.png");
+    sorcière.loadFromFile("../../sprites/sorciere.png");
 
 }
 void init_text_pause(sf::RenderWindow &window,sf::Text &resu,sf::Font &font)
@@ -19,9 +20,9 @@ void init_text_pause(sf::RenderWindow &window,sf::Text &resu,sf::Font &font)
     resu.setFont(font);
     resu.setString("PAUSE");
 }
-void dessine(Perso joueur,objet bank,objet feu,objet etabli,sf::RenderWindow &window,cercle_faim cercle_f,int money,std::vector<Bullet> bullets,sf::Texture image_balle,std::vector<Zombie>zombies,sf::Texture image_zombie,sf::View &camera,sf::Font font,HUD &rate,HUD &damage,bool debug)
+void dessine(Perso joueur,objet bank,objet feu,objet etabli,sf::RenderWindow &window,cercle_faim cercle_f,int money,std::vector<Bullet> bullets,sf::Texture image_balle,std::vector<Mob>zombies,sf::Texture image_zombie,sf::View &camera,sf::Font font,HUD &rate,HUD &damage,bool debug,std::vector<Bullet>witch_balls)
 {
-    sf::Sprite joueurImage(joueur.image),bankImage(bank.image),feuImage(feu.image),balleImage(image_balle),zombieImage(image_zombie),etabliImage(etabli.image);
+    sf::Sprite joueurImage(joueur.image),bankImage(bank.image),feuImage(feu.image),balleImage(image_balle),etabliImage(etabli.image);
     sf::Text text_faim, text_dollar,text_vie;
     text_faim.setPosition(1000,100);
     text_faim.setFillColor(sf::Color::Green);
@@ -46,8 +47,18 @@ void dessine(Perso joueur,objet bank,objet feu,objet etabli,sf::RenderWindow &wi
         window.draw(balleImage);
         
     }
-    for (Zombie zombie : zombies)
+    for (Bullet balle : witch_balls)
     {
+        std::cout<<"dans la dessine vect"<<std::endl;
+        balleImage.setPosition(balle.x-17,balle.y-17);
+        balleImage.setColor(sf::Color(255,0,255));
+        std::cout<<"avant de draw"<<std::endl;
+        window.draw(balleImage);
+        
+    }
+    for (Mob zombie : zombies)
+    {
+        sf ::Sprite zombieImage(zombie.image);
         zombie.hitbox.setOutlineColor(sf::Color::Red);
         zombieImage.setPosition(zombie.x-13,zombie.y-18);
         window.draw(zombieImage);
@@ -86,12 +97,12 @@ void dessine(Perso joueur,objet bank,objet feu,objet etabli,sf::RenderWindow &wi
     window.setView(camera);
     
 }
-void init(Perso &joueur, objet &feu,objet &bank,objet &etabli,Zombie &zombie,sf::View &camera,sf::RenderWindow &window,float &spawn_rate,cercle_faim &cercle_f,Bullet &balle,sf::Text &text_pause,weapon &arme,HUD &rate,HUD &damage,sf::Font &neon)
+void init(Perso &joueur, objet &feu,objet &bank,objet &etabli,Mob &zombie,sf::View &camera,sf::RenderWindow &window,cercle_faim &cercle_f,Bullet &balle,sf::Text &text_pause,weapon &arme,HUD &rate,HUD &damage,sf::Font &neon,sf::Texture &TextureSorcière)
 {
     joueur.invincible=false;
     joueur.x=300;
     joueur.y=500;
-    joueur.hp=200000000;
+    joueur.hp=20;
     joueur.faim=100;
     joueur.v=2;
     joueur.hitbox.setSize(sf::Vector2f(7,25));
@@ -101,7 +112,6 @@ void init(Perso &joueur, objet &feu,objet &bank,objet &etabli,Zombie &zombie,sf:
     camera.setCenter(joueur.x,joueur.y);
     camera.setSize(sf::Vector2f(window.getSize()));
     window.setView(camera);
-    spawn_rate=50000;
     cercle_f.taille=100;
     feu.x=300;
     feu.y=500;
@@ -132,7 +142,7 @@ void init(Perso &joueur, objet &feu,objet &bank,objet &etabli,Zombie &zombie,sf:
     damage.text.setFillColor(sf::Color::White);
     rate.text.setString(std::to_string(int(arme.tear_rate)));
     damage.text.setString(std::to_string(int(arme.dégats)));
-    charge(joueur.image,bank.image,feu.image,balle.image,zombie.image,etabli.image,damage.image,rate.image);
+    charge(joueur.image,bank.image,feu.image,balle.image,zombie.image,etabli.image,damage.image,rate.image,TextureSorcière);
     rate.rectganle.setTexture(&rate.image);
     damage.rectganle.setTexture(&damage.image);
     cercle_f.pixels=get_cercle_faim(feu,cercle_f.taille,window);
@@ -222,10 +232,10 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
 {   
     //definition des classes
     objet feu, bank,etabli;
-    std::vector<Bullet>bullets;
+    std::vector<Bullet>bullets,witch_balls;
     Bullet balle;
-    Zombie zombie;
-    std::vector<Zombie>zombies; 
+    std::vector<Mob>mobs;
+    Mob zombie; 
     sf::View camera;
     cercle_faim cercle_f;
     sf::Text text_pause ;
@@ -235,10 +245,11 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
     float spawn_rate=5000; 
     int money=0;
     weapon arme;
+    sf::Texture TextureSorcière;
     bool z=false, q=false, s=false, d=false,debug=false, souris_pressee=false, sprint=false, loose= false, in_crafting=false, pause=false;
-    init(joueur,feu,bank,etabli,zombie,camera,window,spawn_rate,cercle_f,balle,text_pause,arme,rate_stat,damage_stat,neon);
+    init(joueur,feu,bank,etabli,zombie,camera,window,cercle_f,balle,text_pause,arme,rate_stat,damage_stat,neon,TextureSorcière);
     int vitesse_de_base=joueur.v;
-    dessine(joueur,bank,feu,etabli,window,cercle_f,money,bullets,balle.image,zombies,zombie.image,camera,neon,rate_stat,damage_stat,debug);
+    dessine(joueur,bank,feu,etabli,window,cercle_f,money,bullets,balle.image,mobs,zombie.image,camera,neon,rate_stat,damage_stat,debug,witch_balls);
     window.display();
     sf::Clock FoodGetClock,FoodLostClock,ZombieSpawnClock,InvicibilityClock,TearRateClock,buyClock,SorcièreSpawnClock;
     while (window.isOpen() and not loose)
@@ -453,21 +464,17 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
         window.clear(sf::Color::Black);
  
         // Draw the sprites
-        dessine(joueur,bank,feu,etabli,window,cercle_f,money,bullets,balle.image,zombies,zombie.image,camera,neon,rate_stat,damage_stat,debug);
+        dessine(joueur,bank,feu,etabli,window,cercle_f,money,bullets,balle.image,mobs,zombie.image,camera,neon,rate_stat,damage_stat,debug,witch_balls);
         //update les elements
-        update_position_collisions(bullets,zombies,joueur,InvicibilityClock,arme);
-        //fait spawn un zombie
-        if (ZombieSpawnClock.getElapsedTime().asMilliseconds()>spawn_rate)
-        {
-            ZombieSpawnClock.restart();
-            zombie_spawn(zombies,joueur,);
-        }
+        update_position_collisions(bullets,mobs,joueur,InvicibilityClock,arme,witch_balls);
+        //regade s'il y a des mobs à faire spawn
+        CheckMobSpawn(mobs,joueur,ZombieSpawnClock,SorcièreSpawnClock,spawn_rate,zombie.image,TextureSorcière);
         if (joueur.hp<=0 or joueur.faim<=0)
         {
             loose=true;
         }
-        spawn_rate=spawn_rate-(1/std::log(spawn_rate-spawn_rate*0.1));
-        std::cout<<spawn_rate<<std::endl;
+         spawn_rate=spawn_rate;
+        //(1/std::log(spawn_rate-spawn_rate*0.1));
         window.setView(camera);
         window.display();
         

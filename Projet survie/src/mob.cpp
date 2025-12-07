@@ -1,7 +1,7 @@
 #include"mob.h"
 //fait spawn un zombie aléatoirement autour du joueur
 
-void zombie_spawn(std::vector<Mob> &zombies,Perso joueur,int ID)
+void zombie_spawn(std::vector<Mob> &zombies,Perso joueur,int ID,sf::Texture &zombimage,sf::Texture& sorcimage)
 {
     Mob zombie;
     zombie.ID=ID;
@@ -25,21 +25,31 @@ void zombie_spawn(std::vector<Mob> &zombies,Perso joueur,int ID)
         zombie.hp=50;
         zombie.v=0.5;
     }
+    if (ID==0)
+    {
+        zombie.image=zombimage;
+    }
+    if (ID==1)
+    {
+        zombie.image=sorcimage;
+    }
+    
+    
     zombie.hitbox.setSize(sf::Vector2f(7,25));
     zombie.hitbox.setPosition(zombie.x-13,zombie.y-18);
     zombies.push_back(zombie);
 }
-void CheckMobSpawn(std::vector<Mob> mobs,Perso joueur,sf::Clock ZombieSpawnClock,sf::Clock sorcièreSpawnClock,int spawn_rate)
+void CheckMobSpawn(std::vector<Mob> &mobs,Perso joueur,sf::Clock &ZombieSpawnClock,sf::Clock &sorcièreSpawnClock,int spawn_rate,sf::Texture &zombimage,sf::Texture &sorcimage)
 {
-    if (ZombieSpawnClock.getElapsedTime().asMilliseconds()>spawn_rate)
+    if (ZombieSpawnClock.getElapsedTime().asMilliseconds()>spawn_rate+10000)
         {
             ZombieSpawnClock.restart();
-            zombie_spawn(mobs,joueur,0);
+            zombie_spawn(mobs,joueur,0,zombimage,sorcimage);
         }
     if (sorcièreSpawnClock.getElapsedTime().asMilliseconds()>spawn_rate)
         {
             sorcièreSpawnClock.restart();
-            zombie_spawn(mobs,joueur,1);
+            zombie_spawn(mobs,joueur,1,zombimage,sorcimage);
         }
     
 }
@@ -57,21 +67,25 @@ void zombie_accompagnement(Mob &zombie,Perso joueur)
     zombie.y+=zombie.vy;
     zombie.hitbox.setPosition(zombie.x-3,zombie.y-10);
 }
-void sorcière_accompagnement(Mob &sorcière,Perso joueur,sf::Clock & Shoot_witch_clock,std::vector<Bullet> &balles)
+void sorcière_accompagnement(Mob &sorcière,Perso joueur,std::vector<Bullet> &balles)
 {
     float dx,dy,distance;
     dx = joueur.x - sorcière.x;
     dy =  joueur.y- sorcière.y;
     distance = sqrt(dx*dx + dy*dy);
     Bullet balle;
-    if (distance<200 and Shoot_witch_clock.getElapsedTime().asSeconds()>5)
+    if (distance<200 and sorcière.shoot.getElapsedTime().asSeconds()>5)
     {
-        balle_sorcière(balle,joueur);
+        std::cout<<"je tire"<<std::endl;
+        sorcière.shoot.restart();
+        
         balle.x=sorcière.x;
         balle.y=sorcière.y;
         balle.count=0;
         balle.v=3;
+        balle_sorcière(balle,joueur);
         balles.push_back(balle);
+        std::cout<<"dans le vector"<<std::endl;
         sorcière.vx=0;
         sorcière.vy=0;
     }
@@ -79,16 +93,28 @@ void sorcière_accompagnement(Mob &sorcière,Perso joueur,sf::Clock & Shoot_witc
     {
         sorcière.vx = sorcière.v * dx / distance;
         sorcière.vy = sorcière.v * dy / distance;
+        sorcière.x+=sorcière.vx;
+        sorcière.y+=sorcière.vy;
     }
 }
-void update_position_collisions(std::vector<Bullet> &bullets,std::vector<Zombie>&zombies,Perso &joueur,sf::Clock &InvicibleClock,weapon arme )
+void update_position_collisions(std::vector<Bullet> &bullets,std::vector<Mob>&mobs,Perso &joueur,sf::Clock &InvicibleClock,weapon arme,std::vector<Bullet> &witch_balls)
 {
 
     int i=0;
     
-    for ( Zombie &zombie:zombies)
+    for ( Mob &mob:mobs)
     {
-        zombie_accompagnement(zombie,joueur);
+        if (mob.ID==0)
+        {
+            zombie_accompagnement(mob,joueur);
+        }
+        if (mob.ID==1)
+        {
+            sorcière_accompagnement(mob,joueur,witch_balls);
+        }
+        
+        
+        
     }
     
     while (i<bullets.size())
@@ -96,17 +122,17 @@ void update_position_collisions(std::vector<Bullet> &bullets,std::vector<Zombie>
         int j=0;
         bool bullet_destroyed=false;
         bool zombie_destroyed=false;
-        while (j<zombies.size() and not bullet_destroyed)
+        while (j<mobs.size() and not bullet_destroyed)
         {
-            if(bullets[i].hitbox.getGlobalBounds().intersects(zombies[j].hitbox.getGlobalBounds()))
+            if(bullets[i].hitbox.getGlobalBounds().intersects(mobs[j].hitbox.getGlobalBounds()))
             {
                 
                 bullets.erase(bullets.begin()+i);
                 bullet_destroyed=true;
-                zombies[j].hp=zombies[j].hp-arme.dégats;
-                if (zombies[j].hp<=0)
+                mobs[j].hp=mobs[j].hp-arme.dégats;
+                if (mobs[j].hp<=0)
                 {
-                    zombies.erase(zombies.begin()+j);
+                    mobs.erase(mobs.begin()+j);
                 }
                 
             }
@@ -131,10 +157,10 @@ void update_position_collisions(std::vector<Bullet> &bullets,std::vector<Zombie>
     if(not joueur.invincible)
     {
         bool joueur_touché=false;
-        for (int j = 0; j < zombies.size(); j++)
+        for (int j = 0; j < mobs.size(); j++)
         {
-            if(joueur.hitbox.getGlobalBounds().intersects(zombies[j].hitbox.getGlobalBounds()) and not joueur_touché)
-                {   std::cout<<"collision detectee"<<j<<std::endl;
+            if(joueur.hitbox.getGlobalBounds().intersects(mobs[j].hitbox.getGlobalBounds()) and not joueur_touché)
+                {   
                     joueur.hp=joueur.hp-5;
                     joueur.invincible=true;
                     joueur_touché=true;
@@ -142,4 +168,27 @@ void update_position_collisions(std::vector<Bullet> &bullets,std::vector<Zombie>
                 }
         }
     }
+    i=0;
+    while (i<witch_balls.size())
+    {
+        bool bullet_destroyed=false;
+        if(witch_balls[i].hitbox.getGlobalBounds().intersects(joueur.hitbox.getGlobalBounds()))
+        {
+            joueur.hp-=5;
+            witch_balls.erase(witch_balls.begin()+i);
+            bullet_destroyed=true;
+        }
+        if (not bullet_destroyed and bullets[i].count>200)
+        {
+            bullets.erase(bullets.begin()+i);
+            bullet_destroyed=true;
+        } 
+        if (not bullet_destroyed)
+        {
+            ++i;
+        }
+
+
+    }
+    
 }
