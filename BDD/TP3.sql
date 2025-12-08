@@ -2,17 +2,20 @@
 -- (NomGroupe varchar(5) PRIMARY KEY CHECK (NomGroupe IN('A1', 'A2', 'A3', 'A4', 'A5' ,'A6')),
 -- IntituleGroupe varchar(20));
 
--- create table Matiere 
--- (
--- NomMat varchar(15) PRIMARY KEY, 
--- CoefMat integer CHECK(CoefMat BETWEEN 1 AND 8), 
--- NumEns integer
--- );
-
 -- create table Enseignant
 -- (NumEns integer PRIMARY KEY,
 -- NomEns varchar(30)
 -- );
+
+-- create table Matiere 
+-- (
+-- NomMat varchar(15) PRIMARY KEY, 
+-- CoefMat integer CHECK(CoefMat BETWEEN 1 AND 8), 
+-- NumEns integer REFERENCES Enseignant(NumEns)
+-- ON DELETE CASCADE ON UPDATE CASCADE
+-- );
+
+
 
 -- create sequence Valetud minvalue 1111;
 -- create sequence valCont;
@@ -109,7 +112,7 @@
 -- (1113,3,3.5),
 -- (1114,3,12.5),
 -- (1115,3,20),
--- (1116,3,19.5);
+-- (1116,3,9.5);
 
 -- INSERT INTO Etudiant VALUES
 -- (1300,'Kylian','MBAPPÉ','Madrid','20/12/1998','A6');
@@ -150,6 +153,52 @@
 --     Group by NumCont 
 --     HAVING AVG(NOTE)<8
 -- )
+
+-- SELECT NomEt,NumEt,nomgr FROM Etudiant order by NomGr;
+
+
+-- SELECT NomEt,SUM(Note)/count(Note),NomMat 
+-- from PassCont 
+-- join Contrôle ON PassCont.NumCont =Contrôle.NumCont natural join Etudiant 
+-- Group by NomEt,NomMat
+-- order by NomEt;
+
+
+-- SELECT Note
+-- from PassCont 
+-- join Contrôle ON PassCont.NumCont =Contrôle.NumCont natural join Etudiant
+-- Where NomEt='TOTO' and NomMat='Algo 2' and DatCont='12/12/2022';
+
+
+
+-- SELECT NomEt from Etudiant
+-- Where substring(NomEt,1,1)='a' or substring(NomEt,1,1)='A';
+
+
+-- SELECT Coef
+-- from PassCont 
+-- join Contrôle ON PassCont.NumCont =Contrôle.NumCont
+-- Where Note=20;
+
+-- SELECT NomEt
+-- from PassCont 
+-- join Contrôle ON PassCont.NumCont =Contrôle.NumCont natural join Etudiant
+-- Where NomMat='Algo 2' and DatCont='12/12/2022' and note>=10;
+
+-- SELECT DISTiNcT NomEns
+-- from PassCont 
+-- join Contrôle ON PassCont.NumCont =Contrôle.NumCont  join Matiere on Matiere.NomMat=Contrôle.NomMat join Enseignant on Matiere.NumEns =Enseignant.NumEns;
+
+-- SELECT DISTiNcT NomEt,AdrEt from Etudiant
+-- Where AdrEt not in('Angers','Cholet','Tours');
+
+SELECT DISTiNcT NomEt from
+Etudiant natural join PassCont  natural join Contrôle
+Where NomMat='Algo 3' and DatCont='12/12/2022' and note>(
+    SELECT note from
+    Etudiant natural join PassCont natural join Contrôle
+    Where NomMat='Algo 3' and DatCont='12/12/2022' and NomEt='GHULAM'
+);
 
 
 
