@@ -74,20 +74,21 @@ void sorcière_accompagnement(Mob &sorcière,Perso joueur,std::vector<Bullet> &b
     dy =  joueur.y- sorcière.y;
     distance = sqrt(dx*dx + dy*dy);
     Bullet balle;
-    if (distance<200 and sorcière.shoot.getElapsedTime().asSeconds()>5)
+    if (distance<200)
     {
-        std::cout<<"je tire"<<std::endl;
-        sorcière.shoot.restart();
-        
-        balle.x=sorcière.x;
-        balle.y=sorcière.y;
-        balle.count=0;
-        balle.v=3;
-        balle_sorcière(balle,joueur);
-        balles.push_back(balle);
-        std::cout<<"dans le vector"<<std::endl;
-        sorcière.vx=0;
-        sorcière.vy=0;
+        if (sorcière.shoot.getElapsedTime().asSeconds()>5)
+        {
+            sorcière.shoot.restart();
+            
+            balle.x=sorcière.x;
+            balle.y=sorcière.y;
+            balle.count=0;
+            balle.v=3;
+            balle_sorcière(balle,joueur);
+            balles.push_back(balle);
+            sorcière.vx=0;
+            sorcière.vy=0;
+        }
     }
     else
     {
@@ -171,16 +172,18 @@ void update_position_collisions(std::vector<Bullet> &bullets,std::vector<Mob>&mo
     i=0;
     while (i<witch_balls.size())
     {
+        balle_sorcière(witch_balls[i],joueur);
         bool bullet_destroyed=false;
+        
         if(witch_balls[i].hitbox.getGlobalBounds().intersects(joueur.hitbox.getGlobalBounds()))
         {
             joueur.hp-=5;
             witch_balls.erase(witch_balls.begin()+i);
             bullet_destroyed=true;
         }
-        if (not bullet_destroyed and bullets[i].count>200)
+        if (not bullet_destroyed and witch_balls[i].count>200)
         {
-            bullets.erase(bullets.begin()+i);
+            witch_balls.erase(witch_balls.begin()+i);
             bullet_destroyed=true;
         } 
         if (not bullet_destroyed)

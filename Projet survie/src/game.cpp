@@ -49,10 +49,8 @@ void dessine(Perso joueur,objet bank,objet feu,objet etabli,sf::RenderWindow &wi
     }
     for (Bullet balle : witch_balls)
     {
-        std::cout<<"dans la dessine vect"<<std::endl;
         balleImage.setPosition(balle.x-17,balle.y-17);
         balleImage.setColor(sf::Color(255,0,255));
-        std::cout<<"avant de draw"<<std::endl;
         window.draw(balleImage);
         
     }
@@ -125,8 +123,8 @@ void init(Perso &joueur, objet &feu,objet &bank,objet &etabli,Mob &zombie,sf::Vi
     bank.y=300;
     etabli.x=100;
     etabli.y=100;
-    arme.dégats=2;
-    arme.tear_rate=5000;
+    arme.dégats=10;
+    arme.tear_rate=1000;
     arme.id=0;
     if(!neon.loadFromFile("../../font/Jersey15-Regular.ttf"))
         std::cout<<"erreur du chargement de la police";

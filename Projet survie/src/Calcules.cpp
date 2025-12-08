@@ -68,11 +68,13 @@ void get_balle(int x_joueur, int y_joueur,int x_souris,int y_souris,std::vector<
 }
 void balle_sorcière(Bullet &balle,Perso joueur)
 {
-    float dx=joueur.x-balle.x;
-    float dy=joueur.y-balle.y;
+    float dx=(joueur.x-balle.x);
+    float dy=(joueur.y-balle.y);
     float distance=dy*dy+dx*dx;
-    balle.vx+=balle.v *dx/distance;
-    balle.vy+=balle.v *dy/distance;
+    balle.vx+=balle.v *5*dx/distance;
+    balle.vy+=balle.v *5*dy/distance;
+    balle.x+=balle.vx;
+    balle.y+=balle.vy;
     
 }
 //permet le mouvement de la balle une fois lancée
