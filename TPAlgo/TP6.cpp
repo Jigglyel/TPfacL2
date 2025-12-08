@@ -1,10 +1,12 @@
 struct Noeud{
     Noeud* fg,*fd;
     int val;
+    int hauteur;
 };
 using arbre =Noeud*;
 #include<iostream>
 #include<string>
+#include<cmath>
 
 void ajouter(arbre &A, int e)
 {
@@ -44,7 +46,7 @@ void affiche(arbre &A)
     {
 
         affiche(A->fg);
-        std::cout<<"val : "<<A->val<<" adresse pointeur : "<<A<<"; adresse pointeur gauche : "<<A->fg<<"; adresse pointeur droit : "<<A->fd<<std::endl;
+        std::cout<<"val : "<<A->val<<" adresse pointeur : "<<A<<"; adresse pointeur gauche : "<<A->fg<<"; adresse pointeur droit : "<<A->fd<<" hauteur : "<<A->hauteur<<std::endl;
         affiche(A->fd);
     }
 }
@@ -165,35 +167,69 @@ void fusionner(arbre &A1, arbre A2)
         fusionner(A1,A2->fd);
     }
 }
-int longueur(arbre A)
+int hauteur(arbre A)
 {
     if(A!=nullptr)
     {
-        return 1+longueur(A->fg)+longueur(A->fd);
+        return 1+std::max(hauteur(A->fg),hauteur(A->fd));
     }
     else
-        return 0;
+        return -1;
 }
+
 bool equilibre(arbre A)
 {
     if(A!=nullptr)
     {
-        bool gauche=(equilibre(A->fg));
-        bool droite=(equilibre(A->fd));
-        if(gauche!= droite or gauche==0)
+        if(hauteur(A->fg)-hauteur(A->fd)<=1 and hauteur(A->fg)-hauteur(A->fd)>=-1 and equilibre(A->fg) and equilibre(A->fd))
+            return true;
+        else
+            return false;
+    }
+    else
+        return true;
+}
+
+void supprime(arbre &A)
+{
+    if(A!=nullptr)
+    {
+        supprime(A->fg);
+        supprime(A->fd);
+        std::cout<<"valeur de A : "<<A->val<<" addresse de A : "<<A<<std::endl;
+        delete A;
+    }
+}
+int hauteur2(arbre & A)
+{
+    return A->hauteur;
+}
+
+void update(arbre & A)
+{
+    if(A!=nullptr)
+    {
+        update(A->fg);
+        update(A->fd);
+        if(A->fg==nullptr and A->fd!=nullptr)
+            A->hauteur=A->fd->hauteur+1;
+        else if(A->fd==nullptr and A->fg!=nullptr)
         {
-            return 0;
+            A->hauteur=A->fg->hauteur+1;
         }
-        int diff =longueur(A->fg)-longueur(A->fd);
-        if( diff>=-1 and diff<=1)
+        else if(A->fd==nullptr and A->fg==nullptr)
         {
-            return 1;
+           A->hauteur=0;
         }
         else
-            return 0;
-    }
-    return 1;
+        {
+            std::cout<<"lol"<<std::endl;
+            A->hauteur=1+std::max(A->fg->hauteur,A->fd->hauteur);
+        }
+   }
 }
+
+
 int main()
 {
     int n1=10;
@@ -206,4 +242,8 @@ int main()
     std::cout<<equilibre(A)<<std::endl;
     std::cout<<equilibre(B)<<std::endl;
     std::cout<<equilibre(C)<<std::endl;
+    
+    update(A);
+    affiche(A);
+    
 }
