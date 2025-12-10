@@ -71,10 +71,12 @@ void balle_sorcière(Bullet &balle,Perso joueur)
     float dx=(joueur.x-balle.x);
     float dy=(joueur.y-balle.y);
     float distance=dy*dy+dx*dx;
-    balle.vx+=balle.v *5*dx/distance;
-    balle.vy+=balle.v *5*dy/distance;
+    balle.vx+=balle.v *3*dx/distance;
+    balle.vy+=balle.v *3*dy/distance;
     balle.x+=balle.vx;
     balle.y+=balle.vy;
+    balle.count++;
+    balle.hitbox.setPosition(balle.x,balle.y);
     
 }
 //permet le mouvement de la balle une fois lancée

@@ -58,6 +58,16 @@ void dessine(Perso joueur,objet bank,objet feu,objet etabli,sf::RenderWindow &wi
     {
         sf ::Sprite zombieImage(zombie.image);
         zombie.hitbox.setOutlineColor(sf::Color::Red);
+        if (zombie.ID==0)
+        {
+            zombieImage.setPosition(zombie.x-13,zombie.y-18);
+        }
+        if (zombie.ID==0)
+        {
+            zombieImage.setPosition(zombie.x-30,zombie.y-40);
+        }
+        
+        
         zombieImage.setPosition(zombie.x-13,zombie.y-18);
         window.draw(zombieImage);
         if (debug)

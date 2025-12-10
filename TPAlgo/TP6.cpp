@@ -174,14 +174,18 @@ int hauteur(arbre A)
         return 1+std::max(hauteur(A->fg),hauteur(A->fd));
     }
     else
+    {
+        
         return -1;
+
+    }
 }
 
-bool equilibre(arbre A)
+bool isEquilibre(arbre A)
 {
     if(A!=nullptr)
     {
-        if(hauteur(A->fg)-hauteur(A->fd)<=1 and hauteur(A->fg)-hauteur(A->fd)>=-1 and equilibre(A->fg) and equilibre(A->fd))
+        if(hauteur(A->fg)-hauteur(A->fd)<=1 and hauteur(A->fg)-hauteur(A->fd)>=-1 and isEquilibre(A->fg) and isEquilibre(A->fd))
             return true;
         else
             return false;
@@ -202,7 +206,14 @@ void supprime(arbre &A)
 }
 int hauteur2(arbre & A)
 {
-    return A->hauteur;
+    if (A!=nullptr)
+    {
+        return A->hauteur;
+    }
+    else
+        return -1;
+    
+    
 }
 
 void update(arbre & A)
@@ -223,27 +234,129 @@ void update(arbre & A)
         }
         else
         {
-            std::cout<<"lol"<<std::endl;
             A->hauteur=1+std::max(A->fg->hauteur,A->fd->hauteur);
         }
    }
 }
 
+void rotGauche(arbre &A)
+{
+    arbre tier;
+    tier=A->fd;
+    A->fd=A->fd->fg;
+    tier->fg=A;
+    A=tier;
+    update(A);
+    
+}
+void rotDroite(arbre &A)
+{
+    arbre tier;
+    tier=A->fg;
+    A->fg=A->fg->fd;
+    tier->fd=A;
+    A=tier;
+    update((A));
+}
 
+void rotGD(arbre &A)
+{
+    rotGauche(A->fg);
+    rotDroite(A);
+}
+void rotDG(arbre &A)
+{
+    rotDroite(A->fd);
+    rotGauche(A);
+}
+
+void equilibre(arbre &A)
+{
+    if (A!=nullptr)
+    {
+        if ((hauteur(A->fd)-hauteur(A->fg))>=2)
+        {std::cout<<A->val<<std::endl;
+            if (hauteur(A->fd->fd)-hauteur(A->fd->fg)>=0)
+            {
+                std::cout<<"rotation gauche"<<std::endl;
+                rotGauche(A);
+            }
+            else
+            {
+                std::cout<<"rotation droite gauche"<<std::endl;
+                rotDG(A);
+            }
+        }
+        if ((hauteur(A->fd)-hauteur(A->fg))<=-2)
+        {
+            if (hauteur(A->fg->fg)-hauteur(A->fg->fd)>=0)
+            {
+                std::cout<<"rotation droite"<<std::endl;
+                rotDroite(A);
+            }
+            else
+            {
+                std::cout<<"rotation gauche droite"<<std::endl;
+                rotGD(A);
+            }
+        }
+    }
+    
+}
+
+
+
+void ajouteEtEquilibre(arbre &A,int e)
+{
+    if(A!=nullptr)
+    {
+        if(e<=A->val)
+        {
+            ajouteEtEquilibre(A->fg,e);
+             equilibre(A);
+        }
+        else
+        {
+            ajouteEtEquilibre(A->fd,e);
+            equilibre(A);
+        }
+    }
+    else
+    {
+        A=new Noeud;
+        A->val=e;
+        A->fg=nullptr;
+        A->fd=nullptr;
+    }
+    
+}
+arbre GenereAVL(int * T1,int n1)
+{
+    arbre A=nullptr;
+    for(int i=0; i<n1;++i)
+    {
+        ajouteEtEquilibre(A,T1[i]);
+    }
+    return A;
+}
 int main()
 {
-    int n1=10;
-    int T1[n1] = { 5 , 3 , 7 , 1 , 8 , 10 , 9 ,5 , 7 , 7};
-    int T2[n1]=  {15 , 10 , 26 , 7 , 9 , 23 , 13 , 26 , 10 , 26 };
-    int T3[] ={11 , 4 , 15 , 3 , 7 , 17 , 6 };
-    arbre A=Genere(T1,n1);
-    arbre B=Genere(T2,n1);
-    arbre C=Genere(T3,7);
-    std::cout<<equilibre(A)<<std::endl;
-    std::cout<<equilibre(B)<<std::endl;
-    std::cout<<equilibre(C)<<std::endl;
-    
+    int n1=100000;
+    int* T1=new int[n1];
+    {
+        for (size_t i = 0; i < n1; i++)
+        {
+            T1[i]=rand()%100;
+        }
+        
+    }
+    arbre A=GenereAVL(T1,n1);
+    arbre B=Genere(T1,n1);
+
     update(A);
-    affiche(A);
+    update(B);
+    std::cout<<A->hauteur<<std::endl;
+    std::cout<<B->hauteur<<std::endl;
+
     
 }

@@ -34,9 +34,18 @@ void zombie_spawn(std::vector<Mob> &zombies,Perso joueur,int ID,sf::Texture &zom
         zombie.image=sorcimage;
     }
     
+    if (ID==0)
+    {
+        zombie.hitbox.setSize(sf::Vector2f(7,25));
+        zombie.hitbox.setPosition(zombie.x-13,zombie.y-18);
+    }
+    if (ID==1)
+    {
+        zombie.hitbox.setSize(sf::Vector2f(20,30));
+        zombie.hitbox.setPosition(zombie.x-10,zombie.y-15);
+    }
     
-    zombie.hitbox.setSize(sf::Vector2f(7,25));
-    zombie.hitbox.setPosition(zombie.x-13,zombie.y-18);
+    
     zombies.push_back(zombie);
 }
 void CheckMobSpawn(std::vector<Mob> &mobs,Perso joueur,sf::Clock &ZombieSpawnClock,sf::Clock &sorcièreSpawnClock,int spawn_rate,sf::Texture &zombimage,sf::Texture &sorcimage)
@@ -84,7 +93,7 @@ void sorcière_accompagnement(Mob &sorcière,Perso joueur,std::vector<Bullet> &b
             balle.y=sorcière.y;
             balle.count=0;
             balle.v=3;
-            balle_sorcière(balle,joueur);
+            balle.hitbox.setSize(sf::Vector2f(7,7));
             balles.push_back(balle);
             sorcière.vx=0;
             sorcière.vy=0;
@@ -96,6 +105,7 @@ void sorcière_accompagnement(Mob &sorcière,Perso joueur,std::vector<Bullet> &b
         sorcière.vy = sorcière.v * dy / distance;
         sorcière.x+=sorcière.vx;
         sorcière.y+=sorcière.vy;
+        sorcière.hitbox.setPosition(sorcière.x-30,sorcière.y-40);
     }
 }
 void update_position_collisions(std::vector<Bullet> &bullets,std::vector<Mob>&mobs,Perso &joueur,sf::Clock &InvicibleClock,weapon arme,std::vector<Bullet> &witch_balls)
