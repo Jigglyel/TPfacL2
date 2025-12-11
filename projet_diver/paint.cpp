@@ -5,6 +5,7 @@
 #include<SFML/Graphics.hpp>
 #include<SFML/Window.hpp>
 #include<string>
+#include<cmath>
 const int NC=1280;
 const int NL=720;
 using Tligne=std::array<uint8_t ,NC>;
@@ -33,7 +34,21 @@ void peint_pixel(sf::VertexArray &pixels,int x,int y,int brushSize,sf::Color cou
                 pixels[ny * NC + nx].color = couleur;
         }
 }
-
+void peint_ligne(sf::VertexArray &pixels,sf::Vector2f curent,sf::Vector2f old,int brushSize,sf::Color couleur)
+{
+    float dx= curent.x-old.x;
+    float dy= curent.y-old.y;
+    float distance=std::sqrt(dx*dx+dy*dy);
+    if(distance==0)
+        distance=1;
+    float x=old.x, y=old.y;
+    for(int i=0 ;i<distance;++i)
+    {
+        peint_pixel(pixels,x,y,brushSize,couleur);
+        x+=dx/distance;
+        y+=dy/distance;
+    }
+}
 void touche(sf::Event event,sf::VertexArray & pixels,int &brushSize)
 {
     if (event.key.code==sf::Keyboard::Space)
@@ -64,7 +79,7 @@ void HUD(sf::RenderWindow &window,sf::RectangleShape* &couleurs)
     couleurs[6].setFillColor(sf::Color::Cyan);
     couleurs[7].setFillColor(sf::Color::Magenta);
     couleurs[8].setFillColor(sf::Color::Transparent);
-    couleurs[9].setFillColor(sf::Color(255,0,255));
+    couleurs[9].setFillColor(sf::Color(rand()%256,rand()%256,rand()%256));
     for(int i=0;i<10;++i)
     {
         couleurs[i].setSize(sf::Vector2f(30,30));
@@ -109,7 +124,7 @@ void selectCouleur(sf::RenderWindow &window, sf::Color &couleur,int x,int y,sf::
                     couleur=sf::Color::Transparent;
                     break;
                 case 9:
-                    couleur=sf::Color(255,0,255);
+                    couleur=couleurs[i].getFillColor();
                     break;
             }
         
@@ -123,6 +138,8 @@ int main()
     int brushSize = 3;
     sf::RenderWindow window(sf::VideoMode(1280, 720), "SFML window");
     sf::RectangleShape* couleurs;
+    sf::Vector2f oldPos;
+    bool first_time=true;
     window.clear(sf::Color::White);
     window.setFramerateLimit(300);
     
@@ -144,11 +161,23 @@ int main()
         }
 
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-            {
-                int x=sf::Mouse::getPosition(window).x;
-                int y=sf::Mouse::getPosition(window).y;
+            {   
+                float x=sf::Mouse::getPosition(window).x;
+                float y=sf::Mouse::getPosition(window).y;
                 selectCouleur(window,couleur,x,y,couleurs);
-                peint_pixel(pixels,x,y,brushSize,couleur);
+                if(first_time)
+                {
+                    peint_ligne(pixels,sf::Vector2f(x,y),sf::Vector2f(x,y),brushSize,couleur);
+                    first_time=false;
+                }
+                else
+                    peint_ligne(pixels,sf::Vector2f(x,y),oldPos,brushSize,couleur);
+                oldPos={x,y};
+                
+            }
+            else
+            {
+                first_time=true;
             }
             
             window.clear(sf::Color::White);
