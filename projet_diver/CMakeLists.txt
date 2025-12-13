@@ -16,18 +16,18 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 #importe la bibliothèque SFML depuis le repo github SFML
-add_executable(survie 
+add_executable(paint_maison 
     ./paint.cpp
 )
 
-target_link_libraries(survie PRIVATE sfml-graphics sfml-window sfml-system)
-target_compile_features(survie PRIVATE cxx_std_17)
+target_link_libraries(paint_maison PRIVATE sfml-graphics sfml-window sfml-system)
+target_compile_features(paint_maison PRIVATE cxx_std_17)
 
 #copie les dlls à côter des l'executable (pour Windows)
 if(WIN32)
     add_custom_command(
-        TARGET survie
+        TARGET paint_maison
         COMMENT "Copy OpenAL DLL"
-        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:survie>
+        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:paint_maison>
         VERBATIM)
 endif()

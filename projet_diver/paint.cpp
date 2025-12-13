@@ -6,10 +6,58 @@
 #include<SFML/Window.hpp>
 #include<string>
 #include<cmath>
+#include<vector>
 const int NC=1280;
 const int NL=720;
 using Tligne=std::array<uint8_t ,NC>;
 using Timage=std::array<Tligne,NL>;
+
+
+struct action{
+    sf::Color couleur_avant;
+    sf::Vector2i pos;
+};
+struct maillon{
+    std::vector<action> val;
+    maillon* suiv;
+};
+
+using pile=maillon*;
+
+pile init_pile()
+{
+    return nullptr;
+}
+
+void empiler(pile& P, std::vector<action> a)
+{
+    if (P!=nullptr)
+    {
+        maillon *tier=P;
+        P=new maillon;
+        P->val=a;
+        P->suiv=tier;
+    }
+    else
+    {
+        P=new maillon;
+        P->val=a;
+        P->suiv=nullptr;
+    }
+}
+
+std::vector<action> pop(pile &P)
+{
+    pile resu=P;
+    std::vector<action> resu2=resu->val;
+    P=P->suiv;
+    delete resu;
+    return resu2;
+}
+std::vector<action> consulte(pile &P)
+{
+    return P->val;
+}
 
 
 void init (sf::VertexArray & pixels)
@@ -23,18 +71,35 @@ void init (sf::VertexArray & pixels)
                         }
                     }
 }
-void peint_pixel(sf::VertexArray &pixels,int x,int y,int brushSize,sf::Color couleur)
+void redo(sf::VertexArray &pixels,pile &P)
 {
+    std::vector<action> taches=pop(P);
+     std::cout<<taches.size()<<std::endl;
+    for(action tache : taches)
+    {
+       
+        pixels[tache.pos.y*NC+tache.pos.x].color=tache.couleur_avant;
+    }
+}
+void peint_pixel(sf::VertexArray &pixels,int x,int y,int brushSize,sf::Color couleur,std::vector<action>& taches)
+{
+    action tache;
     for (int dy = -brushSize; dy <= brushSize; ++dy)
         for (int dx = -brushSize; dx <= brushSize; ++dx)
         {
             int nx = x + dx;
             int ny = y + dy;
-            if (nx >= 0 && nx < NC && ny >= 0 && ny < NL)
+            if (nx >= 0 && nx < NC && ny >= 0 && ny < NL and pixels[ny * NC + nx].color!=couleur)
+            {
+                tache.couleur_avant=pixels[ny * NC + nx].color;
+                tache.pos=sf::Vector2i(nx,ny);
                 pixels[ny * NC + nx].color = couleur;
+                
+                taches.push_back(tache);
+            }
         }
 }
-void peint_ligne(sf::VertexArray &pixels,sf::Vector2f curent,sf::Vector2f old,int brushSize,sf::Color couleur)
+void peint_ligne(sf::VertexArray &pixels,sf::Vector2f curent,sf::Vector2f old,int brushSize,sf::Color couleur,std::vector<action> &tache)
 {
     float dx= curent.x-old.x;
     float dy= curent.y-old.y;
@@ -44,12 +109,12 @@ void peint_ligne(sf::VertexArray &pixels,sf::Vector2f curent,sf::Vector2f old,in
     float x=old.x, y=old.y;
     for(int i=0 ;i<distance;++i)
     {
-        peint_pixel(pixels,x,y,brushSize,couleur);
+        peint_pixel(pixels,x,y,brushSize,couleur,tache);
         x+=dx/distance;
         y+=dy/distance;
     }
 }
-void touche(sf::Event event,sf::VertexArray & pixels,int &brushSize)
+void touche(sf::Event event,sf::VertexArray & pixels,int &brushSize,pile &P,bool& full_mode)
 {
     if (event.key.code==sf::Keyboard::Space)
     {
@@ -64,8 +129,35 @@ void touche(sf::Event event,sf::VertexArray & pixels,int &brushSize)
     {
         brushSize--;
     }
+    if (event.key.code==sf::Keyboard::LControl)
+    {
+        if (P!=nullptr)
+        {
+            redo(pixels,P);
+        }
+    }
+    if (event.key.code==sf::Keyboard::R)
+        full_mode=!full_mode;
+    
 }
+void remplissage(sf::VertexArray & pixels,sf::Color couleur,sf::Vector2i pos,std::vector<action> &taches)
+{
 
+    if (pos.x >= 0 && pos.x < NC && pos.y >= 0 && pos.y < NL and pixels[(pos.y)*NC +pos.x].color!=couleur)
+    {
+        action tache;
+        tache.pos.x=pos.x;
+        tache.pos.y=pos.y;
+        tache.couleur_avant=pixels[(pos.y)*NC +pos.x].color;
+        pixels[(pos.y)*NC +pos.x].color=couleur;
+        std::cout<<pos.x<<" "<<pos.y<<std::endl;
+        remplissage(pixels,couleur,sf::Vector2i(pos.x,pos.y+1),taches);
+        remplissage(pixels,couleur,sf::Vector2i(pos.x,pos.y-1),taches);
+        remplissage(pixels,couleur,sf::Vector2i(pos.x+1,pos.y),taches);
+        remplissage(pixels,couleur,sf::Vector2i(pos.x-1,pos.y),taches);
+    }
+    
+}
 void HUD(sf::RenderWindow &window,sf::RectangleShape* &couleurs)
 {
     couleurs= new sf::RectangleShape[10];
@@ -139,7 +231,10 @@ int main()
     sf::RenderWindow window(sf::VideoMode(1280, 720), "SFML window");
     sf::RectangleShape* couleurs;
     sf::Vector2f oldPos;
+    std::vector<action> taches;
+    pile P =init_pile();
     bool first_time=true;
+    bool full_mode=false;
     window.clear(sf::Color::White);
     window.setFramerateLimit(300);
     
@@ -156,7 +251,7 @@ int main()
 
             if (event.type==sf::Event::KeyPressed)
             {
-                touche(event,pixels,brushSize); 
+                touche(event,pixels,brushSize,P,full_mode); 
             }
         }
 
@@ -165,19 +260,33 @@ int main()
                 float x=sf::Mouse::getPosition(window).x;
                 float y=sf::Mouse::getPosition(window).y;
                 selectCouleur(window,couleur,x,y,couleurs);
-                if(first_time)
+                if (full_mode)
                 {
-                    peint_ligne(pixels,sf::Vector2f(x,y),sf::Vector2f(x,y),brushSize,couleur);
-                    first_time=false;
+                    std::cout<<"lol"<<std::endl;
+                    remplissage(pixels,couleur,sf::Vector2i(x,y),taches);
                 }
                 else
-                    peint_ligne(pixels,sf::Vector2f(x,y),oldPos,brushSize,couleur);
-                oldPos={x,y};
+                {
+                    if(first_time)
+                    {
+                        peint_ligne(pixels,sf::Vector2f(x,y),sf::Vector2f(x,y),brushSize,couleur,taches);
+                        first_time=false;
+                    }
+                    else
+                        peint_ligne(pixels,sf::Vector2f(x,y),oldPos,brushSize,couleur,taches);
+                    oldPos={x,y};
+                }
                 
             }
             else
             {
                 first_time=true;
+                if (!taches.empty())
+                {
+                    empiler(P,taches);
+                    taches.clear();
+                }
+                
             }
             
             window.clear(sf::Color::White);
