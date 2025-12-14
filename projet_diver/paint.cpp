@@ -7,6 +7,7 @@
 #include<string>
 #include<cmath>
 #include<vector>
+#include<stack>
 const int NC=1280;
 const int NL=720;
 using Tligne=std::array<uint8_t ,NC>;
@@ -14,7 +15,7 @@ using Timage=std::array<Tligne,NL>;
 
 
 struct action{
-    sf::Color couleur_avant;
+    sf::Color couleur;
     sf::Vector2i pos;
 };
 struct maillon{
@@ -62,23 +63,41 @@ std::vector<action> consulte(pile &P)
 
 void init (sf::VertexArray & pixels)
 {
-                    for (size_t i = 50; i < NL; i++)
-                    {
-                        for (size_t j = 0; j < NC; j++)
-                        {
-                            pixels[i * NC + j].position = sf::Vector2f(j, i);
-                            pixels[i * NC + j].color = sf::Color(255,255,255);
-                        }
-                    }
+    for (size_t i = 50; i < NL; i++)
+    {
+        for (size_t j = 0; j < NC; j++)
+        {
+            pixels[i * NC + j].position = sf::Vector2f(j, i);
+            pixels[i * NC + j].color = sf::Color(255,255,255);
+        }
+    }
+}
+void efface (sf::VertexArray & pixels,pile &P)
+{
+    action tache;
+    std::vector<action> taches;
+    for (size_t i = 50; i < NL; i++)
+    {
+        for (size_t j = 0; j < NC; j++)
+        {
+            tache.couleur=pixels[i * NC + j].color;
+            tache.pos=sf::Vector2i(pixels[i * NC + j].position);
+            if (tache.couleur!=sf::Color::White)
+            {
+                taches.push_back(tache);
+            }  
+            pixels[i * NC + j].color = sf::Color(255,255,255);
+        }
+    }
+    empiler(P,taches);
 }
 void redo(sf::VertexArray &pixels,pile &P)
 {
     std::vector<action> taches=pop(P);
-     std::cout<<taches.size()<<std::endl;
     for(action tache : taches)
     {
        
-        pixels[tache.pos.y*NC+tache.pos.x].color=tache.couleur_avant;
+        pixels[tache.pos.y*NC+tache.pos.x].color=tache.couleur;
     }
 }
 void peint_pixel(sf::VertexArray &pixels,int x,int y,int brushSize,sf::Color couleur,std::vector<action>& taches)
@@ -89,9 +108,9 @@ void peint_pixel(sf::VertexArray &pixels,int x,int y,int brushSize,sf::Color cou
         {
             int nx = x + dx;
             int ny = y + dy;
-            if (nx >= 0 && nx < NC && ny >= 0 && ny < NL and pixels[ny * NC + nx].color!=couleur)
+            if (nx >= 0 && nx < NC && ny >= 50 && ny < NL and pixels[ny * NC + nx].color!=couleur)
             {
-                tache.couleur_avant=pixels[ny * NC + nx].color;
+                tache.couleur=pixels[ny * NC + nx].color;
                 tache.pos=sf::Vector2i(nx,ny);
                 pixels[ny * NC + nx].color = couleur;
                 
@@ -99,7 +118,7 @@ void peint_pixel(sf::VertexArray &pixels,int x,int y,int brushSize,sf::Color cou
             }
         }
 }
-void peint_ligne(sf::VertexArray &pixels,sf::Vector2f curent,sf::Vector2f old,int brushSize,sf::Color couleur,std::vector<action> &tache)
+void peint_ligne(sf::VertexArray &pixels,sf::Vector2f curent,sf::Vector2f old,int brushSize,sf::Color couleur,std::vector<action> &taches)
 {
     float dx= curent.x-old.x;
     float dy= curent.y-old.y;
@@ -109,17 +128,22 @@ void peint_ligne(sf::VertexArray &pixels,sf::Vector2f curent,sf::Vector2f old,in
     float x=old.x, y=old.y;
     for(int i=0 ;i<distance;++i)
     {
-        peint_pixel(pixels,x,y,brushSize,couleur,tache);
+        peint_pixel(pixels,x,y,brushSize,couleur,taches);
         x+=dx/distance;
         y+=dy/distance;
     }
 }
-void touche(sf::Event event,sf::VertexArray & pixels,int &brushSize,pile &P,bool& full_mode)
+void touche(sf::Event event,sf::VertexArray & pixels,int &brushSize,pile &P,bool& full_mode,std::vector<action>& taches)
 {
     if (event.key.code==sf::Keyboard::Space)
     {
-        // Clear screen
-        init(pixels);
+        if (!taches.empty())
+        {
+            empiler(P,taches);
+        }
+        
+        
+        efface(pixels,P);
     } 
     if (event.key.code==sf::Keyboard::Add)
     {
@@ -142,19 +166,35 @@ void touche(sf::Event event,sf::VertexArray & pixels,int &brushSize,pile &P,bool
 }
 void remplissage(sf::VertexArray & pixels,sf::Color couleur,sf::Vector2i pos,std::vector<action> &taches)
 {
-
-    if (pos.x >= 0 && pos.x < NC && pos.y >= 0 && pos.y < NL and pixels[(pos.y)*NC +pos.x].color!=couleur)
-    {
-        action tache;
-        tache.pos.x=pos.x;
-        tache.pos.y=pos.y;
-        tache.couleur_avant=pixels[(pos.y)*NC +pos.x].color;
-        pixels[(pos.y)*NC +pos.x].color=couleur;
-        std::cout<<pos.x<<" "<<pos.y<<std::endl;
-        remplissage(pixels,couleur,sf::Vector2i(pos.x,pos.y+1),taches);
-        remplissage(pixels,couleur,sf::Vector2i(pos.x,pos.y-1),taches);
-        remplissage(pixels,couleur,sf::Vector2i(pos.x+1,pos.y),taches);
-        remplissage(pixels,couleur,sf::Vector2i(pos.x-1,pos.y),taches);
+    std::stack<action> P;
+    action dou;
+    dou.pos.x=pos.x;
+    dou.pos.y=pos.y;
+    dou.couleur=couleur;
+    action redo;
+    redo.couleur=pixels[(pos.y)*NC +pos.x].color;
+    P.push(dou);
+    
+    
+    while (!P.empty())
+    {   dou=P.top();
+        P.pop();
+        if(dou.pos.x >= 0 && dou.pos.x < NC && dou.pos.y >= 50 && dou.pos.y < NL and pixels[dou.pos.y*NC +dou.pos.x].color==redo.couleur and redo.couleur!=couleur)
+        {
+            redo.pos.x=dou.pos.x;
+            redo.pos.y=dou.pos.y;
+            taches.push_back(redo);
+            pixels[dou.pos.y*NC +dou.pos.x].color=dou.couleur;
+            dou.pos.x=dou.pos.x+1;
+            P.push(dou);
+            dou.pos.x=dou.pos.x-2;
+            P.push(dou);
+            dou.pos.x=dou.pos.x+2;
+            dou.pos.y=dou.pos.y+1;
+            P.push(dou);
+            dou.pos.y=dou.pos.y-2;
+            P.push(dou);
+        }
     }
     
 }
@@ -251,7 +291,7 @@ int main()
 
             if (event.type==sf::Event::KeyPressed)
             {
-                touche(event,pixels,brushSize,P,full_mode); 
+                touche(event,pixels,brushSize,P,full_mode,taches); 
             }
         }
 
@@ -262,7 +302,6 @@ int main()
                 selectCouleur(window,couleur,x,y,couleurs);
                 if (full_mode)
                 {
-                    std::cout<<"lol"<<std::endl;
                     remplissage(pixels,couleur,sf::Vector2i(x,y),taches);
                 }
                 else
