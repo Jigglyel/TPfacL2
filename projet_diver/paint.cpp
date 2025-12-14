@@ -277,6 +277,9 @@ int main()
     bool full_mode=false;
     window.clear(sf::Color::White);
     window.setFramerateLimit(300);
+    sf::Cursor cursor;
+    if (cursor.loadFromSystem(sf::Cursor::Arrow))
+        window.setMouseCursor(cursor);
     
         while (window.isOpen())
     {
@@ -291,10 +294,20 @@ int main()
 
             if (event.type==sf::Event::KeyPressed)
             {
-                touche(event,pixels,brushSize,P,full_mode,taches); 
+                touche(event,pixels,brushSize,P,full_mode,taches);
+                if (full_mode)
+                {
+                     if (cursor.loadFromSystem(sf::Cursor::Cross))
+                            window.setMouseCursor(cursor);
+                }
+                else
+                {
+                    if (cursor.loadFromSystem(sf::Cursor::Arrow))
+                        window.setMouseCursor(cursor);
+                }
             }
         }
-
+            
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
             {   
                 float x=sf::Mouse::getPosition(window).x;
