@@ -31,15 +31,18 @@ struct noeud
 using historique=noeud*;
 void affiche_date(date d)
 {
-    std ::cout<<d.jour<<"/"<<d.mois<<"/"<<d.année<<std::endl;
+    std ::cout<<d.jour<<"/"<<d.mois<<"/"<<d.année;
 }
 void affiche_dates(liste dates)
 {
     if (dates!=nullptr)
     {
         affiche_date(dates->val);
+        std::cout<<" ";
         affiche_dates(dates->suiv);  
-    } 
+    }
+    else
+        std::cout<<std::endl; 
 }
 
 liste init_dates()
@@ -51,7 +54,25 @@ historique init_histo()
 {
     return nullptr;
 }
-
+int compte_date(liste dates)
+{
+    if (dates!=nullptr)
+    {
+        return 1 +compte_date(dates->suiv);
+    }
+    else return 0;
+    
+}
+int compte(historique h)
+{
+    if (h!=nullptr)
+    {
+        return compte_date(h->dates)+compte(h->sag)+compte(h->sad);   
+    }
+    else
+        return 0;
+    
+}
 int compare_date(date d1,date d2)
 {
     if (d1.année<d2.année)
@@ -100,7 +121,7 @@ int compare_tirage(tirage t1, tirage t2)
             return -1;
         }
         else
-        if (t1[i>t2[i]])
+        if (t1[i]>t2[i])
         {
             return 1;
         }
@@ -165,11 +186,10 @@ void affiche_tirage_date(historique h,tirage t)
     
     if (h==nullptr)
     {   
-        std::cout<<"tirage inédit"<<std::endl;
+        std::cout<<"tirage inedit"<<std::endl;
     }
     else
     {
-        affiche_dates(h->dates);
         if (compare_tirage(t,h->nombres)!=0)
         {
             if (compare_tirage(t,h->nombres)==-1)
@@ -183,22 +203,77 @@ void affiche_tirage_date(historique h,tirage t)
             affiche_dates(h->dates);
         
     }
-    
-    
 }
+
+void affiche_date_tirage(historique h,std::string ch)
+{
+    std::ifstream fic;
+        fic.open(ch);
+        if (!fic.is_open())
+        {
+            std::cout<<"problème d'ouverture du fichier"<<std::endl;
+        }
+        else
+        {
+            while (fic.good())
+            {
+                tirage t;
+                for (int i = 0; i < 5; i++)
+                {
+                    fic>>t[i];
+                    std::cout<<t[i]<<" ";
+                }
+                std::cout<<"Tirages du : ";   affiche_tirage_date(h,t);
+            }
+        }
+}
+
 void affiche_historique(historique h)
 {
     if (h!=nullptr)
-    {
+    {affiche_historique(h->sag);
         for (int i = 0; i < 5; i++)
         {
-            std::cout<<h->nombres[i];
+            std::cout<<h->nombres[i]<<" ";
         }
         std::cout<<std::endl;
-        affiche_historique(h->sag);
+        
         affiche_historique(h->sad);  
     }
     
+}
+std::array<int,50> calc_frequ(historique h)
+{
+    std::array<int,50> t;
+        for (int i = 1; i <= 50; i++)
+        {
+            t[i-1]=0;
+        }
+    if (h!=nullptr)
+    {
+        
+        for (int i = 0; i < 5; i++)
+        {
+            t[h->nombres[i]-1]++;
+        }
+        std::array<int,50> gauche=calc_frequ(h->sag);
+        std::array<int,50> droite=calc_frequ(h->sad);
+        for (int i = 1; i <= 50; i++)
+        {
+            t[i-1]+=gauche[i-1]+droite[i-1];
+        }
+    }
+    return t;
+    
+}
+void frequence(historique h)
+{
+    std::array<int,50> t=calc_frequ(h);
+    float total=compte(h);
+    for (int i = 0; i < 50; i++)
+    {
+        std::cout<<"frequence de "<<i+1<<" : "<<(t[i]/(total))*100<<"%"<<std::endl;
+    }
 }
 int main()
 {
@@ -215,23 +290,18 @@ int main()
         {
             date d;
             tirage t;
-            fic>>d.année;
-            fic>>d.mois;
             fic>>d.jour;
+            fic>>d.mois;
+            fic>>d.année;
             for (int i = 0; i < 5; i++)
             {
                 fic>>t[i];
             }
             ajoute_tirage(H,t,d);
         }
-        affiche_historique(H);
-        tirage t;
-        t[0]=20;
-        t[1]=21;
-        t[2]=26;
-        t[3]=29;
-        t[4]=36;
-        affiche_tirage_date(H,t);
+        
+        affiche_date_tirage(H,"tirages.txt");
+        frequence(H);
     }
     
     
