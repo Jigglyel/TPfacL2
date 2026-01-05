@@ -46,7 +46,15 @@ void empiler(pile& P, std::vector<action> a)
         P->suiv=nullptr;
     }
 }
-
+void supprimer(pile &P)
+{
+    if(P!=nullptr)
+    {
+        supprimer(P->suiv);
+        delete P;
+        P=nullptr;
+    }
+}
 std::vector<action> pop(pile &P)
 {
     pile resu=P;
@@ -91,13 +99,21 @@ void efface (sf::VertexArray & pixels,pile &P)
     }
     empiler(P,taches);
 }
-void redo(sf::VertexArray &pixels,pile &P)
+void redo(sf::VertexArray &pixels,pile &PActions,pile&Pretour)
 {
-    std::vector<action> taches=pop(P);
+    if(PActions!=nullptr)
+    {
+    std::vector<action> taches=pop(PActions);
+    std::vector<action> retours;
+    action retour;
     for(action tache : taches)
     {
-       
+        retour.pos=tache.pos;
+        retour.couleur=pixels[tache.pos.y*NC+tache.pos.x].color;
         pixels[tache.pos.y*NC+tache.pos.x].color=tache.couleur;
+        retours.push_back(retour);
+    }
+    empiler(Pretour,retours);
     }
 }
 void peint_pixel(sf::VertexArray &pixels,int x,int y,int brushSize,sf::Color couleur,std::vector<action>& taches)
@@ -133,17 +149,17 @@ void peint_ligne(sf::VertexArray &pixels,sf::Vector2f curent,sf::Vector2f old,in
         y+=dy/distance;
     }
 }
-void touche(sf::Event event,sf::VertexArray & pixels,int &brushSize,pile &P,bool& full_mode,std::vector<action>& taches)
+void touche(sf::Event event,sf::VertexArray & pixels,int &brushSize,pile &Back,pile &Forward,bool& full_mode,std::vector<action>& taches)
 {
     if (event.key.code==sf::Keyboard::Space)
     {
         if (!taches.empty())
         {
-            empiler(P,taches);
+            empiler(Back,taches);
         }
         
         
-        efface(pixels,P);
+        efface(pixels,Back);
     } 
     if (event.key.code==sf::Keyboard::Add)
     {
@@ -155,10 +171,12 @@ void touche(sf::Event event,sf::VertexArray & pixels,int &brushSize,pile &P,bool
     }
     if (event.key.code==sf::Keyboard::LControl)
     {
-        if (P!=nullptr)
-        {
-            redo(pixels,P);
-        }
+        redo(pixels,Back,Forward);
+        
+    }
+    if (event.key.code==sf::Keyboard::RControl)
+    {
+        redo(pixels,Forward,Back);
     }
     if (event.key.code==sf::Keyboard::R)
         full_mode=!full_mode;
@@ -198,34 +216,40 @@ void remplissage(sf::VertexArray & pixels,sf::Color couleur,sf::Vector2i pos,std
     }
     
 }
-void HUD(sf::RenderWindow &window,sf::RectangleShape* &couleurs)
+void DessineHUD(sf::RenderWindow &window,sf::RectangleShape* &Hud)
 {
-    couleurs= new sf::RectangleShape[10];
+    Hud= new sf::RectangleShape[12];
     
-    couleurs[0].setFillColor(sf::Color::Black);
-    couleurs[1].setFillColor(sf::Color::White);
-    couleurs[2].setFillColor(sf::Color::Blue);
-    couleurs[3].setFillColor(sf::Color::Red);
-    couleurs[4].setFillColor(sf::Color::Yellow);
-    couleurs[5].setFillColor(sf::Color::Green);
-    couleurs[6].setFillColor(sf::Color::Cyan);
-    couleurs[7].setFillColor(sf::Color::Magenta);
-    couleurs[8].setFillColor(sf::Color::Transparent);
-    couleurs[9].setFillColor(sf::Color(rand()%256,rand()%256,rand()%256));
-    for(int i=0;i<10;++i)
+    
+    Hud[0].setFillColor(sf::Color::Black);
+    Hud[1].setFillColor(sf::Color::White);
+    Hud[2].setFillColor(sf::Color::Blue);
+    Hud[3].setFillColor(sf::Color::Red);
+    Hud[4].setFillColor(sf::Color::Yellow);
+    Hud[5].setFillColor(sf::Color::Green);
+    Hud[6].setFillColor(sf::Color::Cyan);
+    Hud[7].setFillColor(sf::Color::Magenta);
+    Hud[8].setFillColor(sf::Color::Transparent);
+    Hud[9].setFillColor(sf::Color(rand()%256,rand()%256,rand()%256));
+    sf::Texture back,forward;
+    back.loadFromFile("../../assets/back.png");
+    forward.loadFromFile("../../assets/forward.png");
+    Hud[10].setTexture(&back);
+    Hud[11].setTexture(&forward);
+    for(int i=0;i<12;++i)
     {
-        couleurs[i].setSize(sf::Vector2f(30,30));
-        couleurs[i].setPosition(40*i,10);
-        window.draw(couleurs[i]);
+        Hud[i].setSize(sf::Vector2f(30,30));
+        Hud[i].setPosition(40*i,10);
+        window.draw(Hud[i]);
     }
     
 }
 
-void selectCouleur(sf::RenderWindow &window, sf::Color &couleur,int x,int y,sf::RectangleShape* couleurs)
+void selectColors(sf::RenderWindow &window, sf::Color &couleur,int x,int y,sf::RectangleShape* Hud)
 {
     for(int i=0;i<10;++i)
     {
-        if(couleurs[i].getGlobalBounds().contains(sf::Vector2f(x,y)))
+        if(Hud[i].getGlobalBounds().contains(sf::Vector2f(x,y)))
             switch(i)
             {
                 case 0:
@@ -256,11 +280,28 @@ void selectCouleur(sf::RenderWindow &window, sf::Color &couleur,int x,int y,sf::
                     couleur=sf::Color::Transparent;
                     break;
                 case 9:
-                    couleur=couleurs[i].getFillColor();
+                    couleur=Hud[i].getFillColor();
                     break;
             }
         
     }
+}
+void selectRedo(sf::RenderWindow &window,int x,int y,sf::RectangleShape* Hud,sf::VertexArray & pixels,pile &Pback,pile & Pforward)
+{
+    for(int i=10;i<12;++i)
+    {
+        if(Hud[i].getGlobalBounds().contains(sf::Vector2f(x,y)))
+            switch(i)
+        {
+            case 10:
+                redo(pixels,Pback,Pforward);
+                break;
+            case 11:
+                redo(pixels,Pforward,Pback);
+                break;
+        }
+    }
+    
 }
 int main()
 {    
@@ -269,10 +310,11 @@ int main()
     init(pixels);
     int brushSize = 3;
     sf::RenderWindow window(sf::VideoMode(1280, 720), "SFML window");
-    sf::RectangleShape* couleurs;
+    sf::RectangleShape* Hud;
     sf::Vector2f oldPos;
     std::vector<action> taches;
-    pile P =init_pile();
+    pile Back =init_pile();
+    pile Forward =init_pile();
     bool first_time=true;
     bool full_mode=false;
     window.clear(sf::Color::White);
@@ -294,7 +336,7 @@ int main()
 
             if (event.type==sf::Event::KeyPressed)
             {
-                touche(event,pixels,brushSize,P,full_mode,taches);
+                touche(event,pixels,brushSize,Back,Forward,full_mode,taches);
                 if (full_mode)
                 {
                      if (cursor.loadFromSystem(sf::Cursor::Cross))
@@ -312,7 +354,7 @@ int main()
             {   
                 float x=sf::Mouse::getPosition(window).x;
                 float y=sf::Mouse::getPosition(window).y;
-                selectCouleur(window,couleur,x,y,couleurs);
+                selectColors(window,couleur,x,y,Hud);
                 if (full_mode)
                 {
                     remplissage(pixels,couleur,sf::Vector2i(x,y),taches);
@@ -328,15 +370,22 @@ int main()
                         peint_ligne(pixels,sf::Vector2f(x,y),oldPos,brushSize,couleur,taches);
                     oldPos={x,y};
                 }
-                
+            }
+            else
+            if (  event.mouseButton.button==sf::Mouse::Left and event.type==sf::Event::MouseButtonReleased)
+            {
+                float x=sf::Mouse::getPosition(window).x;
+                float y=sf::Mouse::getPosition(window).y;
+                selectRedo(window,x,y,Hud,pixels,Back,Forward);
             }
             else
             {
                 first_time=true;
                 if (!taches.empty())
                 {
-                    empiler(P,taches);
+                    empiler(Back,taches);
                     taches.clear();
+                    supprimer(Forward);
                 }
                 
             }
@@ -344,7 +393,7 @@ int main()
             window.clear(sf::Color::White);
             
             window.draw(pixels);
-            HUD(window,couleurs);
+            DessineHUD(window,Hud);
             window.display();
         
  
