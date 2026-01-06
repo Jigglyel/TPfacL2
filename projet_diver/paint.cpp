@@ -8,8 +8,9 @@
 #include<cmath>
 #include<vector>
 #include<stack>
-const int NC=1280;
-const int NL=720;
+#include<fstream>
+const int NC=1900;
+const int NL=1080;
 using Tligne=std::array<uint8_t ,NC>;
 using Timage=std::array<Tligne,NL>;
 
@@ -149,7 +150,57 @@ void peint_ligne(sf::VertexArray &pixels,sf::Vector2f curent,sf::Vector2f old,in
         y+=dy/distance;
     }
 }
-void touche(sf::Event event,sf::VertexArray & pixels,int &brushSize,pile &Back,pile &Forward,bool& full_mode,std::vector<action>& taches)
+void sauvegarde(const sf::VertexArray &pixels)
+{
+    std::cout<<"où voulez vous sauvegarder ?"<<std::endl;
+    std::cout<<"->:";
+    std::string ch;
+    std::cin>>ch;
+    std::cout<<"quelle nom ?"<<std::endl;
+    std::cout<<"->:";
+    std::string nomfic;
+    std::cin>>nomfic;
+    
+    std::ofstream fic;
+    fic.open(ch+nomfic);
+    if(fic.is_open())
+    {
+        for(int i=0;i<NC*NL;++i)
+        fic<<pixels[i].position.x<<"  "<<pixels[i].position.y<<"  "<<(pixels[i].color.r)<<" "<<(pixels[i].color.g)<<" "<<(pixels[i].color.b)<<std::endl;  
+    }
+    else
+        std::cout<<"Echec d'ouverture du fichier"<<std::endl;
+}
+void charge(sf::VertexArray &pixels)
+{
+    std::cout<<"chemin du chargement ?"<<std::endl;
+    std::cout<<"->:";
+    std::string ch;
+    std::cin>>ch;
+    std::ifstream fic;
+    fic.open(ch);
+    if(fic.is_open())
+    {
+        for(int i=0;i<NC*NL;++i)
+        {
+            fic>>pixels[i].position.x>>pixels[i].position.y>>pixels[i].color.r>>pixels[i].color.g>>pixels[i].color.b;
+        }
+    }
+    else
+        std::cout<<"Echec d'ouverture du fichier"<<std::endl;
+}
+void screenshot(sf::RenderWindow &window)
+{
+    sf::Texture texture;
+    texture.create(window.getSize().x, window.getSize().y-50);
+    texture.update(window,0,50);
+    sf::Image image =texture.copyToImage();
+    if (image.saveToFile("./capture.png"))
+    {
+        std::cout << "screenshot saved to " << "./capture" << std::endl;
+    }
+}
+void touche(sf::Event event,sf::VertexArray & pixels,int &brushSize,pile &Back,pile &Forward,bool& full_mode,std::vector<action>& taches,sf::RenderWindow &window)
 {
     if (event.key.code==sf::Keyboard::Space)
     {
@@ -157,29 +208,34 @@ void touche(sf::Event event,sf::VertexArray & pixels,int &brushSize,pile &Back,p
         {
             empiler(Back,taches);
         }
-        
-        
+
         efface(pixels,Back);
     } 
-    if (event.key.code==sf::Keyboard::Add)
+    else if (event.key.code==sf::Keyboard::Add)
     {
         brushSize++;
     }
-    if (event.key.code==sf::Keyboard::Subtract)
+    else if (event.key.code==sf::Keyboard::Subtract)
     {
         brushSize--;
     }
-    if (event.key.code==sf::Keyboard::LControl)
+    else if (event.key.code==sf::Keyboard::LControl)
     {
         redo(pixels,Back,Forward);
         
     }
-    if (event.key.code==sf::Keyboard::RControl)
+    else if (event.key.code==sf::Keyboard::RControl)
     {
         redo(pixels,Forward,Back);
     }
-    if (event.key.code==sf::Keyboard::R)
+    else if (event.key.code==sf::Keyboard::R)
         full_mode=!full_mode;
+    else if(event.key.code==sf::Keyboard::S)
+        sauvegarde(pixels);
+    else if(event.key.code==sf::Keyboard::C)
+        charge(pixels);
+    else if(event.key.code==sf::Keyboard::E)
+        screenshot(window);
     
 }
 void remplissage(sf::VertexArray & pixels,sf::Color couleur,sf::Vector2i pos,std::vector<action> &taches)
@@ -216,11 +272,11 @@ void remplissage(sf::VertexArray & pixels,sf::Color couleur,sf::Vector2i pos,std
     }
     
 }
-void DessineHUD(sf::RenderWindow &window,sf::RectangleShape* &Hud)
+
+
+void init_constHUD(sf::RenderWindow &window,sf::RectangleShape* &Hud,sf::Texture &back,sf::Texture &forward)
 {
     Hud= new sf::RectangleShape[12];
-    
-    
     Hud[0].setFillColor(sf::Color::Black);
     Hud[1].setFillColor(sf::Color::White);
     Hud[2].setFillColor(sf::Color::Blue);
@@ -230,8 +286,6 @@ void DessineHUD(sf::RenderWindow &window,sf::RectangleShape* &Hud)
     Hud[6].setFillColor(sf::Color::Cyan);
     Hud[7].setFillColor(sf::Color::Magenta);
     Hud[8].setFillColor(sf::Color::Transparent);
-    Hud[9].setFillColor(sf::Color(rand()%256,rand()%256,rand()%256));
-    sf::Texture back,forward;
     back.loadFromFile("../../assets/back.png");
     forward.loadFromFile("../../assets/forward.png");
     Hud[10].setTexture(&back);
@@ -240,8 +294,27 @@ void DessineHUD(sf::RenderWindow &window,sf::RectangleShape* &Hud)
     {
         Hud[i].setSize(sf::Vector2f(30,30));
         Hud[i].setPosition(40*i,10);
-        window.draw(Hud[i]);
     }
+}
+void DessineHUD(sf::RenderWindow &window,sf::RectangleShape* &Hud,pile& Pback,pile& Pforward)
+{
+    
+    Hud[9].setFillColor(sf::Color(rand()%256,rand()%256,rand()%256));
+    if(Pback==nullptr)
+    {
+        Hud[10].setFillColor(sf::Color(180,180,180));
+    }
+    else
+        Hud[10].setFillColor(sf::Color::White);
+    if(Pforward==nullptr)
+    {
+        Hud[11].setFillColor(sf::Color(180,180,180));
+    }
+    else
+        Hud[11].setFillColor(sf::Color::White);
+
+    for(int i=0;i<12;++i)
+        window.draw(Hud[i]);
     
 }
 
@@ -252,6 +325,7 @@ void selectColors(sf::RenderWindow &window, sf::Color &couleur,int x,int y,sf::R
         if(Hud[i].getGlobalBounds().contains(sf::Vector2f(x,y)))
             switch(i)
             {
+
                 case 0:
                     couleur=sf::Color::Black;
                     break;
@@ -303,21 +377,33 @@ void selectRedo(sf::RenderWindow &window,int x,int y,sf::RectangleShape* Hud,sf:
     }
     
 }
+
+
+
 int main()
 {    
     sf::VertexArray pixels(sf::Points,NC*NL);
     sf::Color couleur = sf::Color::Black;
     init(pixels);
     int brushSize = 3;
-    sf::RenderWindow window(sf::VideoMode(1280, 720), "SFML window");
+    sf::RenderWindow window(sf::VideoMode(NC, NL), "SFML window");
     sf::RectangleShape* Hud;
     sf::Vector2f oldPos;
     std::vector<action> taches;
+    sf::Texture back_png,forward_png;
+    
     pile Back =init_pile();
     pile Forward =init_pile();
     bool first_time=true;
     bool full_mode=false;
+    bool availiable_release=false;
+
+
+
+
+    //clear et initialise le hud qui doit rester constant
     window.clear(sf::Color::White);
+    init_constHUD(window,Hud,back_png,forward_png);
     window.setFramerateLimit(300);
     sf::Cursor cursor;
     if (cursor.loadFromSystem(sf::Cursor::Arrow))
@@ -336,7 +422,7 @@ int main()
 
             if (event.type==sf::Event::KeyPressed)
             {
-                touche(event,pixels,brushSize,Back,Forward,full_mode,taches);
+                touche(event,pixels,brushSize,Back,Forward,full_mode,taches,window);
                 if (full_mode)
                 {
                      if (cursor.loadFromSystem(sf::Cursor::Cross))
@@ -370,13 +456,15 @@ int main()
                         peint_ligne(pixels,sf::Vector2f(x,y),oldPos,brushSize,couleur,taches);
                     oldPos={x,y};
                 }
+                availiable_release=true;
             }
             else
-            if (  event.mouseButton.button==sf::Mouse::Left and event.type==sf::Event::MouseButtonReleased)
+            if (availiable_release and event.type==sf::Event::MouseButtonReleased)
             {
                 float x=sf::Mouse::getPosition(window).x;
                 float y=sf::Mouse::getPosition(window).y;
                 selectRedo(window,x,y,Hud,pixels,Back,Forward);
+                availiable_release=false;
             }
             else
             {
@@ -393,7 +481,7 @@ int main()
             window.clear(sf::Color::White);
             
             window.draw(pixels);
-            DessineHUD(window,Hud);
+            DessineHUD(window,Hud,Back,Forward);
             window.display();
         
  
