@@ -9,8 +9,8 @@
 #include<vector>
 #include<stack>
 #include<fstream>
-const int NC=1900;
-const int NL=1080;
+const int NC=1280;
+const int NL=720;
 using Tligne=std::array<uint8_t ,NC>;
 using Timage=std::array<Tligne,NL>;
 
