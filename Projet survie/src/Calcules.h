@@ -17,7 +17,7 @@ struct Perso{
 struct Bullet{
     float x,y,v;
     float vx,vy;
-    sf::Texture image;
+    sf::Sprite image;
     bool on_screen;
     int count;
     sf::RectangleShape hitbox;

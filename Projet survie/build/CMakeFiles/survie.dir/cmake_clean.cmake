@@ -1,16 +1,14 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/survie.dir/src/Calcules.cpp.obj"
-  "CMakeFiles/survie.dir/src/Calcules.cpp.obj.d"
-  "CMakeFiles/survie.dir/src/game.cpp.obj"
-  "CMakeFiles/survie.dir/src/game.cpp.obj.d"
-  "CMakeFiles/survie.dir/src/main.cpp.obj"
-  "CMakeFiles/survie.dir/src/main.cpp.obj.d"
-  "CMakeFiles/survie.dir/src/mob.cpp.obj"
-  "CMakeFiles/survie.dir/src/mob.cpp.obj.d"
-  "bin/survie.exe"
-  "bin/survie.exe.manifest"
+  "CMakeFiles/survie.dir/src/Calcules.cpp.o"
+  "CMakeFiles/survie.dir/src/Calcules.cpp.o.d"
+  "CMakeFiles/survie.dir/src/game.cpp.o"
+  "CMakeFiles/survie.dir/src/game.cpp.o.d"
+  "CMakeFiles/survie.dir/src/main.cpp.o"
+  "CMakeFiles/survie.dir/src/main.cpp.o.d"
+  "CMakeFiles/survie.dir/src/mob.cpp.o"
+  "CMakeFiles/survie.dir/src/mob.cpp.o.d"
+  "bin/survie"
   "bin/survie.pdb"
-  "libsurvie.dll.a"
 )
 
 # Per-language clean rules from dependency scanning.

@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/survie.dir/main.cpp.o CMakeFiles/survie.dir/Calcules.cpp.o CMakeFiles/survie.dir/game.cpp.o -o bin/survie  -lsfml-graphics -lsfml-window -lsfml-system 

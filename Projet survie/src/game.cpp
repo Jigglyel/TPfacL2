@@ -22,7 +22,7 @@ void init_text_pause(sf::RenderWindow &window,sf::Text &resu,sf::Font &font)
 }
 void dessine(Perso joueur,objet bank,objet feu,objet etabli,sf::RenderWindow &window,cercle_faim cercle_f,int money,std::vector<Bullet> bullets,sf::Texture image_balle,std::vector<Mob>zombies,sf::Texture image_zombie,sf::View &camera,sf::Font font,HUD &rate,HUD &damage,bool debug,std::vector<Bullet>witch_balls)
 {
-    sf::Sprite joueurImage(joueur.image),bankImage(bank.image),feuImage(feu.image),balleImage(image_balle),etabliImage(etabli.image);
+    sf::Sprite joueurImage(joueur.image),bankImage(bank.image),feuImage(feu.image),etabliImage(etabli.image);
     sf::Text text_faim, text_dollar,text_vie;
     text_faim.setPosition(1000,100);
     text_faim.setFillColor(sf::Color::Green);
@@ -43,33 +43,31 @@ void dessine(Perso joueur,objet bank,objet feu,objet etabli,sf::RenderWindow &wi
     window.clear(sf::Color::Black);
     for (Bullet balle : bullets)
     {
-        balleImage.setPosition(balle.x-17,balle.y-17);
-        window.draw(balleImage);
+        balle.sprite.setPosition(balle.x-17,balle.y-17);
+        window.draw(balle.sprite);
         
     }
     for (Bullet balle : witch_balls)
     {
-        balleImage.setPosition(balle.x-17,balle.y-17);
-        balleImage.setColor(sf::Color(255,0,255));
-        window.draw(balleImage);
+        balle.sprite.setPosition(balle.x-17,balle.y-17);
+        balle.sprite.setColor(sf::Color(255,0,255));
+        window.draw(balle.sprite);
         
     }
     for (Mob zombie : zombies)
     {
-        sf ::Sprite zombieImage(zombie.image);
         zombie.hitbox.setOutlineColor(sf::Color::Red);
         if (zombie.ID==0)
         {
-            zombieImage.setPosition(zombie.x-13,zombie.y-18);
+            zombie.sprite.setPosition(zombie.x-13,zombie.y-18);
         }
-        if (zombie.ID==0)
+        if (zombie.ID==1)
         {
-            zombieImage.setPosition(zombie.x-30,zombie.y-40);
+            zombie.sprite.setPosition(zombie.x,zombie.y);
         }
         
         
-        zombieImage.setPosition(zombie.x-13,zombie.y-18);
-        window.draw(zombieImage);
+        window.draw(zombie.sprite);
         if (debug)
         {
             window.draw(zombie.hitbox);
@@ -105,7 +103,7 @@ void dessine(Perso joueur,objet bank,objet feu,objet etabli,sf::RenderWindow &wi
     window.setView(camera);
     
 }
-void init(Perso &joueur, objet &feu,objet &bank,objet &etabli,Mob &zombie,sf::View &camera,sf::RenderWindow &window,cercle_faim &cercle_f,Bullet &balle,sf::Text &text_pause,weapon &arme,HUD &rate,HUD &damage,sf::Font &neon,sf::Texture &TextureSorcière)
+void init(Perso &joueur, objet &feu,objet &bank,objet &etabli,sf::View &camera,sf::RenderWindow &window,cercle_faim &cercle_f,sf::Texture &TextureBalle,sf::Text &text_pause,weapon &arme,HUD &rate,HUD &damage,sf::Font &neon,sf::Texture &TextureSorcière,sf::Texture &TextureZombie)
 {
     joueur.invincible=false;
     joueur.x=300;
@@ -114,9 +112,6 @@ void init(Perso &joueur, objet &feu,objet &bank,objet &etabli,Mob &zombie,sf::Vi
     joueur.faim=100;
     joueur.v=2;
     joueur.hitbox.setSize(sf::Vector2f(7,25));
-    zombie.x=200;
-    zombie.y=300;
-    zombie.v=1;
     camera.setCenter(joueur.x,joueur.y);
     camera.setSize(sf::Vector2f(window.getSize()));
     window.setView(camera);
@@ -150,7 +145,7 @@ void init(Perso &joueur, objet &feu,objet &bank,objet &etabli,Mob &zombie,sf::Vi
     damage.text.setFillColor(sf::Color::White);
     rate.text.setString(std::to_string(int(arme.tear_rate)));
     damage.text.setString(std::to_string(int(arme.dégats)));
-    charge(joueur.image,bank.image,feu.image,balle.image,zombie.image,etabli.image,damage.image,rate.image,TextureSorcière);
+    charge(joueur.image,bank.image,feu.image,TextureBalle,TextureZombie,etabli.image,damage.image,rate.image,TextureSorcière);
     rate.rectganle.setTexture(&rate.image);
     damage.rectganle.setTexture(&damage.image);
     cercle_f.pixels=get_cercle_faim(feu,cercle_f.taille,window);
@@ -253,11 +248,11 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
     float spawn_rate=5000; 
     int money=0;
     weapon arme;
-    sf::Texture TextureSorcière;
+    sf::Texture TextureSorcière ,TextureZombie,TextureBalle;
     bool z=false, q=false, s=false, d=false,debug=false, souris_pressee=false, sprint=false, loose= false, in_crafting=false, pause=false;
-    init(joueur,feu,bank,etabli,zombie,camera,window,cercle_f,balle,text_pause,arme,rate_stat,damage_stat,neon,TextureSorcière);
+    init(joueur,feu,bank,etabli,camera,window,cercle_f,TextureBalle,text_pause,arme,rate_stat,damage_stat,neon,TextureSorcière,TextureZombie);
     int vitesse_de_base=joueur.v;
-    dessine(joueur,bank,feu,etabli,window,cercle_f,money,bullets,balle.image,mobs,zombie.image,camera,neon,rate_stat,damage_stat,debug,witch_balls);
+    dessine(joueur,bank,feu,etabli,window,cercle_f,money,bullets,TextureBalle,mobs,TextureZombie,camera,neon,rate_stat,damage_stat,debug,witch_balls);
     window.display();
     sf::Clock FoodGetClock,FoodLostClock,ZombieSpawnClock,InvicibilityClock,TearRateClock,buyClock,SorcièreSpawnClock;
     while (window.isOpen() and not loose)
@@ -472,11 +467,11 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
         window.clear(sf::Color::Black);
  
         // Draw the sprites
-        dessine(joueur,bank,feu,etabli,window,cercle_f,money,bullets,balle.image,mobs,zombie.image,camera,neon,rate_stat,damage_stat,debug,witch_balls);
+        dessine(joueur,bank,feu,etabli,window,cercle_f,money,bullets,balle.image,mobs,TextureZombie,camera,neon,rate_stat,damage_stat,debug,witch_balls);
         //update les elements
         update_position_collisions(bullets,mobs,joueur,InvicibilityClock,arme,witch_balls);
         //regade s'il y a des mobs à faire spawn
-        CheckMobSpawn(mobs,joueur,ZombieSpawnClock,SorcièreSpawnClock,spawn_rate,zombie.image,TextureSorcière);
+        CheckMobSpawn(mobs,joueur,ZombieSpawnClock,SorcièreSpawnClock,spawn_rate,TextureZombie,TextureSorcière);
         if (joueur.hp<=0 or joueur.faim<=0)
         {
             loose=true;

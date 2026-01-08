@@ -19,30 +19,20 @@ void zombie_spawn(std::vector<Mob> &zombies,Perso joueur,int ID,sf::Texture &zom
     if(ID==0)
     {
         zombie.hp=20;
-        zombie.v=1;
+        zombie.v=1; 
+        zombie.hitbox.setSize(sf::Vector2f(7,25));
+        zombie.hitbox.setOrigin(zombimage.getSize().x/2,zombimage.getSize().y/2);
+        zombie.hitbox.setPosition(zombie.x,zombie.y);
+       
+        zombie.sprite.setTexture(zombimage);
     }
     else{
         zombie.hp=50;
         zombie.v=0.5;
-    }
-    if (ID==0)
-    {
-        zombie.image=zombimage;
-    }
-    if (ID==1)
-    {
-        zombie.image=sorcimage;
-    }
-    
-    if (ID==0)
-    {
-        zombie.hitbox.setSize(sf::Vector2f(7,25));
-        zombie.hitbox.setPosition(zombie.x-13,zombie.y-18);
-    }
-    if (ID==1)
-    {
         zombie.hitbox.setSize(sf::Vector2f(20,30));
-        zombie.hitbox.setPosition(zombie.x-10,zombie.y-15);
+        zombie.hitbox.setOrigin(sorcimage.getSize().x/2,sorcimage.getSize().y/2);
+        zombie.hitbox.setPosition(zombie.x,zombie.y);
+        zombie.sprite.setTexture(sorcimage);
     }
     
     
