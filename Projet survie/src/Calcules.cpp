@@ -44,7 +44,7 @@ sf::RectangleShape* get_cercle_faim(objet feu, int taille_cercle,sf::RenderWindo
 }
 
 // permet d'initialiser la position de la balle
-void get_balle(int x_joueur, int y_joueur,int x_souris,int y_souris,std::vector<Bullet> &balles,sf::View &camera,sf::RenderWindow &window)
+void get_balle(int x_joueur, int y_joueur,int x_souris,int y_souris,std::vector<Bullet> &balles,sf::View &camera,sf::RenderWindow &window,sf::Texture &Texture)
 {
     Bullet balle;
     balle.v=5;
@@ -63,16 +63,17 @@ void get_balle(int x_joueur, int y_joueur,int x_souris,int y_souris,std::vector<
     
     balle.count=0;
     balle.hitbox.setSize(sf::Vector2f(7,7));
+    balle.sprite.setTexture(Texture);
     balles.push_back(balle);
     
 }
-void balle_sorcière(Bullet &balle,Perso joueur)
+void balle_sorcière_accompagnement(Bullet &balle,Perso joueur)
 {
     float dx=(joueur.x-balle.x);
     float dy=(joueur.y-balle.y);
     float distance=dy*dy+dx*dx;
-    balle.vx+=balle.v *3*dx/distance;
-    balle.vy+=balle.v *3*dy/distance;
+    balle.vx+=balle.v *5*dx/distance;
+    balle.vy+=balle.v *5*dy/distance;
     balle.x+=balle.vx;
     balle.y+=balle.vy;
     balle.count++;

@@ -40,7 +40,9 @@ void zombie_spawn(std::vector<Mob> &zombies,Perso joueur,int ID,sf::Texture &zom
 }
 void CheckMobSpawn(std::vector<Mob> &mobs,Perso joueur,sf::Clock &ZombieSpawnClock,sf::Clock &sorcièreSpawnClock,int spawn_rate,sf::Texture &zombimage,sf::Texture &sorcimage)
 {
-    if (ZombieSpawnClock.getElapsedTime().asMilliseconds()>spawn_rate+10000)
+    if(mobs.size()<300)
+    {
+    if (ZombieSpawnClock.getElapsedTime().asMilliseconds()>spawn_rate+100)
         {
             ZombieSpawnClock.restart();
             zombie_spawn(mobs,joueur,0,zombimage,sorcimage);
@@ -50,6 +52,7 @@ void CheckMobSpawn(std::vector<Mob> &mobs,Perso joueur,sf::Clock &ZombieSpawnClo
             sorcièreSpawnClock.restart();
             zombie_spawn(mobs,joueur,1,zombimage,sorcimage);
         }
+    }
     
 }
 //s'occupe d'accompagner un zombie
@@ -66,7 +69,7 @@ void zombie_accompagnement(Mob &zombie,Perso joueur)
     zombie.y+=zombie.vy;
     zombie.hitbox.setPosition(zombie.x-3,zombie.y-10);
 }
-void sorcière_accompagnement(Mob &sorcière,Perso joueur,std::vector<Bullet> &balles)
+void sorcière_accompagnement(Mob &sorcière,Perso joueur,std::vector<Bullet> &balles,sf::Texture& TextureBalle)
 {
     float dx,dy,distance;
     dx = joueur.x - sorcière.x;
@@ -75,15 +78,19 @@ void sorcière_accompagnement(Mob &sorcière,Perso joueur,std::vector<Bullet> &b
     Bullet balle;
     if (distance<200)
     {
-        if (sorcière.shoot.getElapsedTime().asSeconds()>5)
+        if (sorcière.shoot.getElapsedTime().asSeconds()>3)
         {
             sorcière.shoot.restart();
             
             balle.x=sorcière.x;
             balle.y=sorcière.y;
             balle.count=0;
-            balle.v=3;
+            balle.v=1;
+            balle.vx=0;
+            balle.vy=0;
             balle.hitbox.setSize(sf::Vector2f(7,7));
+            balle.sprite.setTexture(TextureBalle);
+            balle.sprite.setColor(sf::Color(255,0,255));
             balles.push_back(balle);
             sorcière.vx=0;
             sorcière.vy=0;
@@ -98,9 +105,8 @@ void sorcière_accompagnement(Mob &sorcière,Perso joueur,std::vector<Bullet> &b
         sorcière.hitbox.setPosition(sorcière.x-30,sorcière.y-40);
     }
 }
-void update_position_collisions(std::vector<Bullet> &bullets,std::vector<Mob>&mobs,Perso &joueur,sf::Clock &InvicibleClock,weapon arme,std::vector<Bullet> &witch_balls)
+void update_position_collisions(std::vector<Bullet> &bullets,std::vector<Mob>&mobs,Perso &joueur,sf::Clock &InvicibleClock,weapon arme,std::vector<Bullet> &witch_balls,sf::Texture &TextureBalle)
 {
-
     int i=0;
     
     for ( Mob &mob:mobs)
@@ -111,7 +117,7 @@ void update_position_collisions(std::vector<Bullet> &bullets,std::vector<Mob>&mo
         }
         if (mob.ID==1)
         {
-            sorcière_accompagnement(mob,joueur,witch_balls);
+            sorcière_accompagnement(mob,joueur,witch_balls,TextureBalle);
         }
         
         
@@ -157,14 +163,12 @@ void update_position_collisions(std::vector<Bullet> &bullets,std::vector<Mob>&mo
     }
     if(not joueur.invincible)
     {
-        bool joueur_touché=false;
         for (int j = 0; j < mobs.size(); j++)
         {
-            if(joueur.hitbox.getGlobalBounds().intersects(mobs[j].hitbox.getGlobalBounds()) and not joueur_touché)
+            if(joueur.hitbox.getGlobalBounds().intersects(mobs[j].hitbox.getGlobalBounds()))
                 {   
                     joueur.hp=joueur.hp-5;
                     joueur.invincible=true;
-                    joueur_touché=true;
                     InvicibleClock.restart();   
                 }
         }
@@ -172,24 +176,26 @@ void update_position_collisions(std::vector<Bullet> &bullets,std::vector<Mob>&mo
     i=0;
     while (i<witch_balls.size())
     {
-        balle_sorcière(witch_balls[i],joueur);
-        bool bullet_destroyed=false;
+        balle_sorcière_accompagnement(witch_balls[i],joueur);
         
-        if(witch_balls[i].hitbox.getGlobalBounds().intersects(joueur.hitbox.getGlobalBounds()))
+        
+        if(not joueur.invincible and witch_balls[i].hitbox.getGlobalBounds().intersects(joueur.hitbox.getGlobalBounds()))
         {
             joueur.hp-=5;
+            joueur.invincible=true;
+            InvicibleClock.restart();
             witch_balls.erase(witch_balls.begin()+i);
-            bullet_destroyed=true;
         }
-        if (not bullet_destroyed and witch_balls[i].count>200)
+        else
+        if (witch_balls[i].count>200)
         {
             witch_balls.erase(witch_balls.begin()+i);
-            bullet_destroyed=true;
         } 
-        if (not bullet_destroyed)
+        else
         {
             ++i;
         }
+        
 
 
     }

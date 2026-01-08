@@ -50,7 +50,6 @@ void dessine(Perso joueur,objet bank,objet feu,objet etabli,sf::RenderWindow &wi
     for (Bullet balle : witch_balls)
     {
         balle.sprite.setPosition(balle.x-17,balle.y-17);
-        balle.sprite.setColor(sf::Color(255,0,255));
         window.draw(balle.sprite);
         
     }
@@ -108,7 +107,7 @@ void init(Perso &joueur, objet &feu,objet &bank,objet &etabli,sf::View &camera,s
     joueur.invincible=false;
     joueur.x=300;
     joueur.y=500;
-    joueur.hp=20;
+    joueur.hp=20000;
     joueur.faim=100;
     joueur.v=2;
     joueur.hitbox.setSize(sf::Vector2f(7,25));
@@ -430,7 +429,7 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
         if(souris_pressee and TearRateClock.getElapsedTime().asMilliseconds()>arme.tear_rate)
         {
             TearRateClock.restart();
-            get_balle(joueur.x,joueur.y,sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y,bullets,camera,window);
+            get_balle(joueur.x,joueur.y,sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y,bullets,camera,window,TextureBalle);
         }
         //donne de la nourriture au joueur dans le cercle de faim
         if (sqrt(abs(joueur.x-feu.x)*abs(joueur.x-feu.x)+abs(joueur.y-feu.y)*abs(joueur.y-feu.y))<cercle_f.taille)
@@ -467,16 +466,16 @@ void jeu(Perso joueur ,sf::RenderWindow &window)
         window.clear(sf::Color::Black);
  
         // Draw the sprites
-        dessine(joueur,bank,feu,etabli,window,cercle_f,money,bullets,balle.image,mobs,TextureZombie,camera,neon,rate_stat,damage_stat,debug,witch_balls);
+        dessine(joueur,bank,feu,etabli,window,cercle_f,money,bullets,TextureBalle,mobs,TextureZombie,camera,neon,rate_stat,damage_stat,debug,witch_balls);
         //update les elements
-        update_position_collisions(bullets,mobs,joueur,InvicibilityClock,arme,witch_balls);
+        update_position_collisions(bullets,mobs,joueur,InvicibilityClock,arme,witch_balls,TextureBalle);
         //regade s'il y a des mobs à faire spawn
         CheckMobSpawn(mobs,joueur,ZombieSpawnClock,SorcièreSpawnClock,spawn_rate,TextureZombie,TextureSorcière);
         if (joueur.hp<=0 or joueur.faim<=0)
         {
             loose=true;
         }
-         spawn_rate=spawn_rate;
+         spawn_rate=spawn_rate-10;
         //(1/std::log(spawn_rate-spawn_rate*0.1));
         window.setView(camera);
         window.display();

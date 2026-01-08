@@ -17,7 +17,7 @@ struct Perso{
 struct Bullet{
     float x,y,v;
     float vx,vy;
-    sf::Sprite image;
+    sf::Sprite sprite;
     bool on_screen;
     int count;
     sf::RectangleShape hitbox;
@@ -40,8 +40,8 @@ struct HUD
     sf::Texture image;
 };
 sf::RectangleShape* get_cercle_faim(objet feu, int taille_cercle,sf::RenderWindow &window);
-void get_balle(int x_joueur, int y_joueur,int x_souris,int y_souris,std::vector<Bullet> &balles,sf::View &camera,sf::RenderWindow &window);
+void get_balle(int x_joueur, int y_joueur,int x_souris,int y_souris,std::vector<Bullet> &balles,sf::View &camera,sf::RenderWindow &window,sf::Texture &TextureBalle);
 void balle_accompagnement(Bullet &balle);
 void update_pos_joueur(Perso & joueur, bool z,bool q,bool s,bool d,bool sprint,int vitesse_de_base);
 sf::RectangleShape get_indicator_fire(objet feu,sf::RenderWindow &window,sf::View &camera);
-void balle_sorcière(Bullet &balle,Perso joueur);
+void balle_sorcière_accompagnement(Bullet &balle,Perso joueur);
