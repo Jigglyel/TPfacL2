@@ -9,10 +9,8 @@
 #include<vector>
 #include<stack>
 #include<fstream>
-const int NC=1280;
-const int NL=720;
-using Tligne=std::array<uint8_t ,NC>;
-using Timage=std::array<Tligne,NL>;
+int NC=1280;
+int NL=720;
 
 
 struct action{
@@ -70,8 +68,10 @@ std::vector<action> consulte(pile &P)
 }
 
 
-void init (sf::VertexArray & pixels)
+void init (sf::VertexArray & pixels,int NC,int NL)
 {
+    pixels.setPrimitiveType(sf::Points);
+    pixels.resize(NC * NL);
     for (size_t i = 50; i < NL; i++)
     {
         for (size_t j = 0; j < NC; j++)
@@ -80,6 +80,30 @@ void init (sf::VertexArray & pixels)
             pixels[i * NC + j].color = sf::Color(255,255,255);
         }
     }
+}
+void convertit(sf::VertexArray & pixels,sf::Vector2i taille_dessin, sf::Vector2i taille_fenetre)
+{
+    sf::VertexArray new_pixels;
+    init(new_pixels,taille_fenetre.x,taille_fenetre.y);
+    float x_scale= taille_fenetre.x/taille_dessin.x*1.f;
+    float y_scale= taille_fenetre.y/taille_dessin.y*1.f;
+    for (size_t i = 50; i < taille_dessin.y; i++)
+    {
+        for (size_t j = 0; j < taille_dessin.x; j++)
+        {
+            // std::cout<<x_scale<<" "<<y_scale<<std::endl;
+            // std::cout<<i<<" "<<j<<std::endl;
+            for(size_t k=i;k<=i*y_scale;++k)
+                for ( size_t l=j ; l <= j*x_scale; l++)
+                {
+                    // std::cout<<k*taille_dessin.y+l<<std::endl;
+                    new_pixels[k*taille_fenetre.y+l].color=pixels[k * taille_dessin.y + l].color;
+                    new_pixels[k*taille_fenetre.y+l].position.x=l;
+                    new_pixels[k*taille_fenetre.y+l].position.y=k;
+                }
+        }
+    }
+    pixels=new_pixels;
 }
 void efface (sf::VertexArray & pixels,pile &P)
 {
@@ -384,7 +408,7 @@ int main()
 {    
     sf::VertexArray pixels(sf::Points,NC*NL);
     sf::Color couleur = sf::Color::Black;
-    init(pixels);
+    init(pixels,NC,NL);
     int brushSize = 3;
     sf::RenderWindow window(sf::VideoMode(NC, NL), "SFML window");
     sf::RectangleShape* Hud;
@@ -418,6 +442,13 @@ int main()
             // Close window: exit
             if (event.type == sf::Event::Closed)
                 window.close();
+            if(event.type==sf::Event::Resized)
+            {
+                std::cout<<"risize"<<std::endl;
+                convertit(pixels,sf::Vector2i(NC,NL),sf::Vector2i(event.size.width,event.size.height));
+                NC=event.size.width;
+                NL=event.size.height;
+            }
 
 
             if (event.type==sf::Event::KeyPressed)
@@ -440,7 +471,7 @@ int main()
             {   
                 float x=sf::Mouse::getPosition(window).x;
                 float y=sf::Mouse::getPosition(window).y;
-                selectColors(window,couleur,x,y,Hud);
+                
                 if (full_mode)
                 {
                     remplissage(pixels,couleur,sf::Vector2i(x,y),taches);
@@ -463,6 +494,7 @@ int main()
             {
                 float x=sf::Mouse::getPosition(window).x;
                 float y=sf::Mouse::getPosition(window).y;
+                selectColors(window,couleur,x,y,Hud);
                 selectRedo(window,x,y,Hud,pixels,Back,Forward);
                 availiable_release=false;
             }
