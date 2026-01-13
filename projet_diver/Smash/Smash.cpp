@@ -30,7 +30,7 @@ public:
 
     virtual void Jab()=0;
 
-    // virtual void Ftilt()=0;
+    virtual void Ftilt()=0;
 
     // virtual void Utilt()=0;
 
@@ -107,22 +107,23 @@ public:
         
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::O))
         {
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) or sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-            {
-                //Ftilt();
-            }
-            else
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) and !sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
-            {
-                //Dtilt();
-            }
-            else
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z) and !sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-            {
-                //Utilt();
-            }
-            else
-                Jab();
+            if(!in_air)
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) or sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+                {
+                    Ftilt();
+                }
+                else
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) and !sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+                {
+                    //Dtilt();
+                }
+                else
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z) and !sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+                {
+                    //Utilt();
+                }
+                else
+                    Jab();
         }
     }
 
@@ -160,21 +161,41 @@ class Miruka : public Perso
 
     
     void Jab() override{
+        int dir;
         if(direction=='d')
+            dir=30;
+        else
+            dir=-30;
         {
-            sf::FloatRect jabHitbox(Sprite.getPosition().x+30,Sprite.getPosition().y+10,20,20);
+            sf::FloatRect jabHitbox(Sprite.getPosition().x+dir,Sprite.getPosition().y,20,20);
             Hitbox jab;
             jab.hitbox=jabHitbox;
             jab.duration=1;
             Hitboxs.push_back(jab);
         }
+
+    }
+    void Ftilt() override{
+        int dir;
+        if(direction=='d')
+            dir=30;
         else
+            dir=-30;
         {
-            sf::FloatRect jabHitbox(Sprite.getPosition().x-30,Sprite.getPosition().y+10,20,20);
-            Hitbox jab;
-            jab.hitbox=jabHitbox;
-            jab.duration=1;
-            Hitboxs.push_back(jab);
+            sf::FloatRect coupHitbox(Sprite.getPosition().x+dir,Sprite.getPosition().y,40,15);
+            Hitbox coup;
+            coup.hitbox=coupHitbox;
+            coup.duration=1;
+            Hitboxs.push_back(coup);
+        }
+    }
+    void Utilt() override{
+        {
+            sf::FloatRect coupHitbox(Sprite.getPosition().x+dir,Sprite.getPosition().y,40,15);
+            Hitbox coup;
+            coup.hitbox=coupHitbox;
+            coup.duration=1;
+            Hitboxs.push_back(coup);
         }
     }
 };
