@@ -9,8 +9,10 @@ struct Hitbox
 };
 class Perso
 {
+private:
 
 public:
+    bool spaceRelease=false;
     sf::Sprite Sprite;
     std::string nom;
     bool dbjump=true;
@@ -32,9 +34,9 @@ public:
 
     virtual void Ftilt()=0;
 
-    // virtual void Utilt()=0;
+    virtual void Utilt()=0;
 
-    // virtual void Dtilt()=0;
+    virtual void Dtilt()=0;
 
     // virtual void Fsmash()=0;
 
@@ -78,7 +80,8 @@ public:
         }
         if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Q) and !sf::Keyboard::isKeyPressed(sf::Keyboard::D) or crouch)
             speed.x=0;
-        
+        if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Space) and in_air)
+            spaceRelease=true;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
         {
             if (!in_air)
@@ -89,10 +92,11 @@ public:
             }
             else
             {
-                if (dbjump)
+                if (dbjump and spaceRelease)
                 {
                     speed.y=-jump_height;
                     dbjump=false;
+                    spaceRelease=false;
                 }
             }
         }
@@ -103,7 +107,8 @@ public:
             {
                 crouch=true;
             }
-        }
+        }else
+        crouch=false;
         
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::O))
         {
@@ -113,14 +118,14 @@ public:
                     Ftilt();
                 }
                 else
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) and !sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+                if (crouch)
                 {
-                    //Dtilt();
+                    Dtilt();
                 }
                 else
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z) and !sf::Keyboard::isKeyPressed(sf::Keyboard::S))
                 {
-                    //Utilt();
+                    Utilt();
                 }
                 else
                     Jab();
@@ -152,13 +157,27 @@ class Miruka : public Perso
         if(!T.loadFromFile("../../miruka.jpg"))
             std::cout<<"erreur"<<std::endl;
         Sprite.setTexture(T);
-        Sprite.scale(0.1,0.1);
+        Sprite.setScale(0.1,0.1);
         Sprite.setPosition(100,50);
         
         
     }
 
-
+    void is_crouching()
+    {
+        if (crouch)
+        {
+            Sprite.setScale(0.13,0.05);
+            Sprite.move(0,20);
+        }
+        else
+        {
+            
+            Sprite.setScale(0.1,0.1);
+            Sprite.move(0,20);
+        }
+        
+    }
     
     void Jab() override{
         int dir;
@@ -180,7 +199,7 @@ class Miruka : public Perso
         if(direction=='d')
             dir=30;
         else
-            dir=-30;
+            dir=-48;
         {
             sf::FloatRect coupHitbox(Sprite.getPosition().x+dir,Sprite.getPosition().y,40,15);
             Hitbox coup;
@@ -191,12 +210,27 @@ class Miruka : public Perso
     }
     void Utilt() override{
         {
-            sf::FloatRect coupHitbox(Sprite.getPosition().x+dir,Sprite.getPosition().y,40,15);
+            sf::FloatRect coupHitbox(Sprite.getPosition().x-10,Sprite.getPosition().y-20,40,15);
             Hitbox coup;
             coup.hitbox=coupHitbox;
             coup.duration=1;
             Hitboxs.push_back(coup);
         }
+    }
+    void Dtilt() override{
+        int dir;
+        if(direction=='d')
+            dir=30;
+        else
+            dir=-25;
+        {
+            sf::FloatRect jabHitbox(Sprite.getPosition().x+dir,Sprite.getPosition().y-15,15,40);
+            Hitbox jab;
+            jab.hitbox=jabHitbox;
+            jab.duration=1;
+            Hitboxs.push_back(jab);
+        }
+
     }
 };
 
@@ -225,13 +259,15 @@ int main()
         }
             miruka.input();
             miruka.move();
-            miruka.speed.y+=0.5;
+            miruka.is_crouching();
+            miruka.speed.y+=1;
             if (miruka.Sprite.getPosition().y>300)
             {
                 miruka.Sprite.setPosition(miruka.Sprite.getPosition().x,300);
                 miruka.speed.y=0;
                 miruka.in_air=false;
                 miruka.dbjump=true;
+                miruka.spaceRelease=false;
             }
             window.clear(sf::Color::Black);
             window.draw(miruka.Sprite);
