@@ -2,7 +2,11 @@
 #include<SFML/Graphics.hpp>
 #include<vector>
 
-
+struct Hitbox
+{
+    sf::FloatRect hitbox;
+    float duration;
+};
 class Perso
 {
 
@@ -16,8 +20,9 @@ public:
     float ground_speed;
     float air_speed;
     bool crouch=false;
-    int jump_height;
-    char direction;
+    float jump_height;
+    char direction='d';
+    std::vector<Hitbox> Hitboxs;
   
 
 
@@ -40,40 +45,45 @@ public:
     void move(){
         Sprite.move(speed);
     }
-    void input(sf::Event event)
+    void input()
     {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)and !crouch)
         {
             if (!in_air)
             {
+                direction='d';
                 speed.x=ground_speed;
             }
             else
             {
-                direction='d';
+                
                 speed.x=air_speed;
             }
             
         }
+
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)and !crouch)
         {
             if (!in_air)
             {
-                speed.x=ground_speed;
+                direction='g';
+                speed.x=-ground_speed;
             }
             else
             {
-                direction='g';
+                
                 speed.x=-air_speed;
             }
             
         }
-        else
+        if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Q) and !sf::Keyboard::isKeyPressed(sf::Keyboard::D) or crouch)
+            speed.x=0;
+        
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
         {
             if (!in_air)
             {
-                speed.y-=jump_height;
+                speed.y=-jump_height;
                 in_air=true;
                 crouch=false;
             }
@@ -81,12 +91,12 @@ public:
             {
                 if (dbjump)
                 {
-                    speed.y-=jump_height;
+                    speed.y=-jump_height;
                     dbjump=false;
                 }
             }
         }
-        else
+        
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
         {
             if (!in_air)
@@ -94,7 +104,7 @@ public:
                 crouch=true;
             }
         }
-        else
+        
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::O))
         {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) or sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
@@ -118,40 +128,54 @@ public:
 
 };
 
-struct Hitbox
-{
-    sf::FloatRect hitbox;
-    float duration;
-};
+
 
 class Miruka : public Perso
 {
+    private:
+    sf::Texture T;
+
     public:
     Miruka(){
         nom="Miruka";
         
-        speed.x=300;
-        speed.y=100;
+        speed.x=0;
+        speed.y=0;
         in_air=true;
         crouch=false;
-        ground_speed=8;
-        air_speed=5;
-        jump_height=20;
+        ground_speed=2.5;
+        air_speed=2;
+        jump_height=10;
         pourcentage=0;
-        sf::Texture T;
-        T.loadFromFile("../../miruka.jpg");
+        
+        if(!T.loadFromFile("../../miruka.jpg"))
+            std::cout<<"erreur"<<std::endl;
         Sprite.setTexture(T);
-        Sprite.setPosition(0,0);
+        Sprite.scale(0.1,0.1);
+        Sprite.setPosition(100,50);
+        
+        
     }
 
 
-    std::vector<Hitbox> Hitboxs;
+    
     void Jab() override{
-        sf::FloatRect jabHitbox(Sprite.getPosition().x+10,Sprite.getPosition().y+10,20,20);
-        Hitbox jab;
-        jab.hitbox=jabHitbox;
-        jab.duration=1;
-        Hitboxs.push_back(jab);
+        if(direction=='d')
+        {
+            sf::FloatRect jabHitbox(Sprite.getPosition().x+30,Sprite.getPosition().y+10,20,20);
+            Hitbox jab;
+            jab.hitbox=jabHitbox;
+            jab.duration=1;
+            Hitboxs.push_back(jab);
+        }
+        else
+        {
+            sf::FloatRect jabHitbox(Sprite.getPosition().x-30,Sprite.getPosition().y+10,20,20);
+            Hitbox jab;
+            jab.hitbox=jabHitbox;
+            jab.duration=1;
+            Hitboxs.push_back(jab);
+        }
     }
 };
 
@@ -161,50 +185,55 @@ int main()
     Miruka miruka;
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML window");
     sf::Event event;
-
-// tant qu'il y a des évènements à traiter...
-while (window.pollEvent(event))
-{
-    // on regarde le type de l'évènement...
-    switch (event.type)
+    window.setFramerateLimit(30);
+    while(window.isOpen())
     {
-        // fenêtre fermée
-        case sf::Event::Closed:
-            window.close();
-            break;
-        // on ne traite pas les autres types d'évènements
-        default:
-            break;
-    }
-    miruka.speed.y+=2;
-    if (miruka.Sprite.getPosition().y>500)
-    {
-        miruka.Sprite.setPosition(miruka.Sprite.getPosition().x,500);
-        miruka.speed.y=0;
-    }
-    
-    window.clear(sf::Color::White);
-    window.draw(miruka.Sprite);
-    for(Hitbox &hitbox :miruka.Hitboxs )
-    {
-        int i=0;
-        sf::RectangleShape rect(sf::Vector2f(hitbox.hitbox.width, hitbox.hitbox.height));
-            rect.setPosition(hitbox.hitbox.left, hitbox.hitbox.top);
-            rect.setFillColor(sf::Color::Transparent);
-            rect.setOutlineThickness(2);
-            rect.setOutlineColor(sf::Color::Red);
-            window.draw(rect);
-        hitbox.duration--;
-        if (hitbox.duration<0)
+        while (window.pollEvent(event))
         {
-            miruka.Hitboxs.erase(miruka.Hitboxs.begin()+i);
+            // on regarde le type de l'évènement...
+            switch (event.type)
+            {
+                // fenêtre fermée
+                case sf::Event::Closed:
+                    window.close();
+                    break;
+                // on ne traite pas les autres types d'évènements
+                default:
+                    break;
+            }
         }
-        else
-            ++i;
-        
+            miruka.input();
+            miruka.move();
+            miruka.speed.y+=0.5;
+            if (miruka.Sprite.getPosition().y>300)
+            {
+                miruka.Sprite.setPosition(miruka.Sprite.getPosition().x,300);
+                miruka.speed.y=0;
+                miruka.in_air=false;
+                miruka.dbjump=true;
+            }
+            window.clear(sf::Color::Black);
+            window.draw(miruka.Sprite);
+            for(Hitbox &hitbox :miruka.Hitboxs )
+            {
+                int i=0;
+                sf::RectangleShape rect(sf::Vector2f(hitbox.hitbox.width, hitbox.hitbox.height));
+                    rect.setPosition(hitbox.hitbox.left, hitbox.hitbox.top);
+                    rect.setFillColor(sf::Color::Transparent);
+                    rect.setOutlineThickness(2);
+                    rect.setOutlineColor(sf::Color::Red);
+                    window.draw(rect);
+                hitbox.duration--;
+                if (hitbox.duration<0)
+                {
+                    miruka.Hitboxs.erase(miruka.Hitboxs.begin()+i);
+                }
+                else
+                    ++i;
+                
+            }
+            window.display();
     }
-    window.display();
-}
 
 }
 
