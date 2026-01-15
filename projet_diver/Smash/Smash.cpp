@@ -2,10 +2,24 @@
 #include<SFML/Graphics.hpp>
 #include<vector>
 
-struct Hitbox
+class Hitbox
 {
+    public: 
+
     sf::FloatRect hitbox;
     float duration;
+    float damage;
+    float puissance_ejec;
+    sf::Vector2f direction;
+
+    void coup(Perso &P)
+    {
+        if (Hitbox.contains(P.))
+        {
+            /* code */
+        }
+        
+    }
 };
 class Perso
 {
@@ -24,7 +38,8 @@ public:
     bool crouch=false;
     float jump_height;
     char direction='d';
-    std::vector<Hitbox> Hitboxs;
+    sf::FloatRect hitbox_perso;
+    std::vector<Hitbox> Hitboxs_attaque;
   
 
 
@@ -46,6 +61,15 @@ public:
 
     void move(){
         Sprite.move(speed);
+        Hitbox_perso(Sprite.getSize(),Sprite.getPosition());
+    }
+    sf::RectangleShape get_drawableHitbox()
+    {
+        sf::RectangleShape Hitbox(sf::Vector2f(hitbox_perso.width, hitbox_perso.width.height));
+        Hitbox.setPosition(hitbox_perso.width.left, hitbox_perso.width.top);
+        Hitbox.setFillColor(sf::Color::Transparent);
+        Hitbox.setOutlineThickness(2);
+        Hitbox.setOutlineColor(sf::Color::Red);
     }
     void input()
     {
@@ -159,6 +183,7 @@ class Miruka : public Perso
         Sprite.setTexture(T);
         Sprite.setScale(0.1,0.1);
         Sprite.setPosition(100,50);
+        Hitbox_perso(Sprite.getSize(),Sprite.getPosition());
         
         
     }
@@ -168,13 +193,11 @@ class Miruka : public Perso
         if (crouch)
         {
             Sprite.setScale(0.13,0.05);
-            Sprite.move(0,20);
         }
         else
         {
             
             Sprite.setScale(0.1,0.1);
-            Sprite.move(0,20);
         }
         
     }
@@ -191,6 +214,8 @@ class Miruka : public Perso
             jab.hitbox=jabHitbox;
             jab.duration=1;
             Hitboxs.push_back(jab);
+            speed.x=0;
+            speed.y=0;
         }
 
     }
@@ -206,6 +231,8 @@ class Miruka : public Perso
             coup.hitbox=coupHitbox;
             coup.duration=1;
             Hitboxs.push_back(coup);
+            speed.x=0;
+            speed.y=0;
         }
     }
     void Utilt() override{
@@ -215,6 +242,8 @@ class Miruka : public Perso
             coup.hitbox=coupHitbox;
             coup.duration=1;
             Hitboxs.push_back(coup);
+            speed.x=0;
+            speed.y=0;
         }
     }
     void Dtilt() override{
@@ -229,6 +258,8 @@ class Miruka : public Perso
             jab.hitbox=jabHitbox;
             jab.duration=1;
             Hitboxs.push_back(jab);
+            speed.x=0;
+            speed.y=0;
         }
 
     }
@@ -259,8 +290,9 @@ int main()
         }
             miruka.input();
             miruka.move();
-            miruka.is_crouching();
-            miruka.speed.y+=1;
+             miruka.is_crouching();
+            miruka.speed.y+=0.5;
+            
             if (miruka.Sprite.getPosition().y>300)
             {
                 miruka.Sprite.setPosition(miruka.Sprite.getPosition().x,300);
@@ -271,6 +303,8 @@ int main()
             }
             window.clear(sf::Color::Black);
             window.draw(miruka.Sprite);
+            window.draw(miruka.get_drawableHitbox());
+            window.draw(rect);
             for(Hitbox &hitbox :miruka.Hitboxs )
             {
                 int i=0;
