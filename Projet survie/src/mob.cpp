@@ -78,7 +78,7 @@ void sorcière_accompagnement(Mob &sorcière,Perso joueur,std::vector<Bullet> &b
     Bullet balle;
     if (distance<200)
     {
-        if (sorcière.shoot.getElapsedTime().asSeconds()>3)
+        if (sorcière.shoot.getElapsedTime().asSeconds()>1)
         {
             sorcière.shoot.restart();
             
