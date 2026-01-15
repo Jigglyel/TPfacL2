@@ -403,7 +403,7 @@ class Miruka : public Perso
             coup.hitbox=coupHitbox;
             coup.duration=1;
             coup.damage=15;
-            coup.puissance_ejec=0.4;
+            coup.puissance_ejec=0.3;
             coup.direction=sf::Vector2f(0,-1);
             Hitboxs_attaque.push_back(coup);
             speed.x=0;
