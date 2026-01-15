@@ -28,11 +28,17 @@ public:
     float air_speed;
     bool crouch=false;
     float jump_height;
+    bool hitstun=false;
     int direction=1;
     sf::Texture T;
     sf::FloatRect hitbox_perso;
+    int ID;
+    int vies=3;
     std::vector<Hitbox> Hitboxs_attaque;
-  
+    Perso(int id){
+        ID=id;
+
+    }
 
 
 
@@ -57,6 +63,8 @@ public:
         hitbox_perso.top = Sprite.getPosition().y;
         hitbox_perso.width = T.getSize().x*Sprite.getScale().x;
         hitbox_perso.height = T.getSize().y*Sprite.getScale().y;
+        if(std::sqrt(speed.x*speed.x+speed.y*speed.y)<20)
+            hitstun=false;
     }
     sf::RectangleShape get_drawableHitbox()
     {
@@ -74,51 +82,157 @@ public:
             if (hitbox.hitbox.intersects(hitbox_perso))        
             {
                 float distance=std::sqrt(hitbox.direction.x*hitbox.direction.x +hitbox.direction.y*hitbox.direction.y);
-                sf::Vector2f normalized(hitbox.direction.x/distance,hitbox.direction.y/distance);
+                sf::Vector2f normalized;
+                if(distance==0)
+                     normalized=sf::Vector2f(0,0);
+                else
+                    normalized=sf::Vector2f(hitbox.direction.x/distance,hitbox.direction.y/distance);
                 speed.x= hitbox.puissance_ejec*pourcentage*normalized.x;
                 speed.y= hitbox.puissance_ejec*pourcentage*normalized.y;
-                pourcentage=hitbox.damage;
+                pourcentage+=hitbox.damage;
+                crouch=false;
+                in_air=true;
             }
         
     }
+    void draw_hitboxs(sf::RenderWindow &window)
+    {
+        for(Hitbox &hitbox :Hitboxs_attaque )
+            {
+                int i=0;
+                sf::RectangleShape rect(sf::Vector2f(hitbox.hitbox.width, hitbox.hitbox.height));
+                    rect.setPosition(hitbox.hitbox.left, hitbox.hitbox.top);
+                    rect.setFillColor(sf::Color::Transparent);
+                    rect.setOutlineThickness(2);
+                    rect.setOutlineColor(sf::Color::Red);
+                    window.draw(rect);
+                hitbox.duration--;
+                if (hitbox.duration<0)
+                {
+                    Hitboxs_attaque.erase(Hitboxs_attaque.begin()+i);
+                }
+                else
+                    ++i;
+                
+            }
+    }
 
+    void ground_collisions()
+    {
+        if (Sprite.getPosition().y>400)
+            {
+                Sprite.setPosition(Sprite.getPosition().x,400);
+                speed.y=0;
+                in_air=false;
+                dbjump=true;
+                spaceRelease=false;
+            }
+    }
+
+    void apply_forces()
+    {
+        if(in_air)
+        {
+            speed.y+=0.5;
+            if(speed.x<0)
+                speed.x+=0.2;
+            else
+                speed.x-=0.2;
+            if(speed.y<0)
+                speed.y+=0.2;
+            else
+                speed.y-=0.2;
+        }
+    }
+    void respawn()
+    {
+        if(vies>0)
+        {
+            pourcentage=0;
+            speed.x=0;
+            speed.y=0;
+            if(ID==0)
+                Sprite.setPosition(100,50);
+            else
+                Sprite.setPosition(500,50);
+            in_air=true;
+            crouch=false;
+            dbjump=true;
+            vies--;
+        }
+        //mort
+    }
+    void check_Death(sf::RenderWindow &window)
+    {
+        if(!(Sprite.getPosition().x<window.getSize().x and Sprite.getPosition().x>0 and Sprite.getPosition().y<window.getSize().y and Sprite.getPosition().y>0))
+        {
+            respawn();
+        }
+    }
+ 
 };
-void input(Perso &j1 ,Perso &j2)
+void input(Perso &j1 )
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)and !j1.crouch)
+    sf::Keyboard::Key Up,Down,Left,Right,NormalAttack,Jump;
+    if(j1.ID==0)
+    {
+        Up=sf::Keyboard::Z;
+        Down=sf::Keyboard::S;
+        Left=sf::Keyboard::Q;
+        Right=sf::Keyboard::D;
+        NormalAttack=sf::Keyboard::O;
+        Jump=sf::Keyboard::Space;
+    }
+    if(j1.ID==1)
+    {
+        Up=sf::Keyboard::Up;
+        Down=sf::Keyboard::Down;
+        Left=sf::Keyboard::Left;
+        Right=sf::Keyboard::Right;
+        NormalAttack=sf::Keyboard::Enter;
+        Jump=sf::Keyboard::RShift;
+    } 
+
+
+
+
+
+
+
+
+    if (sf::Keyboard::isKeyPressed(Right)and !j1.crouch)
     {
         if (!j1.in_air)
         {
             j1.direction=1;
             j1.speed.x=j1.ground_speed;
         }
-        else
+        else if(!j1.hitstun)
         {
-            
             j1.speed.x=j1.air_speed;
         }
         
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)and !j1.crouch)
+    if (sf::Keyboard::isKeyPressed(Left)and !j1.crouch)
     {
         if (!j1.in_air)
         {
             j1.direction=-1;
             j1.speed.x=-j1.ground_speed;
         }
-        else
+        else if(!j1.hitstun)
         {
             
             j1.speed.x=-j1.air_speed;
         }
         
     }
-    if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Q) and !sf::Keyboard::isKeyPressed(sf::Keyboard::D) or j1.crouch)
+    if(!sf::Keyboard::isKeyPressed(Left) and !sf::Keyboard::isKeyPressed(Right) and !j1.in_air or j1.crouch)
         j1.speed.x=0;
-    if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Space) and j1.in_air)
+    if(!sf::Keyboard::isKeyPressed(Jump) and j1.in_air)
         j1.spaceRelease=true;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+    if (sf::Keyboard::isKeyPressed(Jump) and !j1.hitstun)
     {
         if (!j1.in_air)
         {
@@ -137,7 +251,7 @@ void input(Perso &j1 ,Perso &j2)
         }
     }
     
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+    if (sf::Keyboard::isKeyPressed(Down))
     {
         if (!j1.in_air)
         {
@@ -146,10 +260,10 @@ void input(Perso &j1 ,Perso &j2)
     }else
     j1.crouch=false;
     
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::O))
+    if (sf::Keyboard::isKeyPressed(NormalAttack))
     {
         if(!j1.in_air)
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) or sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+            if (sf::Keyboard::isKeyPressed(Right) or sf::Keyboard::isKeyPressed(Left))
             {
                 j1.Ftilt();
             }
@@ -159,120 +273,41 @@ void input(Perso &j1 ,Perso &j2)
                 j1.Dtilt();
             }
             else
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z) and !sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+            if (sf::Keyboard::isKeyPressed(Up) and !sf::Keyboard::isKeyPressed(Down))
             {
                 j1.Utilt();
             }
             else
                 j1.Jab();
-    }
-
-
-    //Joueur 2
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)and !j2.crouch)
-    {
-        if (!j2.in_air)
-        {
-            j2.direction=1;
-            j2.speed.x=j2.ground_speed;
-        }
-        else
-        {
-            j2.speed.x=j2.air_speed;
-        }
-        
-    }
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)and !j2.crouch)
-    {
-        if (!j2.in_air)
-        {
-            j2.direction=-1;
-            j2.speed.x=-j2.ground_speed;
-        }
-        else
-        {
-            
-            j2.speed.x=-j2.air_speed;
-        }
-        
-    }
-    if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Left) and !sf::Keyboard::isKeyPressed(sf::Keyboard::Right) or j2.crouch)
-        j2.speed.x=0;
-    if(!sf::Keyboard::isKeyPressed(sf::Keyboard::RShift) and j2.in_air)
-        j2.spaceRelease=true;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::RShift))
-    {
-        if (!j2.in_air)
-        {
-            j2.speed.y=-j2.jump_height;
-            j2.in_air=true;
-            j2.crouch=false;
-        }
-        else
-        {
-            if (j2.dbjump and j2.spaceRelease)
-            {
-                j2.speed.y=-j2.jump_height;
-                j2.dbjump=false;
-                j2.spaceRelease=false;
-            }
-        }
-    }
-    
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-    {
-        if (!j2.in_air)
-        {
-            j2.crouch=true;
-        }
-    }else
-    j2.crouch=false;
-    
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
-    {
-        if(!j2.in_air)
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) or sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-            {
-                j2.Ftilt();
-            }
-            else
-            if (j2.crouch)
-            {
-                j2.Dtilt();
-            }
-            else
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) and !sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-            {
-                j2.Utilt();
-            }
-            else
-                j2.Jab();
-    }
-    
+    }   
 }
-void affiche pourcentage(sf::RenderWindow window,sf::Font &font,Perso P)
+void affiche_pourcentage(sf::RenderWindow &window,sf::Font &font,float pourcentage,int id,int vies)
 {
-    sf::Text text;
-    text.setFont(font);
-    text.setText(P.pourcentage);
-    window.draw(text)
+    sf::Text pourcentext,text_vie;
+    pourcentext.setFont(font);
+    pourcentext.setString(std::to_string(pourcentage).substr(0,3)+'%');
+    pourcentext.setPosition(id*100+300,500);
+    window.draw(pourcentext);
+    text_vie.setString(" vie =" + std::to_string(vies));
+    text_vie.setPosition(id*100+290,540);
+    text_vie.setFont(font);
+    window.draw(text_vie);
 }
 class Miruka : public Perso
 {
 
 
     public:
-    Miruka(){
+    Miruka(int id) :Perso(id){
+        
         nom="Miruka";
         
         speed.x=0;
         speed.y=0;
         in_air=true;
         crouch=false;
-        ground_speed=2.5;
-        air_speed=2;
+        ground_speed=5;
+        air_speed=4;
         jump_height=10;
         pourcentage=0;
         
@@ -315,8 +350,8 @@ class Miruka : public Perso
             jab.hitbox=jabHitbox;
             jab.duration=1;
             jab.damage=5;
-            jab.puissance_ejec=1;
-            jab.direction=sf::Vector2f(1.3*direction,-1.5);
+            jab.puissance_ejec=0.2;
+            jab.direction=sf::Vector2f(2.5*direction,-1.5);
             Hitboxs_attaque.push_back(jab);
             speed.x=0;
             speed.y=0;
@@ -335,8 +370,8 @@ class Miruka : public Perso
             coup.hitbox=coupHitbox;
             coup.duration=1;
             coup.damage=10;
-            coup.puissance_ejec=1.2;
-            coup.direction=sf::Vector2f(1*direction,-1.5);
+            coup.puissance_ejec=0.3;
+            coup.direction=sf::Vector2f(2.5*direction,-1.5);
             Hitboxs_attaque.push_back(coup);
             speed.x=0;
             speed.y=0;
@@ -349,7 +384,7 @@ class Miruka : public Perso
             coup.hitbox=coupHitbox;
             coup.duration=1;
             coup.damage=5;
-            coup.puissance_ejec=1.1;
+            coup.puissance_ejec=0.2;
             coup.direction=sf::Vector2f(0,-1);
             Hitboxs_attaque.push_back(coup);
             speed.x=0;
@@ -368,8 +403,8 @@ class Miruka : public Perso
             coup.hitbox=coupHitbox;
             coup.duration=1;
             coup.damage=15;
-            coup.puissance_ejec=1.8;
-            coup.direction=sf::Vector2f(0.3,-1);
+            coup.puissance_ejec=0.4;
+            coup.direction=sf::Vector2f(0,-1);
             Hitboxs_attaque.push_back(coup);
             speed.x=0;
             speed.y=0;
@@ -381,11 +416,12 @@ class Miruka : public Perso
 
 int main()
 {
-    Miruka j1,j2;
+    Miruka j1(0),j2(1);
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML window");
     sf::Event event;
     sf::Font font;
-    font.loadFromFile()
+    if(!font.loadFromFile("/usr/share/fonts/type1/urw-base35/P052-Italic.t1"))
+        std::cout<<"la police d'écriture n'a pas pu être chargée"<<std::endl;
     window.setFramerateLimit(30);
     while(window.isOpen())
     {
@@ -403,73 +439,32 @@ int main()
                     break;
             }
         }
-            input(j1,j2);
-            j1.move();
-            j2.move();
+        std::cout<<j1.in_air<<std::endl;
+            input(j1);
+            input(j2);
             j1.is_crouching();
             j2.is_crouching();
-            j1.speed.y+=0.5;
-            j2.speed.y+=0.5;
             j1.Check_touched(j2.Hitboxs_attaque);
             j2.Check_touched(j1.Hitboxs_attaque);
-            
-            if (j1.Sprite.getPosition().y>300)
-            {
-                j1.Sprite.setPosition(j1.Sprite.getPosition().x,300);
-                j1.speed.y=0;
-                j1.in_air=false;
-                j1.dbjump=true;
-                j1.spaceRelease=false;
-            }
+            j1.apply_forces();
+            j2.apply_forces();
+            j1.move();
+            j2.move();
+            j1.ground_collisions();
+            j2.ground_collisions();
+            j1.check_Death(window);
+            j2.check_Death(window);
+            /////////////////////////////
+            //Drawings
             window.clear(sf::Color::Black);
             window.draw(j1.Sprite);
             window.draw(j1.get_drawableHitbox());
-            if (j2.Sprite.getPosition().y>300)
-            {
-                j2.Sprite.setPosition(j2.Sprite.getPosition().x,300);
-                j2.speed.y=0;
-                j2.in_air=false;
-                j2.dbjump=true;
-                j2.spaceRelease=false;
-            }
             window.draw(j2.Sprite);
             window.draw(j2.get_drawableHitbox());
-            for(Hitbox &hitbox :j1.Hitboxs_attaque )
-            {
-                int i=0;
-                sf::RectangleShape rect(sf::Vector2f(hitbox.hitbox.width, hitbox.hitbox.height));
-                    rect.setPosition(hitbox.hitbox.left, hitbox.hitbox.top);
-                    rect.setFillColor(sf::Color::Transparent);
-                    rect.setOutlineThickness(2);
-                    rect.setOutlineColor(sf::Color::Red);
-                    window.draw(rect);
-                hitbox.duration--;
-                if (hitbox.duration<0)
-                {
-                    j1.Hitboxs_attaque.erase(j1.Hitboxs_attaque.begin()+i);
-                }
-                else
-                    ++i;
-                
-            }
-            for(Hitbox &hitbox :j2.Hitboxs_attaque )
-            {
-                int i=0;
-                sf::RectangleShape rect(sf::Vector2f(hitbox.hitbox.width, hitbox.hitbox.height));
-                    rect.setPosition(hitbox.hitbox.left, hitbox.hitbox.top);
-                    rect.setFillColor(sf::Color::Transparent);
-                    rect.setOutlineThickness(2);
-                    rect.setOutlineColor(sf::Color::Red);
-                    window.draw(rect);
-                hitbox.duration--;
-                if (hitbox.duration<0)
-                {
-                    j2.Hitboxs_attaque.erase(j2.Hitboxs_attaque.begin()+i);
-                }
-                else
-                    ++i;
-                
-            }
+            j1.draw_hitboxs(window);
+            j2.draw_hitboxs(window);
+            affiche_pourcentage(window,font,j1.pourcentage,j1.ID,j1.vies);
+            affiche_pourcentage(window,font,j2.pourcentage,j2.ID,j2.vies);
             window.display();
     }
 
