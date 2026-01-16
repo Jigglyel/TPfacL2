@@ -57,13 +57,22 @@ public:
 
     // virtual void Dsmash()=0;
 
+    virtual void Fair()=0;
+
+    virtual void Dair()=0;
+
+    virtual void Nair()=0;
+
+    virtual void Upair()=0;
+
+    virtual void Bair()=0;
+
     void move(){
         Sprite.move(speed);
-        hitbox_perso.left = Sprite.getPosition().x;
-        hitbox_perso.top = Sprite.getPosition().y;
-        hitbox_perso.width = T.getSize().x*Sprite.getScale().x;
-        hitbox_perso.height = T.getSize().y*Sprite.getScale().y;
-        if(std::sqrt(speed.x*speed.x+speed.y*speed.y)<20)
+        hitbox_perso=Sprite.getGlobalBounds();
+        if(std::sqrt(speed.x*speed.x+speed.y*speed.y)>10)
+            hitstun=true;
+        else
             hitstun=false;
     }
     sf::RectangleShape get_drawableHitbox()
@@ -262,23 +271,38 @@ void input(Perso &j1 )
     
     if (sf::Keyboard::isKeyPressed(NormalAttack))
     {
-        if(!j1.in_air)
-            if (sf::Keyboard::isKeyPressed(Right) or sf::Keyboard::isKeyPressed(Left))
+            
+            if (j1.crouch or sf::Keyboard::isKeyPressed(Down))
             {
-                j1.Ftilt();
-            }
-            else
-            if (j1.crouch)
-            {
-                j1.Dtilt();
+                if(!j1.in_air)
+                    j1.Dtilt();
+                else
+                    j1.Dair();
             }
             else
             if (sf::Keyboard::isKeyPressed(Up) and !sf::Keyboard::isKeyPressed(Down))
             {
-                j1.Utilt();
+                if(!j1.in_air)
+                    j1.Utilt();
+                else
+                    j1.Upair();
             }
             else
-                j1.Jab();
+            if (sf::Keyboard::isKeyPressed(Right) or sf::Keyboard::isKeyPressed(Left))
+            {
+                if(!j1.in_air)
+                    j1.Ftilt();
+                else
+                    if(j1.direction==1)
+                        j1.Fair();
+                    else
+                        j1.Bair();
+            }
+            else
+                if(!j1.in_air)
+                    j1.Jab();
+                else
+                    j1.Nair();
     }   
 }
 void affiche_pourcentage(sf::RenderWindow &window,sf::Font &font,float pourcentage,int id,int vies)
@@ -409,7 +433,83 @@ class Miruka : public Perso
             speed.x=0;
             speed.y=0;
         }
-
+    }
+    void Fair() override{
+        int dir;
+        if(direction==1)
+            dir=30;
+        else
+            dir=-25;
+        {
+            sf::FloatRect coupHitbox(Sprite.getPosition().x+dir,Sprite.getPosition().y-15,15,30);
+            Hitbox coup;
+            coup.hitbox=coupHitbox;
+            coup.duration=1;
+            coup.damage=8;
+            coup.puissance_ejec=0.2;
+            coup.direction=sf::Vector2f(1*direction,-2);
+            Hitboxs_attaque.push_back(coup);
+        }
+    }
+    void Bair() override{
+        int dir;
+        if(direction==1)
+            dir=30;
+        else
+            dir=-25;
+        
+        {
+            sf::FloatRect coupHitbox(Sprite.getPosition().x-dir,Sprite.getPosition().y,15,40);
+            Hitbox coup;
+            coup.hitbox=coupHitbox;
+            coup.duration=1;
+            coup.damage=15;
+            coup.puissance_ejec=0.4;
+            coup.direction=sf::Vector2f(-direction,-2);
+            Hitboxs_attaque.push_back(coup);
+        }
+    }
+    void Nair() override{
+        int dir;
+        if(direction==1)
+            dir=30;
+        else
+            dir=-25;
+        {
+            sf::FloatRect coupHitbox(Sprite.getPosition().x,Sprite.getPosition().y,40,40);
+            Hitbox coup;
+            coup.hitbox=coupHitbox;
+            coup.duration=1;
+            coup.damage=9;
+            coup.puissance_ejec=0.2;
+            coup.direction=sf::Vector2f(speed.x,-1.25);
+            Hitboxs_attaque.push_back(coup);
+        }
+    }
+    void Upair() override{
+        {
+            sf::FloatRect coupHitbox(Sprite.getPosition().x-10,Sprite.getPosition().y-20,20,15);
+            Hitbox coup;
+            coup.hitbox=coupHitbox;
+            coup.duration=1;
+            coup.damage=12;
+            coup.puissance_ejec=0.3;
+            coup.direction=sf::Vector2f(0,-1);
+            Hitboxs_attaque.push_back(coup);
+        }
+    }
+    void Dair() override{
+        {
+            sf::FloatRect coupHitbox(Sprite.getPosition().x+10,Sprite.getPosition().y+20,20,20);
+            Hitbox coup;
+            coup.hitbox=coupHitbox;
+            coup.duration=1;
+            coup.damage=15;
+            coup.puissance_ejec=0.3;
+            coup.direction=sf::Vector2f(0,1);
+            Hitboxs_attaque.push_back(coup);
+            speed.y=10;
+        }
     }
 };
 
@@ -439,7 +539,6 @@ int main()
                     break;
             }
         }
-        std::cout<<j1.in_air<<std::endl;
             input(j1);
             input(j2);
             j1.is_crouching();
@@ -454,9 +553,10 @@ int main()
             j2.ground_collisions();
             j1.check_Death(window);
             j2.check_Death(window);
+            std::cout<<j1.crouch<<std::endl;
             /////////////////////////////
             //Drawings
-            window.clear(sf::Color::Black);
+            window.clear(sf::Color(30,200,200));
             window.draw(j1.Sprite);
             window.draw(j1.get_drawableHitbox());
             window.draw(j2.Sprite);
