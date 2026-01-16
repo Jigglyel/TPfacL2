@@ -412,7 +412,8 @@ int main()
     sf::Vector2f oldPos;
     std::vector<action> taches;
     sf::Texture back_png,forward_png;
-    
+    sf::View camera(sf::Vector2f(window.getSize().x/2,window.getSize().y/2),sf::Vector2f(window.getSize().x,window.getSize().y));
+    window.setView(camera);
     pile Back =init_pile();
     pile Forward =init_pile();
     bool first_time=true;
@@ -441,9 +442,9 @@ int main()
                 window.close();
             if(event.type==sf::Event::Resized)
             {
-                convertit(pixels,sf::Vector2i(NC,NL),sf::Vector2i(event.size.width,event.size.height));
-                NC=event.size.width;
-                NL=event.size.height;
+                //convertit(pixels,sf::Vector2i(NC,NL),sf::Vector2i(event.size.width,event.size.height));
+                //NC=event.size.width;
+                //NL=event.size.height;
             }
 
 
@@ -467,6 +468,10 @@ int main()
             {   
                 float x=sf::Mouse::getPosition(window).x;
                 float y=sf::Mouse::getPosition(window).y;
+                x=window.mapPixelToCoords(sf::Vector2i(x,y)).x;
+                y=window.mapPixelToCoords(sf::Vector2i(x,y)).y;
+                
+
                 
                 if (full_mode)
                 {
