@@ -85,22 +85,19 @@ void convertit(sf::VertexArray & pixels,sf::Vector2i taille_dessin, sf::Vector2i
 {
     sf::VertexArray new_pixels;
     init(new_pixels,taille_fenetre.x,taille_fenetre.y);
-    float x_scale= taille_fenetre.x/taille_dessin.x*1.f;
-    float y_scale= taille_fenetre.y/taille_dessin.y*1.f;
-    for (size_t i = 50; i < taille_dessin.y; i++)
+    float x_scale= taille_fenetre.x/(taille_dessin.x*1.f);
+    float y_scale= taille_fenetre.y/(taille_dessin.y*1.f);
+    std::cout<<x_scale<<" "<<y_scale<<std::endl;
+    std::cout<<taille_fenetre.x<<" "<<taille_fenetre.y<<std::endl;
+    std::cout<<taille_dessin.x<<" "<<taille_dessin.y<<std::endl;
+    for (int i = 0; i < taille_fenetre.y; i++)
     {
-        for (size_t j = 0; j < taille_dessin.x; j++)
+        for (int j = 0; j < taille_fenetre.x; j++)
         {
-            // std::cout<<x_scale<<" "<<y_scale<<std::endl;
-            // std::cout<<i<<" "<<j<<std::endl;
-            for(size_t k=i;k<=i*y_scale;++k)
-                for ( size_t l=j ; l <= j*x_scale; l++)
-                {
-                    // std::cout<<k*taille_dessin.y+l<<std::endl;
-                    new_pixels[k*taille_fenetre.y+l].color=pixels[k * taille_dessin.y + l].color;
-                    new_pixels[k*taille_fenetre.y+l].position.x=l;
-                    new_pixels[k*taille_fenetre.y+l].position.y=k;
-                }
+                    if(i*y_scale<taille_dessin.y and j*x_scale<taille_dessin.x)
+                        new_pixels[i*taille_fenetre.x+j].color=pixels[static_cast<int>(i / y_scale)*taille_dessin.x + static_cast<int>(j/x_scale)].color;
+                    new_pixels[i*taille_fenetre.x+j].position.x=j;
+                    new_pixels[i*taille_fenetre.x+j].position.y=i;
         }
     }
     pixels=new_pixels;
@@ -444,7 +441,6 @@ int main()
                 window.close();
             if(event.type==sf::Event::Resized)
             {
-                std::cout<<"risize"<<std::endl;
                 convertit(pixels,sf::Vector2i(NC,NL),sf::Vector2i(event.size.width,event.size.height));
                 NC=event.size.width;
                 NL=event.size.height;

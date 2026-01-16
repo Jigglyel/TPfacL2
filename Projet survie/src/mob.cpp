@@ -40,7 +40,7 @@ void zombie_spawn(std::vector<Mob> &zombies,Perso joueur,int ID,sf::Texture &zom
 }
 void CheckMobSpawn(std::vector<Mob> &mobs,Perso joueur,sf::Clock &ZombieSpawnClock,sf::Clock &sorcièreSpawnClock,int spawn_rate,sf::Texture &zombimage,sf::Texture &sorcimage)
 {
-    if(mobs.size()<300)
+    if(mobs.size()<30)
     {
     if (ZombieSpawnClock.getElapsedTime().asMilliseconds()>spawn_rate+100)
         {
