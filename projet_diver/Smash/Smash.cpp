@@ -25,7 +25,8 @@ public:
     int pourcentage=0;
     sf::Vector2f speed;
     float ground_speed;
-    float air_speed;
+    float air_speedmax;
+    float air_acceleration;
     bool crouch=false;
     float jump_height;
     bool hitstun=false;
@@ -70,9 +71,7 @@ public:
     void move(){
         Sprite.move(speed);
         hitbox_perso=Sprite.getGlobalBounds();
-        if(std::sqrt(speed.x*speed.x+speed.y*speed.y)>10)
-            hitstun=true;
-        else
+        if(std::sqrt(speed.x*speed.x+speed.y*speed.y)<10)
             hitstun=false;
     }
     sf::RectangleShape get_drawableHitbox()
@@ -101,6 +100,7 @@ public:
                 pourcentage+=hitbox.damage;
                 crouch=false;
                 in_air=true;
+                hitstun=true;
             }
         
     }
@@ -218,7 +218,12 @@ void input(Perso &j1 )
         }
         else if(!j1.hitstun)
         {
-            j1.speed.x=j1.air_speed;
+            j1.speed.x+=j1.air_acceleration;
+            if (j1.speed.x>=j1.air_speedmax)
+            {
+                j1.speed.x=j1.air_speedmax;
+            }
+            
         }
         
     }
@@ -233,7 +238,11 @@ void input(Perso &j1 )
         else if(!j1.hitstun)
         {
             
-            j1.speed.x=-j1.air_speed;
+            j1.speed.x-=j1.air_acceleration;
+            if (j1.speed.x<=-j1.air_speedmax)
+            {
+                j1.speed.x=-j1.air_speedmax;
+            }
         }
         
     }
@@ -293,10 +302,30 @@ void input(Perso &j1 )
                 if(!j1.in_air)
                     j1.Ftilt();
                 else
-                    if(j1.direction==1)
-                        j1.Fair();
+                {
+                    if (sf::Keyboard::isKeyPressed(Right) )
+                    {
+                        if (j1.direction==1)
+                        {
+                            j1.Fair();
+                        }
+                        else
+                            j1.Bair();
+                    }
                     else
-                        j1.Bair();
+                    {
+                        if (j1.direction==-1)
+                        {
+                            j1.Fair();
+                        }
+                        else
+                            j1.Bair();
+                        
+                    }
+                    
+    
+                    
+                }
             }
             else
                 if(!j1.in_air)
@@ -331,7 +360,8 @@ class Miruka : public Perso
         in_air=true;
         crouch=false;
         ground_speed=5;
-        air_speed=4;
+        air_speedmax=4;
+        air_acceleration=0.5;
         jump_height=10;
         pourcentage=0;
         
@@ -449,6 +479,7 @@ class Miruka : public Perso
             coup.puissance_ejec=0.2;
             coup.direction=sf::Vector2f(1*direction,-2);
             Hitboxs_attaque.push_back(coup);
+            std::cout<<"fair"<<std::endl;
         }
     }
     void Bair() override{
@@ -467,6 +498,7 @@ class Miruka : public Perso
             coup.puissance_ejec=0.4;
             coup.direction=sf::Vector2f(-direction,-2);
             Hitboxs_attaque.push_back(coup);
+            std::cout<<"bair"<<std::endl;
         }
     }
     void Nair() override{
@@ -500,7 +532,7 @@ class Miruka : public Perso
     }
     void Dair() override{
         {
-            sf::FloatRect coupHitbox(Sprite.getPosition().x+10,Sprite.getPosition().y+20,20,20);
+            sf::FloatRect coupHitbox(Sprite.getPosition().x,Sprite.getPosition().y+30,15,25);
             Hitbox coup;
             coup.hitbox=coupHitbox;
             coup.duration=1;
@@ -520,7 +552,15 @@ int main()
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML window");
     sf::Event event;
     sf::Font font;
-    if(!font.loadFromFile("/usr/share/fonts/type1/urw-base35/P052-Italic.t1"))
+    std::string police_path;
+    #ifdef _WIN32
+        police_path="C:/Users/mu37/OneDrive/Images/Documents/Image-Line/FL Studio/Settings/Hardware/NI Komplete Kontrol/docs/_static/fonts/Oswald.ttf";
+    #else
+        police_path="/usr/share/fonts/type1/urw-base35/P052-Italic.t1";
+    #endif
+    
+        
+    if(!font.loadFromFile(police_path))
         std::cout<<"la police d'écriture n'a pas pu être chargée"<<std::endl;
     window.setFramerateLimit(30);
     while(window.isOpen())
@@ -553,7 +593,6 @@ int main()
             j2.ground_collisions();
             j1.check_Death(window);
             j2.check_Death(window);
-            std::cout<<j1.crouch<<std::endl;
             /////////////////////////////
             //Drawings
             window.clear(sf::Color(30,200,200));
