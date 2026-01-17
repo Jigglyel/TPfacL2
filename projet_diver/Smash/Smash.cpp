@@ -23,32 +23,32 @@ class Hitbox
 };
 class Perso
 {
-private:
+    private:
 
-public:
-    bool spaceRelease=false;
-    sf::Sprite Sprite;
-    std::string nom;
-    bool dbjump=true;
-    bool in_air=true;
-    int pourcentage=0;
-    sf::Vector2f speed;
-    float ground_speed;
-    float air_speedmax;
-    float air_acceleration;
-    bool crouch=false;
-    float jump_height;
-    bool hitstun=false;
-    int direction=1;
-    sf::Texture T;
-    sf::FloatRect hitbox_perso;
-    int ID;
-    int vies=3;
-    std::queue<Hitbox> Hitboxs_attaque;
-    Perso(int id){
-        ID=id;
+    public:
+        bool spaceRelease=false;
+        sf::Sprite Sprite;
+        std::string nom;
+        bool dbjump=true;
+        bool in_air=true;
+        int pourcentage=0;
+        sf::Vector2f speed;
+        float ground_speed;
+        float air_speedmax;
+        float air_acceleration;
+        bool crouch=false;
+        float jump_height;
+        bool hitstun=false;
+        int direction=1;
+        sf::Texture T;
+        sf::FloatRect hitbox_perso;
+        int ID;
+        int vies=3;
+        std::queue<Hitbox> Hitboxs_attaque;
+        Perso(int id){
+            ID=id;
 
-    }
+        }
 
 
 
@@ -442,11 +442,11 @@ class Miruka : public Perso
             jab.puissance_ejec=0.2;
             jab.direction=sf::Vector2f(2.5*direction,-1.5);
             Hitboxs_attaque.push(jab);
-            Hitbox lent;
-            lent.duration=10;
-            Hitboxs_attaque.push(lent);
-            speed.x=0;
-            speed.y=0;
+            // Hitbox lent;
+            // lent.duration=0;
+            // Hitboxs_attaque.push(lent);
+            // speed.x=0;
+            // speed.y=0;
         }
 
     }
@@ -478,7 +478,7 @@ class Miruka : public Perso
             sf::FloatRect coupHitbox(-10,-20,40,15);
             Hitbox coup;
             coup.hitbox=coupHitbox;
-            coup.duration=1;
+            coup.duration=5;
             coup.damage=5;
             coup.puissance_ejec=0.2;
             
@@ -564,15 +564,16 @@ class Miruka : public Perso
         
             for (size_t i = 0; i < 15; i++)
             {
-                sf::FloatRect coupHitbox(0,0,40,40);
+                sf::FloatRect coupHitbox(-12,-12,45,45);
                 Hitbox coup;
                 coup.hitbox=coupHitbox;
                 coup.duration=1;
-                coup.damage=9;
+                coup.damage=2;
                 coup.puissance_ejec=0.2;
                 coup.direction=sf::Vector2f(speed.x,-1.25);
                 Hitboxs_attaque.push(coup);
             }
+            Hitboxs_attaque.back().puissance_ejec=0.6;
             
             
             Hitbox lent;
@@ -582,7 +583,7 @@ class Miruka : public Perso
     }
     void Upair() override{
         {
-            sf::FloatRect coupHitbox(10,-20,20,15);
+            sf::FloatRect coupHitbox(5,-20,20,15);
             Hitbox coup;
             coup.hitbox=coupHitbox;
             coup.duration=1;
@@ -599,7 +600,7 @@ class Miruka : public Perso
         {
             for (size_t i = 0; i < 10; i++)
             {
-                sf::FloatRect coupHitbox(10,30,15,25);
+                sf::FloatRect coupHitbox(5,30,15,25);
                 Hitbox coup;
                 coup.hitbox=coupHitbox;
                 coup.damage=15;
@@ -628,6 +629,7 @@ int main()
     sf::Event event;
     sf::Font font;
     std::string police_path;
+    int r=0, g=0, b=0;
     #ifdef _WIN32
         police_path="C:/Users/mu37/OneDrive/Images/Documents/Image-Line/FL Studio/Settings/Hardware/NI Komplete Kontrol/docs/_static/fonts/Oswald.ttf";
     #else
@@ -658,21 +660,25 @@ int main()
             input(j2);
             j1.is_crouching();
             j2.is_crouching();
-            j1.setActivesHitboxes();
-            j2.setActivesHitboxes();
-            j1.Check_touched(j2.Hitboxs_attaque);
-            j2.Check_touched(j1.Hitboxs_attaque);
+           
             j1.apply_forces();
             j2.apply_forces();
             j1.move();
             j2.move();
+            j1.setActivesHitboxes();
+            j2.setActivesHitboxes();
+            j1.Check_touched(j2.Hitboxs_attaque);
+            j2.Check_touched(j1.Hitboxs_attaque);
             j1.ground_collisions();
             j2.ground_collisions();
             j1.check_Death(window);
             j2.check_Death(window);
             /////////////////////////////
             //Drawings
-            window.clear(sf::Color(30,200,200));
+            r=(r+1)%256;
+            g=(g+2)%256;
+            b=(b+3)%256;
+            window.clear(sf::Color(r,g,b));
             window.draw(j1.Sprite);
             window.draw(j1.get_drawableHitbox());
             window.draw(j2.Sprite);
