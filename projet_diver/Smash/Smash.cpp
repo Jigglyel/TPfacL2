@@ -3,6 +3,7 @@
 #include<vector>
 #include<cmath>
 #include<queue>
+#include<cstdlib>
 class Hitbox
 {
     public: 
@@ -21,6 +22,57 @@ class Hitbox
         puissance_ejec=0;
     }
 };
+
+class traingle_mort
+{
+    public :
+    sf::RectangleShape tri;
+    int durée=90;
+    sf::Vector2f speed;
+
+    void apply_forces()
+    {
+        
+            speed.y+=0.5;
+    }
+
+    void rebondit(sf::RenderWindow &window)
+    {
+        if (tri.getPosition().x<0)
+        {
+            tri.setPosition(0,tri.getPosition().y);
+            speed.x=-speed.x;
+        }
+        if (tri.getPosition().x>window.getSize().x)
+        {
+            tri.setPosition(window.getSize().x,tri.getPosition().y);
+            speed.x=-speed.x;
+        }
+        if (tri.getPosition().y<0)
+        {
+            tri.setPosition(tri.getPosition().x,0);
+            speed.y=-speed.y;
+        }
+        if (tri.getPosition().y>window.getSize().y)
+        {
+            tri.setPosition(tri.getPosition().x,window.getSize().y);
+            speed.y=-speed.y;
+        }
+        
+    }
+    void move()
+    {
+        tri.move(speed);
+        durée--;
+    }
+    void affiche(sf::RenderWindow &window)
+    {
+        window.draw(tri);
+    }
+    
+
+
+};
 class Perso
 {
     private:
@@ -28,6 +80,7 @@ class Perso
     public:
         bool spaceRelease=false;
         sf::Sprite Sprite;
+        bool mort=false;
         std::string nom;
         bool dbjump=true;
         bool in_air=true;
@@ -45,6 +98,7 @@ class Perso
         int ID;
         int vies=3;
         std::queue<Hitbox> Hitboxs_attaque;
+        std::vector<traingle_mort> triangles;
         Perso(int id){
             ID=id;
 
@@ -171,28 +225,54 @@ class Perso
                 speed.y+=0.2;
         }
     }
+    void death_particules()
+    {
+        for (size_t i = 0; i < 20; i++)
+            {
+                traingle_mort triangle;
+                sf::Vector2i size;
+                size.x=Sprite.getScale().x*T.getSize().x;
+                size.y=Sprite.getScale().x*T.getSize().x;
+                triangle.tri.setPosition(Sprite.getPosition());
+                triangle.tri.setSize(sf::Vector2f(4,4));
+                triangle.tri.setFillColor(sf::Color::Red);
+                triangle.speed.x=rand()%10;
+                triangle.speed.y=rand()%10;
+                triangles.push_back(triangle);
+            }
+    }
     void respawn()
     {
-        if(vies>0)
+        if (vies>=0)
+        {
+            death_particules();
+        }
+        
+            
+        if(vies>1)
         {
             pourcentage=0;
             speed.x=0;
             speed.y=0;
-            if(ID==0)
-                Sprite.setPosition(100,50);
-            else
-                Sprite.setPosition(500,50);
+            
             in_air=true;
             crouch=false;
             dbjump=true;
             vies--;
+            if(ID==0)
+                Sprite.setPosition(100,50);
+            else
+                Sprite.setPosition(500,50);
+                   
         }
-        else
-        {
-            /* code */
+            else
+            {
+                Sprite.setScale(0,0);
+                vies--;
+            }
+            
         }
-        
-    }
+
     void check_Death(sf::RenderWindow &window)
     {
         if(!(Sprite.getPosition().x<window.getSize().x and Sprite.getPosition().x>0 and Sprite.getPosition().y<window.getSize().y and Sprite.getPosition().y>0))
@@ -205,8 +285,28 @@ class Perso
         Hitboxs_attaque.front().hitbox.left+=Sprite.getPosition().x;
         Hitboxs_attaque.front().hitbox.top+=Sprite.getPosition().y;
     } 
+    void move_triangles(sf::RenderWindow& window)
+    {
+        for (traingle_mort & triangle :  triangles)
+        {
+            triangle.apply_forces();
+            triangle.move();
+            triangle.rebondit(window);
+            triangle.affiche(window);
+            
+        }
+        if (!triangles.empty())
+            if (triangles.back().durée==0)
+            {
+                triangles.clear();
+            }
+        
+            
+    }
  
 };
+
+
 void input(Perso &Player )
 {
     if (Player.Hitboxs_attaque.empty())
@@ -218,7 +318,7 @@ void input(Perso &Player )
             Down=sf::Keyboard::S;
             Left=sf::Keyboard::Q;
             Right=sf::Keyboard::D;
-            NormalAttack=sf::Keyboard::O;
+            NormalAttack=sf::Keyboard::R;
             Jump=sf::Keyboard::Space;
         }
         if(Player.ID==1)
@@ -376,7 +476,10 @@ void affiche_pourcentage(sf::RenderWindow &window,sf::Font &font,float pourcenta
     pourcentext.setString(std::to_string(pourcentage).substr(0,3)+'%');
     pourcentext.setPosition(id*100+300,500);
     window.draw(pourcentext);
-    text_vie.setString(" vie =" + std::to_string(vies));
+    if (vies>=1)
+        text_vie.setString(" vie =" + std::to_string(vies));
+    else
+        text_vie.setString("mort");
     text_vie.setPosition(id*100+290,540);
     text_vie.setFont(font);
     window.draw(text_vie);
@@ -629,6 +732,7 @@ int main()
     sf::Event event;
     sf::Font font;
     std::string police_path;
+    std::vector<sf::RectangleShape> particules;
     int r=0, g=0, b=0;
     #ifdef _WIN32
         police_path="C:/Users/mu37/OneDrive/Images/Documents/Image-Line/FL Studio/Settings/Hardware/NI Komplete Kontrol/docs/_static/fonts/Oswald.ttf";
@@ -675,9 +779,9 @@ int main()
             j2.check_Death(window);
             /////////////////////////////
             //Drawings
-            r=(r+1)%256;
-            g=(g+2)%256;
-            b=(b+3)%256;
+            r=100;
+            g=190%256;
+            b=105%256;
             window.clear(sf::Color(r,g,b));
             window.draw(j1.Sprite);
             window.draw(j1.get_drawableHitbox());
@@ -685,6 +789,8 @@ int main()
             window.draw(j2.get_drawableHitbox());
             j1.draw_hitboxs(window);
             j2.draw_hitboxs(window);
+            j1.move_triangles(window);
+            j2.move_triangles(window);
             affiche_pourcentage(window,font,j1.pourcentage,j1.ID,j1.vies);
             affiche_pourcentage(window,font,j2.pourcentage,j2.ID,j2.vies);
             window.display();
