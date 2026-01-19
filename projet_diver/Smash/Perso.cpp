@@ -1,0 +1,193 @@
+#include "Perso.hpp"
+    
+    Perso::Perso(int id){
+        ID=id;
+        spaceRelease=false;
+        mort=false;
+        dbjump=true;
+        in_air=true;
+        pourcentage=0;
+        crouch=false;
+        hitstun=false;
+        direction=1;
+        vies=3;
+    }
+
+
+
+
+
+
+void Perso::move(){
+    Sprite.move(speed);
+    hitbox_perso=Sprite.getGlobalBounds();
+    if(std::sqrt(speed.x*speed.x+speed.y*speed.y)<10)
+        hitstun=false;
+}
+sf::RectangleShape Perso::get_drawableHitbox()
+{
+    sf::RectangleShape drawbox(sf::Vector2f(hitbox_perso.width, hitbox_perso.height));
+    drawbox.setPosition(hitbox_perso.left, hitbox_perso.top);
+    drawbox.setFillColor(sf::Color::Transparent);
+    drawbox.setOutlineThickness(2);
+    if (Hitboxs_attaque.empty())
+    {
+        drawbox.setOutlineColor(sf::Color::Red);
+    }
+    else
+        drawbox.setOutlineColor(sf::Color::Magenta);
+    
+    
+    return drawbox;
+}
+
+void Perso::Check_touched(std::queue<Hitbox> Hitboxs_attaque_ennemis)
+{
+        
+    if(!Hitboxs_attaque_ennemis.empty())
+    {
+        
+        Hitbox &hitbox=Hitboxs_attaque_ennemis.front();
+        if (hitbox.hitbox.intersects(hitbox_perso))        
+        {
+            float distance=std::sqrt(hitbox.direction.x*hitbox.direction.x +hitbox.direction.y*hitbox.direction.y);
+            sf::Vector2f normalized;
+            if(distance==0)
+                    normalized=sf::Vector2f(0,0);
+            else
+                normalized=sf::Vector2f(hitbox.direction.x/distance,hitbox.direction.y/distance);
+            speed.x= hitbox.puissance_ejec*(pourcentage+1)*normalized.x;
+            speed.y= hitbox.puissance_ejec*(pourcentage+1)*normalized.y;
+            pourcentage+=hitbox.damage;
+            crouch=false;
+            in_air=true;
+            hitstun=true;
+        }
+    }
+}
+void Perso::draw_hitboxs(sf::RenderWindow &window)
+{
+        
+    if(!Hitboxs_attaque.empty())
+    {
+        Hitbox &hitbox=Hitboxs_attaque.front();
+        
+            sf::RectangleShape rect(sf::Vector2f(hitbox.hitbox.width, hitbox.hitbox.height));
+                rect.setPosition(hitbox.hitbox.left, hitbox.hitbox.top);
+                rect.setFillColor(sf::Color::Transparent);
+                rect.setOutlineThickness(2);
+                rect.setOutlineColor(sf::Color::Red);
+                window.draw(rect);
+            hitbox.duration--;
+            if (hitbox.duration<=0)
+            {
+                Hitboxs_attaque.pop();
+            }
+            
+    }
+}
+
+void Perso::ground_collisions()
+{
+    if (Sprite.getPosition().y>400)
+        {
+            Sprite.setPosition(Sprite.getPosition().x,400);
+            speed.y=0;
+            in_air=false;
+            dbjump=true;
+            spaceRelease=false;
+        }
+}
+
+void Perso::apply_forces()
+{
+    if(in_air)
+    {
+        speed.y+=0.5;
+        if(speed.x<0)
+            speed.x+=0.1;
+        else
+            speed.x-=0.1;
+        if(speed.y<0)
+            speed.y+=0.2;
+    }
+}
+void Perso::create_death_particules()
+{
+    for (size_t i = 0; i < 20; i++)
+        {
+            Death_particules triangle;
+            sf::Vector2i size;
+            size.x=Sprite.getScale().x*T.getSize().x;
+            size.y=Sprite.getScale().x*T.getSize().x;
+            triangle.tri.setPosition(Sprite.getPosition());
+            triangle.tri.setSize(sf::Vector2f(4,4));
+            triangle.tri.setFillColor(sf::Color::Red);
+            triangle.speed.x=rand()%10;
+            triangle.speed.y=rand()%10;
+            triangles.push_back(triangle);
+        }
+}
+void Perso::respawn()
+{
+    if (vies>=0)
+    {
+        create_death_particules();
+    }
+    
+        
+    if(vies>1)
+    {
+        pourcentage=0;
+        speed.x=0;
+        speed.y=0;
+        
+        in_air=true;
+        crouch=false;
+        dbjump=true;
+        vies--;
+        if(ID==0)
+            Sprite.setPosition(100,50);
+        else
+            Sprite.setPosition(500,50);
+                
+    }
+        else
+        {
+            Sprite.setScale(0,0);
+            vies--;
+        }
+        
+    }
+
+void Perso::check_Death(sf::RenderWindow &window)
+{
+    if(!(Sprite.getPosition().x<window.getSize().x and Sprite.getPosition().x>0 and Sprite.getPosition().y<window.getSize().y and Sprite.getPosition().y>0))
+    {
+        respawn();
+    }
+}
+void Perso::setActivesHitboxes()
+{  
+    Hitboxs_attaque.front().hitbox.left+=Sprite.getPosition().x;
+    Hitboxs_attaque.front().hitbox.top+=Sprite.getPosition().y;
+} 
+void Perso::move_triangles(sf::RenderWindow& window)
+{
+    for (Death_particules & triangle :  triangles)
+    {
+        triangle.apply_forces();
+        triangle.move();
+        triangle.rebondit(window);
+        triangle.affiche(window);
+        
+    }
+    if (!triangles.empty())
+        if (triangles.back().durée==0)
+        {
+            triangles.clear();
+        }
+    
+        
+}
+

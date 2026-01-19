@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(CMakeSFMLProject LANGUAGES CXX)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 #import la bibliothèque SFML depuis un repo github
@@ -18,6 +18,10 @@ FetchContent_MakeAvailable(SFML)
 #importe la bibliothèque SFML depuis le repo github SFML
 add_executable(Smash
     ./Smash.cpp
+    ./Perso.cpp
+    ./Hitbox.cpp
+    ./miruka.cpp
+    ./Death_Particules.cpp
 )
 
 target_link_libraries(Smash PRIVATE sfml-graphics sfml-window sfml-system)
