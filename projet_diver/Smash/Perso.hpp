@@ -58,7 +58,6 @@ class Perso
 
     void move();
     void refresh_hitbox();
-    sf::RectangleShape get_drawableHitbox();
     
     void Check_touched(std::queue<Hitbox> Hitboxs_attaque_ennemis,std::vector<Arrow> &fleches);
     void draw_hitboxs(sf::RenderWindow &window);

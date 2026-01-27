@@ -27,23 +27,7 @@ void Perso::refresh_hitbox()
 {
     hitbox_perso=Sprite.getGlobalBounds();
 }
-sf::RectangleShape Perso::get_drawableHitbox()
-{
-    refresh_hitbox();
-    sf::RectangleShape drawbox(sf::Vector2f(hitbox_perso.width, hitbox_perso.height));
-    drawbox.setPosition(hitbox_perso.left, hitbox_perso.top);
-    drawbox.setFillColor(sf::Color::Transparent);
-    drawbox.setOutlineThickness(2);
-    if (Hitboxs_attaque.empty())
-    {
-        drawbox.setOutlineColor(sf::Color::Red);
-    }
-    else
-        drawbox.setOutlineColor(sf::Color::Magenta);
-    
-    
-    return drawbox;
-}
+
 bool Perso::manage_hitbox_ejection(const Hitbox &hitbox){
 
     if (hitbox.hitbox.intersects(hitbox_perso))        
@@ -75,7 +59,9 @@ void Perso::Check_touched(std::queue<Hitbox> Hitboxs_attaque_ennemis,std::vector
     for (auto it = fleches.begin(); it != fleches.end(); )
     {
         if (ID!=it->belonging and manage_hitbox_ejection(it->hitbox))
-            fleches.erase(it);       
+            fleches.erase(it);   
+        else
+            ++it;    
 
     }
     
@@ -104,9 +90,9 @@ void Perso::draw_hitboxs(sf::RenderWindow &window)
 
 void Perso::ground_collisions()
 {
-    if (Sprite.getPosition().y>400)
+    if (Sprite.getPosition().y+Sprite.getGlobalBounds().height>400)
         {
-            Sprite.setPosition(Sprite.getPosition().x,400);
+            Sprite.setPosition(Sprite.getPosition().x,400-Sprite.getGlobalBounds().height);
             speed.y=0;
             in_air=false;
             dbjump=true;

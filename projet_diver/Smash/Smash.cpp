@@ -194,8 +194,19 @@ void affiche_pourcentage(sf::RenderWindow &window,sf::Font &font,float pourcenta
     text_vie.setFont(font);
     window.draw(text_vie);
 }
+sf::RectangleShape get_drawableHitbox(sf::FloatRect rect_hitbox)
+{
+    sf::RectangleShape drawbox(sf::Vector2f(rect_hitbox.width, rect_hitbox.height));
+    drawbox.setPosition(rect_hitbox.left, rect_hitbox.top);
+    drawbox.setFillColor(sf::Color::Transparent);
+    drawbox.setOutlineThickness(2);
+    drawbox.setOutlineColor(sf::Color::Red);
 
-void gerer_fleches(std::vector<Arrow> &fleches,sf::RenderWindow &window)
+    
+    
+    return drawbox;
+}
+void gerer_fleches(std::vector<Arrow> &fleches)
 {
     for (auto it = fleches.begin(); it != fleches.end(); )
     {
@@ -203,18 +214,36 @@ void gerer_fleches(std::vector<Arrow> &fleches,sf::RenderWindow &window)
         it->move();
         if (it->is_ground_collision())
         {
+            std::cout<<"ground collision"<<std::endl;
             it = fleches.erase(it); // erase retourne le prochain itérateur VALIDE
         }
         else
         {
             it->refresh_hitbox();
-            window.draw(it->sprite);
             ++it;
         }
     }
-    
 }
+void affiche_fleches(const std::vector<Arrow> fleches,sf::RenderWindow &window)
+{
+    for (auto it = fleches.begin(); it != fleches.end(); )
+    {
+        window.draw(it->sprite);
+        window.draw(get_drawableHitbox(it->hitbox.hitbox));
+        ++it;
+    }
+        
+}
+void affiche_joueur(Perso &joueur,sf::RenderWindow &window)
+{
+    joueur.refresh_hitbox();
+    sf::RectangleShape drawbox=get_drawableHitbox(joueur.hitbox_perso);
+    if(!joueur.Hitboxs_attaque.empty())
+        drawbox.setOutlineColor(sf::Color::Magenta);
+    window.draw(joueur.Sprite);
+    window.draw(drawbox);
 
+}
 int main()
 {
     Miruka j1(0),j2(1);
@@ -232,7 +261,7 @@ int main()
         police_path="/usr/share/fonts/type1/urw-base35/P052-Italic.t1";
     #endif
     
-    if(!flecheImage.loadFromFile("../fleche.jpg"))
+    if(!flecheImage.loadFromFile("../fleche.png"))
         std::cout<<"la fleche n'a pas pu être chargée"<<std::endl;
     if(!font.loadFromFile(police_path))
         std::cout<<"la police d'écriture n'a pas pu être chargée"<<std::endl;
@@ -255,6 +284,7 @@ int main()
         }
             input(j1,flecheImage,fleches);
             input(j2,flecheImage,fleches);
+            std::cout<<fleches.size()<<std::endl;
             j1.is_crouching();
             j2.is_crouching();
            
@@ -262,7 +292,7 @@ int main()
             j2.apply_forces();
             j1.move();
             j2.move();
-            gerer_fleches(fleches,window);
+            gerer_fleches(fleches);
             j1.setActivesHitboxes();
             j2.setActivesHitboxes();
             j1.Check_touched(j2.Hitboxs_attaque,fleches);
@@ -276,17 +306,23 @@ int main()
             r=100;
             g=190%256;
             b=105%256;
+            
             window.clear(sf::Color(r,g,b));
-            window.draw(j1.Sprite);
-            window.draw(j1.get_drawableHitbox());
-            window.draw(j2.Sprite);
-            window.draw(j2.get_drawableHitbox());
+            affiche_joueur(j1,window);
+            affiche_joueur(j2,window);
             j1.draw_hitboxs(window);
             j2.draw_hitboxs(window);
             j1.move_triangles(window);
             j2.move_triangles(window);
+            affiche_fleches(fleches,window);
             affiche_pourcentage(window,font,j1.pourcentage,j1.ID,j1.vies);
             affiche_pourcentage(window,font,j2.pourcentage,j2.ID,j2.vies);
+            sf::VertexArray ligne(sf::Lines, 2); // 2 points pour une ligne
+            ligne[0].position = sf::Vector2f(0.f, 400.f); // Point de départ
+            ligne[1].position = sf::Vector2f(800.f, 400.f); // Point d'arrivée
+            ligne[0].color = sf::Color::Red; // Couleur du premier point
+            ligne[1].color = sf::Color::Yellow; // Couleur du deuxième point
+            window.draw(ligne);
             window.display();
     }
 

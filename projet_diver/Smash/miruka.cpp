@@ -255,10 +255,13 @@ void Miruka::NeutralB(std::vector<Arrow> &Arrows,sf::Texture &T)
 {
     Arrow fleche(T);
     fleche.sprite.setPosition(direction*30+Sprite.getPosition().x,Sprite.getPosition().y-10);
-    fleche.sprite.setScale(0.5,0.5);
+    fleche.hitbox.direction=sf::Vector2f(direction,-2);
+    fleche.speed.x=15*direction;
     fleche.belonging=ID;
+    fleche.sprite.rotate(90-90*direction);
     Arrows.push_back(fleche);
     Hitbox lent;
-    lent.duration=10;
+    lent.duration=15;
     Hitboxs_attaque.push(lent);
+    std::cout<<" fin du Neutral B"<<std::endl;
 }
