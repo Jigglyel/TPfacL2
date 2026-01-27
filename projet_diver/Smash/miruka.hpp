@@ -1,6 +1,7 @@
 #pragma once
 #include "Perso.hpp"
 #include <SFML/Graphics.hpp>
+#include "arrow.hpp"
 
 class Miruka : public Perso {
 public:
@@ -15,6 +16,7 @@ public:
     void Nair() override;
     void Upair() override;
     void Dair() override;
+    void NeutralB(std::vector<Arrow> &Arrows,sf::Texture &T) override;
 
     void is_crouching() ;
 

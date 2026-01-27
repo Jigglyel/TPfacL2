@@ -4,7 +4,9 @@
 #include <vector>
 #include "Hitbox.hpp"
 #include "Death_Particules.hpp"
+#include<iostream>
 #include<cmath>
+#include"arrow.hpp"
 
 
 class Perso
@@ -49,15 +51,24 @@ class Perso
     virtual void Upair()=0;
     virtual void Bair()=0;
 
+    // virtual void DownB()=0;
+    virtual void NeutralB(std::vector<Arrow> &Arrows,sf::Texture &T)=0;
+    // virtual void UpB()=0;
+    // virtual void SideB()=0;
+
     void move();
+    void refresh_hitbox();
     sf::RectangleShape get_drawableHitbox();
-    void Check_touched(std::queue<Hitbox> Hitboxs_attaque_ennemis);
+    
+    void Check_touched(std::queue<Hitbox> Hitboxs_attaque_ennemis,std::vector<Arrow> &fleches);
     void draw_hitboxs(sf::RenderWindow &window);
     void ground_collisions();
     void apply_forces();
     void create_death_particules();
     void respawn();
+    bool manage_hitbox_ejection(const Hitbox &hitbox);
     void check_Death(sf::RenderWindow &window);
     void setActivesHitboxes();
     void move_triangles(sf::RenderWindow& window);
+
 };

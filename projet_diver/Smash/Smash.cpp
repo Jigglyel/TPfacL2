@@ -1,5 +1,4 @@
 #include<iostream>
-
 #include<vector>
 #include<cmath>
 #include<queue>
@@ -10,19 +9,20 @@
 
 
 
-void input(Perso &Player )
+void input(Perso &Player,sf::Texture &fleche,std::vector<Arrow> &fleches )
 {
     if (Player.Hitboxs_attaque.empty())
     {
-        sf::Keyboard::Key Up,Down,Left,Right,NormalAttack,Jump;
+        sf::Keyboard::Key Up,Down,Left,Right,NormalAttack,Jump,SpecialAttack;
         if(Player.ID==0)
         {
             Up=sf::Keyboard::Z;
             Down=sf::Keyboard::S;
             Left=sf::Keyboard::Q;
             Right=sf::Keyboard::D;
-            NormalAttack=sf::Keyboard::R;
+            NormalAttack=sf::Keyboard::T;
             Jump=sf::Keyboard::Space;
+            SpecialAttack=sf::Keyboard::R;
         }
         if(Player.ID==1)
         {
@@ -32,6 +32,7 @@ void input(Perso &Player )
             Right=sf::Keyboard::Right;
             NormalAttack=sf::Keyboard::Enter;
             Jump=sf::Keyboard::RShift;
+            SpecialAttack=sf::Keyboard::M;
         } 
 
 
@@ -165,6 +166,12 @@ void input(Perso &Player )
                     else
                         Player.Nair();
         }
+        else
+        if (sf::Keyboard::isKeyPressed(SpecialAttack))
+        {
+            Player.NeutralB(fleches,fleche);
+        }
+        
     } 
     else if(!Player.in_air)
     {
@@ -188,7 +195,25 @@ void affiche_pourcentage(sf::RenderWindow &window,sf::Font &font,float pourcenta
     window.draw(text_vie);
 }
 
-
+void gerer_fleches(std::vector<Arrow> &fleches,sf::RenderWindow &window)
+{
+    for (auto it = fleches.begin(); it != fleches.end(); )
+    {
+        it->apply_forces();
+        it->move();
+        if (it->is_ground_collision())
+        {
+            it = fleches.erase(it); // erase retourne le prochain itérateur VALIDE
+        }
+        else
+        {
+            it->refresh_hitbox();
+            window.draw(it->sprite);
+            ++it;
+        }
+    }
+    
+}
 
 int main()
 {
@@ -198,6 +223,8 @@ int main()
     sf::Font font;
     std::string police_path;
     std::vector<sf::RectangleShape> particules;
+    std::vector<Arrow> fleches;
+    sf::Texture flecheImage;
     int r=0, g=0, b=0;
     #ifdef _WIN32
         police_path="C:/Users/mu37/OneDrive/Images/Documents/Image-Line/FL Studio/Settings/Hardware/NI Komplete Kontrol/docs/_static/fonts/Oswald.ttf";
@@ -205,7 +232,8 @@ int main()
         police_path="/usr/share/fonts/type1/urw-base35/P052-Italic.t1";
     #endif
     
-        
+    if(!flecheImage.loadFromFile("../fleche.jpg"))
+        std::cout<<"la fleche n'a pas pu être chargée"<<std::endl;
     if(!font.loadFromFile(police_path))
         std::cout<<"la police d'écriture n'a pas pu être chargée"<<std::endl;
     window.setFramerateLimit(30);
@@ -225,8 +253,8 @@ int main()
                     break;
             }
         }
-            input(j1);
-            input(j2);
+            input(j1,flecheImage,fleches);
+            input(j2,flecheImage,fleches);
             j1.is_crouching();
             j2.is_crouching();
            
@@ -234,10 +262,11 @@ int main()
             j2.apply_forces();
             j1.move();
             j2.move();
+            gerer_fleches(fleches,window);
             j1.setActivesHitboxes();
             j2.setActivesHitboxes();
-            j1.Check_touched(j2.Hitboxs_attaque);
-            j2.Check_touched(j1.Hitboxs_attaque);
+            j1.Check_touched(j2.Hitboxs_attaque,fleches);
+            j2.Check_touched(j1.Hitboxs_attaque,fleches);
             j1.ground_collisions();
             j2.ground_collisions();
             j1.check_Death(window);

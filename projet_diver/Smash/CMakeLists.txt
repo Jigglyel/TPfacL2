@@ -22,6 +22,7 @@ add_executable(Smash
     ./Hitbox.cpp
     ./miruka.cpp
     ./Death_Particules.cpp
+    ./arrow.cpp
 )
 
 target_link_libraries(Smash PRIVATE sfml-graphics sfml-window sfml-system)

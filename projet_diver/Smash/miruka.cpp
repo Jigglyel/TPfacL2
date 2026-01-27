@@ -116,14 +116,28 @@ void Miruka::Dtilt() {
     else
         dir=-25;
     {
-        sf::FloatRect coupHitbox(dir,-15,15,40);
+        sf::FloatRect coupHitbox(dir,15,15,10);
         Hitbox coup;
         coup.hitbox=coupHitbox;
         coup.duration=1;
-        coup.damage=15;
-        coup.puissance_ejec=0.3;
+        coup.damage=2;
+        coup.puissance_ejec=0.1;
         coup.direction=sf::Vector2f(0,-1);
         Hitboxs_attaque.push(coup);
+        coup.hitbox.height=20;
+        coup.hitbox.top=5;
+        Hitboxs_attaque.push(coup);
+        coup.hitbox.height=30;
+        coup.hitbox.top=-5;
+        Hitboxs_attaque.push(coup);
+        coup.hitbox.height=40;
+        coup.damage=15;
+        coup.puissance_ejec=0.3;
+        coup.hitbox.top=-15;
+        Hitboxs_attaque.push(coup);
+    
+        
+        
         Hitbox lent;
         lent.duration=20;
         Hitboxs_attaque.push(lent);
@@ -235,4 +249,16 @@ void Miruka::Dair() {
         lent.duration=10;
         Hitboxs_attaque.push(lent);
     }
+}
+
+void Miruka::NeutralB(std::vector<Arrow> &Arrows,sf::Texture &T)
+{
+    Arrow fleche(T);
+    fleche.sprite.setPosition(direction*30+Sprite.getPosition().x,Sprite.getPosition().y-10);
+    fleche.sprite.setScale(0.5,0.5);
+    fleche.belonging=ID;
+    Arrows.push_back(fleche);
+    Hitbox lent;
+    lent.duration=10;
+    Hitboxs_attaque.push(lent);
 }

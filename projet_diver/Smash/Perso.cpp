@@ -20,12 +20,16 @@
 
 void Perso::move(){
     Sprite.move(speed);
-    hitbox_perso=Sprite.getGlobalBounds();
     if(std::sqrt(speed.x*speed.x+speed.y*speed.y)<10)
         hitstun=false;
 }
+void Perso::refresh_hitbox()
+{
+    hitbox_perso=Sprite.getGlobalBounds();
+}
 sf::RectangleShape Perso::get_drawableHitbox()
 {
+    refresh_hitbox();
     sf::RectangleShape drawbox(sf::Vector2f(hitbox_perso.width, hitbox_perso.height));
     drawbox.setPosition(hitbox_perso.left, hitbox_perso.top);
     drawbox.setFillColor(sf::Color::Transparent);
@@ -40,30 +44,41 @@ sf::RectangleShape Perso::get_drawableHitbox()
     
     return drawbox;
 }
+bool Perso::manage_hitbox_ejection(const Hitbox &hitbox){
 
-void Perso::Check_touched(std::queue<Hitbox> Hitboxs_attaque_ennemis)
+    if (hitbox.hitbox.intersects(hitbox_perso))        
+    {
+        float distance=std::sqrt(hitbox.direction.x*hitbox.direction.x +hitbox.direction.y*hitbox.direction.y);
+        sf::Vector2f normalized;
+        if(distance==0)
+                normalized=sf::Vector2f(0,0);
+        else
+            normalized=sf::Vector2f(hitbox.direction.x/distance,hitbox.direction.y/distance);
+        speed.x= hitbox.puissance_ejec*(pourcentage+1)*normalized.x;
+        speed.y= hitbox.puissance_ejec*(pourcentage+1)*normalized.y;
+        pourcentage+=hitbox.damage;
+        crouch=false;
+        in_air=true;
+        hitstun=true;
+        return true;
+    }
+    return false;
+}
+void Perso::Check_touched(std::queue<Hitbox> Hitboxs_attaque_ennemis,std::vector<Arrow> &fleches)
 {
         
     if(!Hitboxs_attaque_ennemis.empty())
     {
+        manage_hitbox_ejection(Hitboxs_attaque_ennemis.front());
         
-        Hitbox &hitbox=Hitboxs_attaque_ennemis.front();
-        if (hitbox.hitbox.intersects(hitbox_perso))        
-        {
-            float distance=std::sqrt(hitbox.direction.x*hitbox.direction.x +hitbox.direction.y*hitbox.direction.y);
-            sf::Vector2f normalized;
-            if(distance==0)
-                    normalized=sf::Vector2f(0,0);
-            else
-                normalized=sf::Vector2f(hitbox.direction.x/distance,hitbox.direction.y/distance);
-            speed.x= hitbox.puissance_ejec*(pourcentage+1)*normalized.x;
-            speed.y= hitbox.puissance_ejec*(pourcentage+1)*normalized.y;
-            pourcentage+=hitbox.damage;
-            crouch=false;
-            in_air=true;
-            hitstun=true;
-        }
     }
+    for (auto it = fleches.begin(); it != fleches.end(); )
+    {
+        if (ID!=it->belonging and manage_hitbox_ejection(it->hitbox))
+            fleches.erase(it);       
+
+    }
+    
 }
 void Perso::draw_hitboxs(sf::RenderWindow &window)
 {
@@ -130,42 +145,45 @@ void Perso::create_death_particules()
 }
 void Perso::respawn()
 {
-    if (vies>=0)
-    {
-        create_death_particules();
-    }
+
     
         
-    if(vies>1)
-    {
-        pourcentage=0;
-        speed.x=0;
-        speed.y=0;
-        
-        in_air=true;
-        crouch=false;
-        dbjump=true;
-        vies--;
-        if(ID==0)
-            Sprite.setPosition(100,50);
-        else
-            Sprite.setPosition(500,50);
-                
-    }
-        else
+        if(vies>1)
         {
-            Sprite.setScale(0,0);
+            pourcentage=0;
+            speed.x=0;
+            speed.y=0;
+            
+            in_air=true;
+            crouch=false;
+            dbjump=true;
             vies--;
+            if(ID==0)
+                Sprite.setPosition(100,50);
+            else
+                Sprite.setPosition(500,50);
+                    
         }
+        else
+            vies--;
+        
         
     }
 
 void Perso::check_Death(sf::RenderWindow &window)
 {
-    if(!(Sprite.getPosition().x<window.getSize().x and Sprite.getPosition().x>0 and Sprite.getPosition().y<window.getSize().y and Sprite.getPosition().y>0))
+    if (vies>0)   
     {
-        respawn();
+        if(!(Sprite.getPosition().x<window.getSize().x and Sprite.getPosition().x>0 and Sprite.getPosition().y<window.getSize().y and Sprite.getPosition().y>0))
+        {
+            create_death_particules();
+            respawn();
+        }
     }
+    else
+        {
+            Sprite.setScale(0.01,0.01);
+        }
 }
 void Perso::setActivesHitboxes()
 {  
