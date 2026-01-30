@@ -1,13 +1,23 @@
 # !/ bin / bash
-fichier=$(ls -A . );
 i=0;
-tier=0;
-for (( j=0; j < ${#fichier}; ++j )); do
-    while ( $fichier[$i] < $fichier[($i+1)] ); do
-        tier=$fichier[$i];
-        fichier[$i]=$fichier[($i+1)];
-        fichier[$i+1]=$tier;
-        i++;
+for  nom in $(ls -A .) ; do
+    fichier[$i]=$nom
+    i=$(( i + 1 ));
+done
+tier="";
+
+for ((i=0;i<${#fichier[@]}; ++i)) ; do
+    for ((j=0;j<${#fichier[@]}; ++j)) ; do
+        if (( ${#fichier[$j]}<${#fichier[$(($j+1))]} )) ; then
+            tier=${fichier[$j]};
+            fichier[$j]=${fichier[$(($j+1))]};
+            fichier[$((  $j+1  ))]=$tier;
+        fi
     done
 done
-echo $fichier;
+
+for ((i=0;i<${#fichier[@]}; ++i)) ; do
+echo ${fichier[$i]};
+
+done
+
