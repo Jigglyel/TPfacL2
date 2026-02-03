@@ -130,8 +130,8 @@ void Perso::create_death_particules()
             triangle.tri.setPosition(Sprite.getPosition());
             triangle.tri.setSize(sf::Vector2f(4,4));
             triangle.tri.setFillColor(sf::Color::Red);
-            triangle.speed.x=rand()%10;
-            triangle.speed.y=rand()%10;
+            triangle.speed.x=rand()%10*(rand()%2-1);
+            triangle.speed.y=rand()%10*(rand()%2-1);
             triangles.push_back(triangle);
         }
 }

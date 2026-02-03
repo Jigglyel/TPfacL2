@@ -166,10 +166,17 @@ void Miruka::Fair() {
         sf::FloatRect coupHitbox(dir,-15,15,30);
         Hitbox coup;
         coup.hitbox=coupHitbox;
-        coup.duration=1;
+        coup.duration=2;
+        coup.damage=4;
+        coup.puissance_ejec=0.1;
+        coup.direction=sf::Vector2f(1*direction,1.75);
+        Hitboxs_attaque.push(coup);
+
+
+        coup.hitbox= sf::FloatRect(dir,0,28,15);
+        coup.direction=sf::Vector2f(1*direction,-2);
         coup.damage=8;
         coup.puissance_ejec=0.2;
-        coup.direction=sf::Vector2f(1*direction,-2);
         Hitboxs_attaque.push(coup);
         Hitbox lent;
         lent.duration=5;
