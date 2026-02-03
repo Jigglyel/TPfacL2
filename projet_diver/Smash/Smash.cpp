@@ -337,7 +337,7 @@ int main()
     std::vector<Arrow> fleches;
     sf::Texture flecheImage;
     std::vector<Plateform> map;
-    ajoute_Plat(map,100,400,700,400,false);
+    ajoute_Plat(map,0,400,800,400,false);
     ajoute_Plat(map,200,300,300,300,false);
     ajoute_Plat(map,400,200,600,200,true);
     ajoute_Plat(map,300,250,500,250,true);

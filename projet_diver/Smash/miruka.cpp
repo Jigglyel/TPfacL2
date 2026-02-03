@@ -14,7 +14,7 @@ Miruka::Miruka(int id) :Perso(id){
     ground_speed=5;
     air_speedmax=4;
     air_acceleration=0.5;
-    jump_height=10;
+    jump_height=11;
     pourcentage=0;
     
     if(!T.loadFromFile("../miruka.jpg"))
@@ -93,12 +93,22 @@ void Miruka::Ftilt() {
 }
 void Miruka::Utilt() {
     {
-        sf::FloatRect coupHitbox(-10,-20,40,15);
+        sf::FloatRect coupHitbox(1,-13,20,15);
         Hitbox coup;
         coup.hitbox=coupHitbox;
+        coup.duration=6;
+        coup.damage=2;
+        coup.puissance_ejec=0.1;
+        
+
+        coup.direction=sf::Vector2f(0,-1);
+        Hitboxs_attaque.push(coup);
+
+        coupHitbox =sf::FloatRect(-10,-20,40,17);
+        coup.hitbox=coupHitbox;
         coup.duration=5;
-        coup.damage=5;
-        coup.puissance_ejec=0.2;
+        coup.damage=1;
+        coup.puissance_ejec=0.3;
         
 
         coup.direction=sf::Vector2f(0,-1);
@@ -174,14 +184,26 @@ void Miruka::Bair() {
         dir=-25;
     
     {
-        sf::FloatRect coupHitbox(-dir,0,15,40);
+        sf::FloatRect coupHitbox(-dir,-5,30,15);
         Hitbox coup;
         coup.hitbox=coupHitbox;
-        coup.duration=1;
-        coup.damage=15;
-        coup.puissance_ejec=0.4;
-        coup.direction=sf::Vector2f(-direction,-2);
+        coup.duration=2;
+        coup.damage=2;
+        coup.puissance_ejec=0.08;
+        coup.direction=sf::Vector2f(0,1);
         Hitboxs_attaque.push(coup);
+        for (int i = coup.hitbox.top+5; i < 20; i=i+5)
+        {
+           coup.hitbox.top=i;
+           Hitboxs_attaque.push(coup);
+        }
+        coup.hitbox.top=25;
+        coup.damage=6;
+        coup.puissance_ejec=0.3;
+        Hitboxs_attaque.push(coup);
+
+        
+        
         Hitbox lent;
         lent.duration=8;
         Hitboxs_attaque.push(lent);
@@ -278,7 +300,7 @@ void Miruka::NeutralB(std::vector<Arrow> &Arrows,sf::Texture &T)
     Arrow fleche(T);
     fleche.sprite.setPosition(direction*22+Sprite.getPosition().x,Sprite.getPosition().y);
     fleche.hitbox.direction=sf::Vector2f(direction,-2);
-    fleche.speed.x=30*direction;
+    fleche.speed.x=20*direction;
     fleche.belonging=ID;
     Arrows.push_back(fleche);
     Hitbox lent;
