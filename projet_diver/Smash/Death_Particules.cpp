@@ -11,22 +11,22 @@
         if (tri.getPosition().x<0)
         {
             tri.setPosition(0,tri.getPosition().y);
-            speed.x=-speed.x;
+            speed.x=-speed.x*0.4;
         }
         if (tri.getPosition().x>window.getSize().x)
         {
             tri.setPosition(window.getSize().x,tri.getPosition().y);
-            speed.x=-speed.x;
+            speed.x=-speed.x*0.4;
         }
         if (tri.getPosition().y<0)
         {
             tri.setPosition(tri.getPosition().x,0);
-            speed.y=-speed.y;
+            speed.y=-speed.y*0.4;
         }
         if (tri.getPosition().y>window.getSize().y)
         {
             tri.setPosition(tri.getPosition().x,window.getSize().y);
-            speed.y=-speed.y;
+            speed.y=-speed.y*0.4;
         }
         
     }

@@ -4,6 +4,7 @@
 #include<queue>
 #include<cstdlib>
 #include"miruka.hpp"
+#include"plateform.cpp"
 
 
 
@@ -214,7 +215,6 @@ void gerer_fleches(std::vector<Arrow> &fleches)
         it->move();
         if (it->is_ground_collision())
         {
-            std::cout<<"ground collision"<<std::endl;
             it = fleches.erase(it); // erase retourne le prochain itérateur VALIDE
         }
         else
@@ -244,6 +244,88 @@ void affiche_joueur(Perso &joueur,sf::RenderWindow &window)
     window.draw(drawbox);
 
 }
+float cross(sf::Vector2f A,sf::Vector2f B)
+{
+    return A.x*B.y-B.x*A.y;
+}
+
+bool traverse_plat(const Plateform &P, const sf::Vector2f &p1,const sf::Vector2f &p2)
+{
+    sf::Vector2f A= P.point1,B=P.point2;
+    sf::Vector2f C= p1,D=p2;
+    sf::Vector2f AB= B-A;
+    sf::Vector2f AC= C-A;
+    sf::Vector2f AD= D-A;
+
+    sf::Vector2f CD= D-C;
+    sf::Vector2f CA= A-C;
+    sf::Vector2f CB= B-C;
+
+    return (cross(AB,AC)*cross(AB,AD)<=0.f and cross(CD,CA)*cross(CD,CB)<=0.f);
+}
+
+void check_plat(std::vector<Plateform> &plateforms,Perso & J)
+{
+    sf::Vector2f p2;
+    p2= sf::Vector2f(J.Sprite.getPosition().x,J.Sprite.getPosition().y+J.Sprite.getGlobalBounds().height);
+    J.in_air=true;
+    
+    for (const Plateform &plateform :plateforms)
+    {
+        if(J.PositionMemory.y<=p2.y and traverse_plat(plateform,J.PositionMemory,p2))
+        {
+            
+            if (J.crouch and plateform.traversable)
+            {
+                J.Sprite.setPosition(J.Sprite.getPosition().x,plateform.point1.y-J.Sprite.getGlobalBounds().height+1);
+            }
+            else
+                J.Sprite.setPosition(J.Sprite.getPosition().x,plateform.point1.y-J.Sprite.getGlobalBounds().height);
+            J.speed.y=0;
+            J.in_air=false;
+            J.dbjump=true;
+            J.spaceRelease=false;
+        }
+        else
+            {
+                sf::Vector2f top;
+                top= sf::Vector2f(J.Sprite.getPosition().x,J.Sprite.getPosition().y);
+                sf::Vector2f topMemory;
+                topMemory= J.PositionMemory;
+                topMemory.y-=J.Sprite.getGlobalBounds().height;
+                //bug trop bizarre ou changer p2 et position memory faisait bugger
+                if(!plateform.traversable and traverse_plat(plateform,topMemory,top) and topMemory.y>top.y)
+                {
+                    J.Sprite.setPosition(J.Sprite.getPosition().x,plateform.point1.y);
+                    J.speed.y=0;
+                }
+            }
+    }
+        
+    
+    
+}
+void ajoute_Plat(std::vector<Plateform> &plateforms,int x1,int y1,int x2,int y2,bool traversable)
+{
+    Plateform p;
+    p.point1=sf::Vector2f(x1,y1);
+    p.point2=sf::Vector2f(x2,y2);
+    p.traversable=traversable;
+    plateforms.push_back(p);
+}
+
+void affiche_plat(const std::vector<Plateform> &plateforms,sf::RenderWindow & window)
+{
+    for (Plateform plateform :plateforms)
+    {
+        sf::VertexArray plat(sf::Lines,2);
+        plat[0].position=plateform.point1;
+        plat[1].position=plateform.point2;
+        plat[0].color=sf::Color::Red;
+        plat[1].color=sf::Color::Red;
+        window.draw(plat);   
+    }
+}
 int main()
 {
     Miruka j1(0),j2(1);
@@ -254,6 +336,11 @@ int main()
     std::vector<sf::RectangleShape> particules;
     std::vector<Arrow> fleches;
     sf::Texture flecheImage;
+    std::vector<Plateform> map;
+    ajoute_Plat(map,100,400,700,400,false);
+    ajoute_Plat(map,200,300,300,300,false);
+    ajoute_Plat(map,400,200,600,200,true);
+    ajoute_Plat(map,300,250,500,250,true);
     int r=0, g=0, b=0;
     #ifdef _WIN32
         police_path="C:/Users/mu37/OneDrive/Images/Documents/Image-Line/FL Studio/Settings/Hardware/NI Komplete Kontrol/docs/_static/fonts/Oswald.ttf";
@@ -284,23 +371,33 @@ int main()
         }
             input(j1,flecheImage,fleches);
             input(j2,flecheImage,fleches);
-            std::cout<<fleches.size()<<std::endl;
-            j1.is_crouching();
-            j2.is_crouching();
-           
+            
+            
             j1.apply_forces();
             j2.apply_forces();
+            
             j1.move();
             j2.move();
-            gerer_fleches(fleches);
+            j1.is_crouching();
+            j2.is_crouching();
+            check_plat(map,j1);
+            check_plat(map,j2);
             j1.setActivesHitboxes();
             j2.setActivesHitboxes();
+            
+            
+            
+            
+            gerer_fleches(fleches);
             j1.Check_touched(j2.Hitboxs_attaque,fleches);
             j2.Check_touched(j1.Hitboxs_attaque,fleches);
-            j1.ground_collisions();
-            j2.ground_collisions();
+            
+            
+            
+            
             j1.check_Death(window);
             j2.check_Death(window);
+            
             /////////////////////////////
             //Drawings
             r=100;
@@ -308,6 +405,7 @@ int main()
             b=105%256;
             
             window.clear(sf::Color(r,g,b));
+            
             affiche_joueur(j1,window);
             affiche_joueur(j2,window);
             j1.draw_hitboxs(window);
@@ -317,12 +415,7 @@ int main()
             affiche_fleches(fleches,window);
             affiche_pourcentage(window,font,j1.pourcentage,j1.ID,j1.vies);
             affiche_pourcentage(window,font,j2.pourcentage,j2.ID,j2.vies);
-            sf::VertexArray ligne(sf::Lines, 2); // 2 points pour une ligne
-            ligne[0].position = sf::Vector2f(0.f, 400.f); // Point de départ
-            ligne[1].position = sf::Vector2f(800.f, 400.f); // Point d'arrivée
-            ligne[0].color = sf::Color::Red; // Couleur du premier point
-            ligne[1].color = sf::Color::Yellow; // Couleur du deuxième point
-            window.draw(ligne);
+            affiche_plat(map,window);
             window.display();
     }
 

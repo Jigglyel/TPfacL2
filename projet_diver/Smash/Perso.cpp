@@ -11,6 +11,7 @@
         hitstun=false;
         direction=1;
         vies=3;
+        
     }
 
 
@@ -19,9 +20,11 @@
 
 
 void Perso::move(){
+    PositionMemory=sf::Vector2f(Sprite.getPosition().x,Sprite.getPosition().y+Sprite.getGlobalBounds().height);
     Sprite.move(speed);
     if(std::sqrt(speed.x*speed.x+speed.y*speed.y)<10)
         hitstun=false;
+    
 }
 void Perso::refresh_hitbox()
 {
@@ -80,6 +83,8 @@ void Perso::draw_hitboxs(sf::RenderWindow &window)
                 rect.setOutlineColor(sf::Color::Red);
                 window.draw(rect);
             hitbox.duration--;
+            hitbox.hitbox.left-=Sprite.getPosition().x;
+            hitbox.hitbox.top-=Sprite.getPosition().y;
             if (hitbox.duration<=0)
             {
                 Hitboxs_attaque.pop();
@@ -102,9 +107,10 @@ void Perso::ground_collisions()
 
 void Perso::apply_forces()
 {
+    speed.y+=0.5;
     if(in_air)
     {
-        speed.y+=0.5;
+        
         if(speed.x<0)
             speed.x+=0.1;
         else
