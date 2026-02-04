@@ -1,5 +1,15 @@
 #include "Death_Particules.hpp"
 
+    Death_particules::Death_particules(const sf::Sprite &Sprite)
+    {
+        tri.setPosition(Sprite.getPosition());
+        tri.setSize(sf::Vector2f(4,4));
+        tri.setFillColor(sf::Color::Red);
+        speed.x=rand()%10*(-1+((rand()%2)*2));
+        speed.y=rand()%10*(-1+((rand()%2)*2));
+        
+    }
+
     void Death_particules::apply_forces()
     {
         

@@ -123,15 +123,8 @@ void Perso::create_death_particules()
 {
     for (size_t i = 0; i < 20; i++)
         {
-            Death_particules triangle;
-            sf::Vector2i size;
-            size.x=Sprite.getScale().x*T.getSize().x;
-            size.y=Sprite.getScale().x*T.getSize().x;
-            triangle.tri.setPosition(Sprite.getPosition());
-            triangle.tri.setSize(sf::Vector2f(4,4));
-            triangle.tri.setFillColor(sf::Color::Red);
-            triangle.speed.x=rand()%10*(rand()%2-1);
-            triangle.speed.y=rand()%10*(rand()%2-1);
+            Death_particules triangle(Sprite);
+            
             triangles.push_back(triangle);
         }
 }
