@@ -21,6 +21,7 @@ add_executable(Smash
     ./Perso.cpp
     ./Hitbox.cpp
     ./miruka.cpp
+    ./itsuyo.cpp
     ./Death_Particules.cpp
     ./arrow.cpp
 )

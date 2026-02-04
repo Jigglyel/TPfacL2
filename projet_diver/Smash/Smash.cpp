@@ -5,7 +5,7 @@
 #include<cstdlib>
 #include"miruka.hpp"
 #include"plateform.cpp"
-
+#include"itsuyo.hpp"
 
 
 
@@ -328,7 +328,8 @@ void affiche_plat(const std::vector<Plateform> &plateforms,sf::RenderWindow & wi
 }
 int main()
 {
-    Miruka j1(0),j2(1);
+    Miruka j1(0);
+    Itsuyo j2(1);
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML window");
     sf::Event event;
     sf::Font font;

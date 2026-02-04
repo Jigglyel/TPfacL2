@@ -1,5 +1,10 @@
+#pragma once
+#include "Perso.hpp"
+#include <SFML/Graphics.hpp>
+
+
 class Itsuyo : public Perso {
-public:
+    public:
     Itsuyo(int id);
 
     void Jab() override;

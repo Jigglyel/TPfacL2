@@ -172,8 +172,11 @@ void Perso::check_Death(sf::RenderWindow &window)
 }
 void Perso::setActivesHitboxes()
 {  
-    Hitboxs_attaque.front().hitbox.left+=Sprite.getPosition().x;
-    Hitboxs_attaque.front().hitbox.top+=Sprite.getPosition().y;
+    if(!Hitboxs_attaque.empty())
+    {
+        Hitboxs_attaque.front().hitbox.left+=Sprite.getPosition().x;
+        Hitboxs_attaque.front().hitbox.top+=Sprite.getPosition().y;
+    }
 } 
 void Perso::move_triangles(sf::RenderWindow& window)
 {

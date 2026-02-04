@@ -75,18 +75,14 @@ void Miruka::Ftilt() {
     else
         dir=-48;
     {
-        
+        sf::FloatRect coupHitbox(dir,0,40,15);
         Hitbox coup;
-        
-
+        coup.hitbox=coupHitbox;
+        coup.duration=1;
         coup.damage=10;
         coup.puissance_ejec=0.3;
-        coup.hitbox=sf::FloatRect(dir,0,40,15); 
         coup.direction=sf::Vector2f(2.5*direction,-1.5);
         Hitboxs_attaque.push(coup);
-
-
-        
         Hitbox lent;
         lent.duration=15;
         Hitboxs_attaque.push(lent);
@@ -131,7 +127,7 @@ void Miruka::Dtilt() {
     else
         dir=-25;
     {
-        sf::FloatRect coupHitbox(dir,0,15,10);
+        sf::FloatRect coupHitbox(dir,5,15,10);
         Hitbox coup;
         coup.hitbox=coupHitbox;
         coup.duration=1;
@@ -140,15 +136,15 @@ void Miruka::Dtilt() {
         coup.direction=sf::Vector2f(0,-1);
         Hitboxs_attaque.push(coup);
         coup.hitbox.height=20;
-        coup.hitbox.top=-10;
+        coup.hitbox.top=-5;
         Hitboxs_attaque.push(coup);
         coup.hitbox.height=30;
-        coup.hitbox.top=-20;
+        coup.hitbox.top=-15;
         Hitboxs_attaque.push(coup);
         coup.hitbox.height=40;
         coup.damage=15;
         coup.puissance_ejec=0.3;
-        coup.hitbox.top=-30;
+        coup.hitbox.top=-25;
         Hitboxs_attaque.push(coup);
     
         
@@ -166,7 +162,7 @@ void Miruka::Fair() {
         dir=30;
     else
         dir=-25;
-    
+    {
         sf::FloatRect coupHitbox(dir,-15,15,30);
         Hitbox coup;
         coup.hitbox=coupHitbox;
@@ -176,10 +172,7 @@ void Miruka::Fair() {
         coup.direction=sf::Vector2f(1*direction,1.75);
         Hitboxs_attaque.push(coup);
 
-if(direction==1)
-        dir=30;
-    else
-        dir=-35;
+
         coup.hitbox= sf::FloatRect(dir,0,28,15);
         coup.direction=sf::Vector2f(1*direction,-2);
         coup.damage=8;
@@ -188,7 +181,7 @@ if(direction==1)
         Hitbox lent;
         lent.duration=5;
         Hitboxs_attaque.push(lent);
-    
+    }
 }
 void Miruka::Bair() {
     int dir;
