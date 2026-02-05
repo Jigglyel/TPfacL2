@@ -31,9 +31,9 @@ void input(Perso &Player,sf::Texture &fleche,std::vector<Arrow> &fleches )
             Down=sf::Keyboard::Down;
             Left=sf::Keyboard::Left;
             Right=sf::Keyboard::Right;
-            NormalAttack=sf::Keyboard::Numpad1;
+            NormalAttack=sf::Keyboard::Numpad6;
             Jump=sf::Keyboard::Numpad0;
-            SpecialAttack=sf::Keyboard::Numpad2;
+            SpecialAttack=sf::Keyboard::Add;
         } 
 
 
@@ -358,7 +358,7 @@ int main()
     std::vector<Arrow> fleches;
     sf::Texture flecheImage;
     std::vector<Plateform> map;
-    ajoute_Plat(map,150,400,650,400,true);
+    ajoute_Plat(map,150,400,650,400,false);
     ajoute_Plat(map,250,300,350,300,false);
     ajoute_Plat(map,450,250,550,250,true);
     int r=0, g=0, b=0;

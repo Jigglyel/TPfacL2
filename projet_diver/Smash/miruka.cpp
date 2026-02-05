@@ -21,7 +21,10 @@ Miruka::Miruka(int id) :Perso(id){
         std::cout<<"erreur"<<std::endl;
     Sprite.setTexture(T);
     Sprite.setScale(0.1,0.1);
-    Sprite.setPosition(100,50);
+    if(ID==0)
+        Sprite.setPosition(200,50);
+    else
+        Sprite.setPosition(500,50);
     hitbox_perso.left = Sprite.getPosition().x;
     hitbox_perso.top = Sprite.getPosition().y;
     hitbox_perso.width = T.getSize().x*Sprite.getScale().x;

@@ -23,7 +23,7 @@
 void Perso::move(){
     PositionMemory=sf::Vector2f(Sprite.getPosition().x,Sprite.getPosition().y+Sprite.getGlobalBounds().height);
     Sprite.move(speed);
-    if(std::sqrt(speed.x*speed.x+speed.y*speed.y)<10)
+    if(std::sqrt(speed.x*speed.x+speed.y*speed.y*0.2)<15)
         hitstun=false;
     
 }
@@ -111,13 +111,22 @@ void Perso::apply_forces()
     speed.y+=0.5;
     if(in_air)
     {
-        
-        if(speed.x<0)
-            speed.x+=0.1;
+        if(hitstun)
+        {
+            if(speed.x<0)
+                speed.x+=0.2;
+            else
+                speed.x-=0.2;
+        }
         else
-            speed.x-=0.1;
-        if(speed.y<0)
-            speed.y+=0.2;
+        {
+            if(speed.x<0)
+                speed.x+=0.1;
+            else
+                speed.x-=0.1;
+            if(speed.y<0)
+                speed.y+=0.2;
+        }
     }
 }
 void Perso::create_death_particules()
@@ -145,7 +154,7 @@ void Perso::respawn()
             dbjump=true;
             vies--;
             if(ID==0)
-                Sprite.setPosition(100,50);
+                Sprite.setPosition(200,50);
             else
                 Sprite.setPosition(500,50);
                     
