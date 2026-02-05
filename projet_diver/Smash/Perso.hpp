@@ -37,6 +37,7 @@ class Perso
     std::queue<Hitbox> Hitboxs_attaque;
     std::vector<Death_particules> triangles;
     sf::Vector2f PositionMemory;
+    bool idle;
     
     
     virtual void Jab()=0;

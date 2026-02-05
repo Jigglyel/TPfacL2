@@ -31,9 +31,9 @@ void input(Perso &Player,sf::Texture &fleche,std::vector<Arrow> &fleches )
             Down=sf::Keyboard::Down;
             Left=sf::Keyboard::Left;
             Right=sf::Keyboard::Right;
-            NormalAttack=sf::Keyboard::Enter;
-            Jump=sf::Keyboard::RShift;
-            SpecialAttack=sf::Keyboard::M;
+            NormalAttack=sf::Keyboard::Numpad1;
+            Jump=sf::Keyboard::Numpad0;
+            SpecialAttack=sf::Keyboard::Numpad2;
         } 
 
 
@@ -112,7 +112,7 @@ void input(Perso &Player,sf::Texture &fleche,std::vector<Arrow> &fleches )
         }else
         Player.crouch=false;
         
-        if (sf::Keyboard::isKeyPressed(NormalAttack))
+        if (sf::Keyboard::isKeyPressed(NormalAttack) and !Player.idle)
         {
                 
                 if (Player.crouch or sf::Keyboard::isKeyPressed(Down))
@@ -168,7 +168,7 @@ void input(Perso &Player,sf::Texture &fleche,std::vector<Arrow> &fleches )
                         Player.Nair();
         }
         else
-        if (sf::Keyboard::isKeyPressed(SpecialAttack))
+        if (sf::Keyboard::isKeyPressed(SpecialAttack) and !Player.idle)
         {
             if (sf::Keyboard::isKeyPressed(Up) and !sf::Keyboard::isKeyPressed(Down))
             {
@@ -244,6 +244,13 @@ void affiche_joueur(Perso &joueur,sf::RenderWindow &window)
     sf::RectangleShape drawbox=get_drawableHitbox(joueur.hitbox_perso);
     if(!joueur.Hitboxs_attaque.empty())
         drawbox.setOutlineColor(sf::Color::Magenta);
+    if (joueur.idle)
+    {
+        joueur.Sprite.setColor(sf::Color(100,100,100));
+    }
+    else
+        joueur.Sprite.setColor(sf::Color::White);
+    
     window.draw(joueur.Sprite);
     window.draw(drawbox);
 
@@ -288,7 +295,16 @@ void check_plat(std::vector<Plateform> &plateforms,Perso & J)
             J.speed.y=0;
             J.in_air=false;
             J.dbjump=true;
+            
             J.spaceRelease=false;
+            if (J.idle)
+            {
+                J.idle=false;
+                Hitbox lag;
+                lag.duration=8;
+                J.Hitboxs_attaque.push(lag);
+            }
+            
         }
         else
             {

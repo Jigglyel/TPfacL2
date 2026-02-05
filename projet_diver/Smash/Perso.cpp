@@ -9,6 +9,7 @@
         pourcentage=0;
         crouch=false;
         hitstun=false;
+        idle=false;
         direction=1;
         vies=3;
         

@@ -329,4 +329,5 @@ void Miruka::UpB()
     lent.duration=10;
     Hitboxs_attaque.push(lent);
     speed.y=-20; 
+    idle=true;
 }
