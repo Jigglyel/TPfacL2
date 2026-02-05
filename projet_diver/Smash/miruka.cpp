@@ -314,3 +314,19 @@ void Miruka::NeutralB(std::vector<Arrow> &Arrows,sf::Texture &T)
     lent.duration=15;
     Hitboxs_attaque.push(lent);
 }
+
+void Miruka::UpB()
+{
+    sf::FloatRect coupHitbox(2,30,20,20);
+    Hitbox coup;
+    coup.hitbox=coupHitbox;
+    coup.damage=3;
+    coup.duration=15;
+    coup.puissance_ejec=0.3;
+    coup.direction=sf::Vector2f(0,1);
+    Hitboxs_attaque.push(coup); 
+    Hitbox lent;
+    lent.duration=10;
+    Hitboxs_attaque.push(lent);
+    speed.y=-20; 
+}

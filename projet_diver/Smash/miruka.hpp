@@ -17,6 +17,7 @@ public:
     void Upair() override;
     void Dair() override;
     void NeutralB(std::vector<Arrow> &Arrows,sf::Texture &T) override;
+    void UpB() override;
 
     void is_crouching() ;
 

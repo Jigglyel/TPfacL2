@@ -54,7 +54,7 @@ class Perso
 
     // virtual void DownB()=0;
     virtual void NeutralB(std::vector<Arrow> &Arrows,sf::Texture &T)=0;
-    // virtual void UpB()=0;
+    virtual void UpB()=0;
     // virtual void SideB()=0;
 
     void move();

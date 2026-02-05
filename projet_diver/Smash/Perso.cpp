@@ -159,7 +159,7 @@ void Perso::check_Death(sf::RenderWindow &window)
 {
     if (vies>0)   
     {
-        if(!(Sprite.getPosition().x<window.getSize().x and Sprite.getPosition().x>0 and Sprite.getPosition().y<window.getSize().y and Sprite.getPosition().y>0))
+        if(Sprite.getPosition().x>window.getSize().x or Sprite.getPosition().x<0 or Sprite.getPosition().y>window.getSize().y or (Sprite.getPosition().y<0 and hitstun))
         {
             create_death_particules();
             respawn();

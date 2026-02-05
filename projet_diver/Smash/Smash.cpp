@@ -170,7 +170,11 @@ void input(Perso &Player,sf::Texture &fleche,std::vector<Arrow> &fleches )
         else
         if (sf::Keyboard::isKeyPressed(SpecialAttack))
         {
-            Player.NeutralB(fleches,fleche);
+            if (sf::Keyboard::isKeyPressed(Up) and !sf::Keyboard::isKeyPressed(Down))
+            {
+                Player.UpB();
+            }else
+                Player.NeutralB(fleches,fleche);
         }
         
     } 
@@ -329,7 +333,7 @@ void affiche_plat(const std::vector<Plateform> &plateforms,sf::RenderWindow & wi
 int main()
 {
     Miruka j1(0);
-    Itsuyo j2(1);
+    Miruka j2(1);
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML window");
     sf::Event event;
     sf::Font font;
@@ -338,10 +342,9 @@ int main()
     std::vector<Arrow> fleches;
     sf::Texture flecheImage;
     std::vector<Plateform> map;
-    ajoute_Plat(map,0,400,800,400,false);
-    ajoute_Plat(map,200,300,300,300,false);
-    ajoute_Plat(map,400,200,600,200,true);
-    ajoute_Plat(map,300,250,500,250,true);
+    ajoute_Plat(map,150,400,650,400,true);
+    ajoute_Plat(map,250,300,350,300,false);
+    ajoute_Plat(map,450,250,550,250,true);
     int r=0, g=0, b=0;
     #ifdef _WIN32
         police_path="C:/Users/mu37/OneDrive/Images/Documents/Image-Line/FL Studio/Settings/Hardware/NI Komplete Kontrol/docs/_static/fonts/Oswald.ttf";
