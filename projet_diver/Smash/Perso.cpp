@@ -23,7 +23,7 @@
 void Perso::move(){
     PositionMemory=sf::Vector2f(Sprite.getPosition().x,Sprite.getPosition().y+Sprite.getGlobalBounds().height);
     Sprite.move(speed);
-    if(std::sqrt(speed.x*speed.x+speed.y*speed.y*0.2)<15)
+    if(std::sqrt(speed.x*speed.x+speed.y*speed.y*1)<15)
         hitstun=false;
     
 }
@@ -152,6 +152,7 @@ void Perso::respawn()
             in_air=true;
             crouch=false;
             dbjump=true;
+            idle=false;
             vies--;
             if(ID==0)
                 Sprite.setPosition(200,50);
