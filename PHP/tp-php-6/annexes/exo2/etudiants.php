@@ -26,7 +26,46 @@
 </fieldset>
 </form>
 <?php
-// A COMPLETER
+
+$nom=$_POST["nom"];
+$prenom=$_POST["prenom"];
+$groupe=$_POST["groupe"];
+$inscription=isset($_POST["envoi"]);
+$affiche=isset($_POST["affiche"]);
+if ($inscription) {
+    $file=fopen("etudiants.csv","a");
+
+    fputcsv($file,[$nom,$prenom,$groupe],";","\"",NULL,PHP_EOL);
+    fclose($file);
+}
+if ($affiche) {
+    $file=fopen("etudiants.csv","r+");
+    $tab=[];
+    while (($ligne=fgetcsv($file,NULL,";","\"")) !==false) {
+        $tab[]=$ligne;
+}
+    echo "<table>";
+    echo "<thead>";
+    echo "<tr>";
+    echo "<td>ID</td><td>Nom</td><td>Prenom</td><td>Groupe</td>";
+    echo "</thead>";
+    echo "</tr>";
+    echo "<tbody>";
+    foreach($tab as $i=>$ligne)
+    {
+        echo "<tr>";
+        echo   "<td>$i</td>";
+        foreach($ligne as $champ)
+        {
+            echo   "<td>$champ</td>";
+        }
+        echo "</tr>";
+    }
+
+
+
+
+}
 ?>
 </body>
 </html>
