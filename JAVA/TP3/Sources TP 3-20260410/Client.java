@@ -32,4 +32,8 @@ public class Client {
     public String toString() {
         return "nom : "+nom+ "\n"+"solde : " +solde +"\n" + "numero client : "+numeroClient + "\n";
     }
+    @Override
+    public boolean equals(Object obj) {
+        return this==((Client)obj);
+    }
 }

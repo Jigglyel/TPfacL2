@@ -49,5 +49,8 @@ public class Annuaire {
         }
         return somme;
     }
-	
+    public boolean contient(Client c)
+    {
+        return clients.contains(c);
+    }
 }

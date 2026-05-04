@@ -1298,29 +1298,82 @@ Array.prototype.supprimerDoublons = function () {
 
 /************************************************************************ */
 // Question 1 : nombre de sociétés sans numéros de téléphone
-var sans_telephone;
+var sans_telephone=0;
+societes.forEach(societe => {
+  if (societe[1]=="xx-xx-xx-xx-xx") {
+    sans_telephone++
+    
+  }
+  
+});
 // A COMPLETER
 console.log("#SOCIETES SANS TELEPHONE = " + sans_telephone); // 114
 
 /************************************************************************ */
 // Question 2 : objet stockant le nombre de sociétés par département
 var distribution = {};
+societes.forEach(societe => {
+  dep=societe[2].toString().substring(0,2);
+  console.log(dep);
+  
+  if (distribution.hasOwnProperty(dep)) {
+    distribution[dep]++;
+  }
+  else
+    distribution[dep]=1;
+  
+});
 // A COMPLETER
 console.log("#SOCIETES PAR DEPARTEMENT = ");
 console.log(distribution);
 
 /************************************************************************ */
 // Question 3 : extraire les prénoms sous forme d'un tableau trié de mots
-var prenoms;
+var prenoms=[];
+let i=0
+societes.forEach(societe => {
+  prenoms[i]=societe[4].split(" ")[0];
+  ++i
+  
+});
+prenoms= prenoms.supprimerDoublons();
+prenoms.sort()
 // A COMPLETER
 console.log("PRENOMS TRIES = " + prenoms);
 
 /************************************************************************ */
 // Question 4 : générer le tableau HTML des sociétés
 // A COMPLETER
-
+tableau=document.querySelector("table");
+societes.forEach(societe => {
+  row=tableau.insertRow()
+  cell=row.insertCell()
+  cell.innerText=societe[0];
+  cell=row.insertCell()
+  cell.innerText=societe[2];
+  cell=row.insertCell()
+  if(prenoms_feminins.includes(societe[4].split(" ")[0]))
+  {
+    
+    cell.classList="presidente"
+  }
+  cell.innerText=societe[4];
+  
+});
 /************************************************************************ */
 // Question 5 : impléménter constructeur et méthode de prototype
+function Societe(nom,cp,nompres)
+{
+  this.nom=nom;
+  this.cp=cp;
+  this.nompres=nompres
+}
+Societe.prototype.toHTML=function(datalist)
+{
+  op=document.createElement("option")
+  datalist.appendChild(op);
+  op.value=this.nom+this.cp.toString()+this.nompres
+}
 societes.forEach(function (s) {
   let societe = new Societe(s[0], s[2], s[4]);
   societe.toHTML(document.getElementById("societes"));
