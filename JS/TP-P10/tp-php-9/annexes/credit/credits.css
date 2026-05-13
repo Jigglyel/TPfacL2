@@ -1,0 +1,56 @@
+@charset "UTF-8";
+
+body {
+  background-color: white;
+}
+
+fieldset {
+  background-color: gold;
+}
+
+legend {
+  font-size: 120%;
+  font-weight: bold;
+}
+
+.question {
+  font-weight: bold;
+}
+
+input[type="number"] {
+  font-size: 80%;
+  text-align: right;
+  width: 80px;
+}
+
+table, td, th {
+  border-collapse: collapse;
+  border: 1px solid black;
+}
+
+table {
+  table-layout: fixed;
+  text-align: right;
+  vertical-align: bottom;
+}
+
+td, th {
+  padding: 3px 3px 3px 3px;
+}
+
+td {
+  width: 100px;
+}
+
+th {
+  width: 150px;
+  text-align: left;
+}
+
+tr:nth-child(1) th {
+  text-align: right;
+}
+
+tr:nth-child(1) th:nth-child(1) {
+  text-align: left;
+}

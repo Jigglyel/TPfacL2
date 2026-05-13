@@ -1,0 +1,91 @@
+@charset "UTF-8";
+
+/* See https://css-tricks.com/snippets/css/a-guide-to-flexbox/#flexbox-background */
+.container {
+    display: grid;
+    grid-template-rows: 1fr 4fr;
+    /*
+  grid-gap: 10px;
+  grid-auto-rows: minmax(100px, auto);  
+   */
+}
+
+.ops {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-end: 2;
+}
+
+.mat1 {
+    grid-column-end: 2;
+    grid-row-start: 2;
+}
+
+.mat2 {
+    grid-column-start: 2;
+    grid-row-start: 2;
+}
+
+.mat1 td {
+    background-color: green;
+}
+
+.mat2 td {
+    background-color: orange;
+}
+
+input {
+    background-color: lightblue;
+}
+
+button {
+    background-color: red;
+}
+
+.mat1,
+.mat2,
+input[type="text"] {
+    text-align: center;
+}
+
+p:first-child,
+label:nth-child(n+6) {
+    font-weight: bold;
+}
+
+fieldset {
+    width: 200px;
+    margin-bottom: 20px;
+}
+
+fieldset>p {
+    display: inline-block;
+    margin: 5px;
+}
+
+.ops :nth-child(n+7) {
+    display: inline-block;
+    width: 80px;
+    margin: 5px;
+}
+
+td {
+    border-collapse: collapse;
+    border: 1px solid black;
+    text-align: center;
+    vertical-align: bottom;
+    font-size: 100%;
+}
+
+table,
+th {
+    border-collapse: collapse;
+    border: 0;
+}
+
+th,
+td {
+    vertical-align: middle;
+    height: 50px;
+    width: 50px;
+}

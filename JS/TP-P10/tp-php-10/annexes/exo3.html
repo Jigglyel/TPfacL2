@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Catalogue Musical</title>
+    <link rel="stylesheet" href="./utils/style.css">
+</head>
+
+<body>
+    <div id="nav">
+        <h1>Catalogue Musical</h1>
+        <form>
+            <input type="submit" class="nav-btn" name="voir" value="Voir le catalogue">
+            <input type="button" class="nav-btn" name="stats" value="Statistiques">
+        </form>
+    </div>
+
+    <hr>
+
+    <div id="contents">
+
+        <div id="albums">
+            <table class="albumlist">
+                <tbody>
+                    <tr>
+                        <th>artiste</th>
+                        <th>album</th>
+                        <th>année</th>
+                        <th>actions</th>
+                    </tr>
+                    <tr>
+                        <td>Metallica</td>
+                        <td>...And Justice For All</td>
+                        <td>1988</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(1,&quot;...And Justice For All&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Metallica</td>
+                        <td>Black Album</td>
+                        <td>1991</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(2,&quot;Black Album&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Metallica</td>
+                        <td>Master of Puppets</td>
+                        <td>1986</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(3,&quot;Master of Puppets&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Megadeth</td>
+                        <td>Endgame</td>
+                        <td>2009</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(4,&quot;Endgame&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Megadeth</td>
+                        <td>Peace Sells</td>
+                        <td>1986</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(5,&quot;Peace Sells&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Anthrax</td>
+                        <td>The Greater of 2 Evils</td>
+                        <td>2004</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(6,&quot;The Greater of 2 Evils&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Eric Clapton</td>
+                        <td>Reptile</td>
+                        <td>2001</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(7,&quot;Reptile&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Eric Clapton</td>
+                        <td>Riding with the King</td>
+                        <td>2000</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(8,&quot;Riding with the King&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>ZZ Top</td>
+                        <td>Greatest Hits</td>
+                        <td>1992</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(9,&quot;Greatest Hits&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Van Halen</td>
+                        <td>Greatest Hits</td>
+                        <td>2004</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(10,&quot;Greatest Hits&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Lynyrd Skynyrd</td>
+                        <td>All-Time Greatest Hits</td>
+                        <td>1975</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(11,&quot;All-Time Greatest Hits&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>AC/DC</td>
+                        <td>Greatest Hits</td>
+                        <td>2003</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(12,&quot;Greatest Hits&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>The Beatles</td>
+                        <td>Sgt. Peppers Lonely Hearts Club Band</td>
+                        <td>1967</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(13,&quot;Sgt. Peppers Lonely Hearts Club Band&quot;)">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Miley</td>
+                        <td>Younger Now</td>
+                        <td>2017</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(14,&quot;Younger Now&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Miley Cyrus</td>
+                        <td>Bangerz</td>
+                        <td>2013</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(15,&quot;Bangerz&quot;)"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="songs">
+            <h4 id="album-name"></h4>
+            <ol>
+                <li class="1">One(7.25)</li>
+                <li class="1">Blackened(6.42)</li>
+                <li class="2">Enter Sandman(5.3)</li>
+                <li class="2">Sad But True(5.29)</li>
+                <li class="3">Master of Puppets(8.35)</li>
+                <li class="3">Battery(5.13)</li>
+                <li class="4">Dialectic Chaos(2.26)</li>
+                <li class="4">Endgame(5.57)</li>
+                <li class="5">Peace Sells(4.09)</li>
+                <li class="5">The Conjuring(5.09)</li>
+                <li class="6">Madhouse(4.26)</li>
+                <li class="6">I am the Law(6.03)</li>
+                <li class="7">Reptile(3.36)</li>
+                <li class="7">Modern Girl(4.49)</li>
+                <li class="8">Riding with the King(4.23)</li>
+                <li class="8">Key to the Highway(3.39)</li>
+                <li class="9">Sharp Dressed Man(4.15)</li>
+                <li class="9">Legs(4.32)</li>
+                <li class="10">Eruption(1.43)</li>
+                <li class="10">Hot For Teacher(4.43)</li>
+                <li class="11">Sweet Home Alabama(4.45)</li>
+                <li class="11">Free Bird(14.23)</li>
+                <li class="12">Thunderstruck(4.52)</li>
+                <li class="12">T.N.T(3.35)</li>
+                <li class="13">Sgt. Peppers Lonely Hearts Club Band(2.0333)</li>
+                <li class="13">With a Little Help from My Friends(2.7333)</li>
+                <li class="13">Lucy in the Sky with Diamonds(3.4666)</li>
+                <li class="13">Getting Better(2.8)</li>
+                <li class="13">Fixing a Hole(2.6)</li>
+                <li class="13">She's Leaving Home(3.5833)</li>
+                <li class="13">Being for the Benefit of Mr. Kite!(2.6166)</li>
+                <li class="13">Within You Without You(5.066)</li>
+                <li class="13">When I'm Sixty-Four(2.6166)</li>
+                <li class="13">Lovely Rita(2.7)</li>
+                <li class="13">Good Morning Good Morning(2.6833)</li>
+                <li class="13">Sgt. Pepper's Lonely Hearts Club Band (Reprise)(1.3166)</li>
+                <li class="13">A Day in the Life(5.65)</li>
+            </ol>
+        </div>
+
+        <script src="catalogue.js"></script>
+    </div>
+
+
+</body>
+
+</html>

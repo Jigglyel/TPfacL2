@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Catalogue Musical</title>
+    <link rel="stylesheet" href="./utils/style.css">
+</head>
+
+<body>
+    <div id="nav">
+        <h1>Catalogue Musical</h1>
+        <form>
+            <input type="submit" class="nav-btn" name="voir" value="Voir le catalogue">
+            <input type="button" class="nav-btn" name="stats" value="Statistiques">
+        </form>
+    </div>
+
+    <hr>
+
+    <div id="contents">
+
+        <div id="albums">
+            <table class="albumlist">
+                <tbody>
+                    <tr>
+                        <th>artiste</th>
+                        <th>album</th>
+                        <th>année</th>
+                        <th>actions</th>
+                    </tr>
+                    <tr>
+                        <td>Metallica</td>
+                        <td>...And Justice For All</td>
+                        <td>1988</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(1,&quot;...And Justice For All&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Metallica</td>
+                        <td>Black Album</td>
+                        <td>1991</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(2,&quot;Black Album&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Metallica</td>
+                        <td>Master of Puppets</td>
+                        <td>1986</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(3,&quot;Master of Puppets&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Megadeth</td>
+                        <td>Endgame</td>
+                        <td>2009</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(4,&quot;Endgame&quot;)">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Megadeth</td>
+                        <td>Peace Sells</td>
+                        <td>1986</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(5,&quot;Peace Sells&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Anthrax</td>
+                        <td>The Greater of 2 Evils</td>
+                        <td>2004</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(6,&quot;The Greater of 2 Evils&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Eric Clapton</td>
+                        <td>Reptile</td>
+                        <td>2001</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(7,&quot;Reptile&quot;)">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Eric Clapton</td>
+                        <td>Riding with the King</td>
+                        <td>2000</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(8,&quot;Riding with the King&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>ZZ Top</td>
+                        <td>Greatest Hits</td>
+                        <td>1992</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(9,&quot;Greatest Hits&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Van Halen</td>
+                        <td>Greatest Hits</td>
+                        <td>2004</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(10,&quot;Greatest Hits&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Lynyrd Skynyrd</td>
+                        <td>All-Time Greatest Hits</td>
+                        <td>1975</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(11,&quot;All-Time Greatest Hits&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>AC/DC</td>
+                        <td>Greatest Hits</td>
+                        <td>2003</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(12,&quot;Greatest Hits&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>The Beatles</td>
+                        <td>Sgt. Peppers Lonely Hearts Club Band</td>
+                        <td>1967</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(13,&quot;Sgt. Peppers Lonely Hearts Club Band&quot;)">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Miley</td>
+                        <td>Younger Now</td>
+                        <td>2017</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(14,&quot;Younger Now&quot;)"></td>
+                    </tr>
+                    <tr>
+                        <td>Miley Cyrus</td>
+                        <td>Bangerz</td>
+                        <td>2013</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(15,&quot;Bangerz&quot;)">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>NSYNC</td>
+                        <td>Celebrity</td>
+                        <td>2003</td>
+                        <td><input type="button" value="Détails" onclick="afficherAlbumDetails(16,&quot;Celebrity&quot;)"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="songs">
+            <h4 id="album-name">"...And Justice For All"</h4>
+            <ol>
+                <li class="1" style="display: list-item;">One(7.25)</li>
+                <li class="1" style="display: list-item;">Blackened(6.42)</li>
+                <li class="2" style="display: none;">Enter Sandman(5.3)</li>
+                <li class="2" style="display: none;">Sad But True(5.29)</li>
+                <li class="3" style="display: none;">Master of Puppets(8.35)</li>
+                <li class="3" style="display: none;">Battery(5.13)</li>
+                <li class="4" style="display: none;">Dialectic Chaos(2.26)</li>
+                <li class="4" style="display: none;">Endgame(5.57)</li>
+                <li class="5" style="display: none;">Peace Sells(4.09)</li>
+                <li class="5" style="display: none;">The Conjuring(5.09)</li>
+                <li class="6" style="display: none;">Madhouse(4.26)</li>
+                <li class="6" style="display: none;">I am the Law(6.03)</li>
+                <li class="7" style="display: none;">Reptile(3.36)</li>
+                <li class="7" style="display: none;">Modern Girl(4.49)</li>
+                <li class="8" style="display: none;">Riding with the King(4.23)</li>
+                <li class="8" style="display: none;">Key to the Highway(3.39)</li>
+                <li class="9" style="display: none;">Sharp Dressed Man(4.15)</li>
+                <li class="9" style="display: none;">Legs(4.32)</li>
+                <li class="10" style="display: none;">Eruption(1.43)</li>
+                <li class="10" style="display: none;">Hot For Teacher(4.43)</li>
+                <li class="11" style="display: none;">Sweet Home Alabama(4.45)</li>
+                <li class="11" style="display: none;">Free Bird(14.23)</li>
+                <li class="12" style="display: none;">Thunderstruck(4.52)</li>
+                <li class="12" style="display: none;">T.N.T(3.35)</li>
+                <li class="13" style="display: none;">Sgt. Peppers Lonely Hearts Club Band(2.0333)</li>
+                <li class="13" style="display: none;">With a Little Help from My Friends(2.7333)</li>
+                <li class="13" style="display: none;">Lucy in the Sky with Diamonds(3.4666)</li>
+                <li class="13" style="display: none;">Getting Better(2.8)</li>
+                <li class="13" style="display: none;">Fixing a Hole(2.6)</li>
+                <li class="13" style="display: none;">She's Leaving Home(3.5833)</li>
+                <li class="13" style="display: none;">Being for the Benefit of Mr. Kite!(2.6166)</li>
+                <li class="13" style="display: none;">Within You Without You(5.066)</li>
+                <li class="13" style="display: none;">When I'm Sixty-Four(2.6166)</li>
+                <li class="13" style="display: none;">Lovely Rita(2.7)</li>
+                <li class="13" style="display: none;">Good Morning Good Morning(2.6833)</li>
+                <li class="13" style="display: none;">Sgt. Pepper's Lonely Hearts Club Band(1.3166)</li>
+                <li class="13" style="display: none;">A Day in the Life(5.65)</li>
+            </ol>
+        </div>
+
+        <script>
+            function _0x8e0a(_0x35cda9, _0x3df0f3) {
+                const _0x33f0bc = _0x33f0();
+                return _0x8e0a = function(_0x8e0a54, _0x497660) {
+                    _0x8e0a54 = _0x8e0a54 - 0x161;
+                    let _0x552b4b = _0x33f0bc[_0x8e0a54];
+                    return _0x552b4b;
+                }, _0x8e0a(_0x35cda9, _0x3df0f3);
+            }
+            const _0x571e87 = _0x8e0a;
+            (function(_0x5c5e9d, _0x4ac4e8) {
+                const _0x79f918 = _0x8e0a,
+                    _0x4f02ea = _0x5c5e9d();
+                while (!![]) {
+                    try {
+                        const _0xe2ed35 = parseInt(_0x79f918(0x166)) / 0x1 + -parseInt(_0x79f918(0x170)) / 0x2 * (-parseInt(_0x79f918(0x16a)) / 0x3) + parseInt(_0x79f918(0x168)) / 0x4 * (-parseInt(_0x79f918(0x175)) / 0x5) + parseInt(_0x79f918(0x16c)) / 0x6 + -parseInt(_0x79f918(0x163)) / 0x7 + parseInt(_0x79f918(0x161)) / 0x8 * (parseInt(_0x79f918(0x172)) / 0x9) + parseInt(_0x79f918(0x174)) / 0xa * (-parseInt(_0x79f918(0x164)) / 0xb);
+                        if (_0xe2ed35 === _0x4ac4e8) break;
+                        else _0x4f02ea['push'](_0x4f02ea['shift']());
+                    } catch (_0x35c44e) {
+                        _0x4f02ea['push'](_0x4f02ea['shift']());
+                    }
+                }
+            }(_0x33f0, 0xc508b), document[_0x571e87(0x165)](_0x571e87(0x171))[_0x571e87(0x16d)](_0xbd26e1 => _0xbd26e1[_0x571e87(0x16f)][_0x571e87(0x16e)] = 'none'));
+
+            function afficherTitre(_0x31761f) {
+                const _0x5d2d86 = _0x571e87;
+                document[_0x5d2d86(0x173)](_0x5d2d86(0x167))[_0x5d2d86(0x16b)] = '\x22' + _0x31761f + '\x22';
+            }
+
+            function afficherPlaylist(_0x560c8d) {
+                const _0xf501a4 = _0x571e87;
+                let _0x512600 = document[_0xf501a4(0x165)]('li');
+                _0x512600[_0xf501a4(0x16d)](_0x2ab88f => {
+                    const _0x40fcd9 = _0xf501a4;
+                    _0x2ab88f['className'] != _0x560c8d ? _0x2ab88f[_0x40fcd9(0x16f)][_0x40fcd9(0x16e)] = _0x40fcd9(0x162) : _0x2ab88f['style'][_0x40fcd9(0x16e)] = _0x40fcd9(0x169);
+                });
+            }
+
+            function afficherAlbumDetails(_0x245196, _0x2a4807) {
+                afficherTitre(_0x2a4807), afficherPlaylist(_0x245196);
+            }
+
+            function _0x33f0() {
+                const _0x59b57c = ['30UJNleb', '710105vIEYDy', '2398888DZmYZr', 'none', '5727120DydSwU', '7364753IcRTPa', 'querySelectorAll', '1389287lLGZdM', 'album-name', '28KaKirF', 'list-item', '3792BVGgJs', 'innerText', '5555430Jqjmgi', 'forEach', 'display', 'style', '2236LNBnLp', 'li:nth-child(n+3)', '27Abvlaw', 'getElementById'];
+                _0x33f0 = function() {
+                    return _0x59b57c;
+                };
+                return _0x33f0();
+            }
+        </script>
+        <script src="stats.js"></script>
+    </div>
+
+
+</body>
+
+</html>

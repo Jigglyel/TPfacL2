@@ -1,0 +1,102 @@
+html {
+    background-color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    width: 85%;
+    padding: 0;
+    margin: auto;
+    line-height: 1.6;
+}
+
+
+/* ==============================================
+ * NAV 
+ * ============================================== */
+
+#nav {
+    margin: auto;
+    text-align: center;
+}
+
+.nav-btn {
+    background-color: #3F4351;
+    background-image: linear-gradient(-45deg, #3F4351, #384758);
+    color: #E6EAEF;
+    margin: 10px 20px 10px 20px;
+    padding: 6px 10px 6px 10px;
+    border-radius: 10px;
+}
+
+.nav-btn:hover {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+
+/* ==============================================
+ * CONTENTS {albums + songs}
+ * ============================================== */
+
+
+#contents {
+    display: flex;
+    justify-content: space-between;
+}
+
+#albums {
+    width: 100%;
+    /*border: 2px solid red ;*/
+}
+
+#songs {
+    width: 100%;
+    /*border: 2px solid blue;*/
+    align-items: center;
+}
+
+label {
+    margin: 30px 20px 30px 5px;
+    /*padding-left: 20px;
+    padding-right: 20px;
+    border: 1px solid blue;*/
+}
+
+
+
+form>select {
+    padding-right: 50px;
+}
+
+
+table {
+    border: 1px solid #ddd;
+    margin: 30px;
+    border-collapse: collapse;
+    /*border-radius: 5px;*/
+}
+
+td,
+th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+th {
+    background-color: #3F4351;
+    color: white;
+    padding: 10px 6px 10px 6px;
+    text-align: left;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: yellow;
+}
+
+.error {
+    color: red;
+}

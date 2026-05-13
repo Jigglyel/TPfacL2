@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Calcul d'intégrale</title>
+    <script defer src="integrale.js"></script>
+</head>
+
+<body>
+    <div>
+        <h1>Calcul d'int&eacute;grales</h1>
+        <form>
+            <p>
+                <label for="fx">Calcul de l'intégrale f(x) =</label>
+                <select name="fx" id="fx">
+                    <option value="linear" selected>x</option>
+                    <option value="quadratic">x * x</option>
+                </select>
+            </p>
+            <p>
+                <label for="x1">x<sub>1</sub></label>
+                <input type="text" name="x1" id="x1" value="0" size="6" required />
+                &nbsp;&nbsp;
+                <label for="y1">y<sub>1</sub>=f(x<sub>1</sub>)</label>
+                <input type="text" name="y1" id="y1" size="6" style="color: red;" disabled="disabled" />
+            </p>
+            <p>
+                <label for="x2">x<sub>2</sub></label>
+                <input type="text" name="x2" id="x2" value="2" size="6" required />
+                &nbsp;&nbsp;
+                <label for="y2">y<sub>2</sub>=f(x<sub>2</sub>)</label>
+                <input type="text" name="y2" id="y2" size="6" style="color: red;" disabled="disabled" />
+            </p>
+            <p>
+                <label for="itv">intervalles</label>
+                <select name="itv" id="itv">
+                    <option value="10">10</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="500">500</option>
+                    <option value="1000">1000</option>
+                </select>
+            </p>
+            <p>
+                <input type="button" value="calculer" />
+                &nbsp;&nbsp;
+                <input type="button" value="effacer" />
+            </p>
+            <p>
+                <label for="meth1">Résultat méthode des rectangles à droite</label>
+                <input type="text" name="meth1" id="meth1" size="30" style="color: red;" disabled="disabled" />
+            </p>
+            <p>
+                <label for="meth2">Résultat méthode des trapèzes</label>
+                <input type="text" name="meth2" id="meth2" size="30" style="color: red;" disabled="disabled" />
+            </p>
+            <p>
+                <label for="meth3">Résultat méthode de Simpson</label>
+                <input type="text" name="meth3" id="meth3" size="30" style="color: red;" disabled="disabled" />
+            </p>
+        </form>
+        <canvas id="canvas" width="400" height="400"></canvas>
+    </div>
+</body>
+
+</html>

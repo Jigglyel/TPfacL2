@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TP JS : matrices</title>
+    <link rel="stylesheet" type="text/css" href="matrices.css" />
+    <script defer src="utils.js"></script>
+    <script defer src="matrices.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <fieldset class="ops">
+            <p>Matrices 0/1</p>
+            <input type="radio" name="binaire" id="binary" value="oui" checked />
+            <label for="binary">oui</label>
+            <input type="radio" name="binaire" id="integer" value="non" />
+            <label for="integer">non</label>
+            <br />
+            <label for="rows">Lignes</label>
+            <input type="number" name="lignes" id="rows" value="4" min="1" max="16" step="1" />
+            <br />
+            <label for="columns">Colonnes</label>
+            <input type="number" name="colonnes" id="columns" value="4" min="1" max="16" step="1" />
+            <br />
+            <button class="transposer">Transposer</button>
+            <button class="permuter">Permuter</button>
+        </fieldset>
+        <div class="mat1"></div>
+        <div class="mat2"></div>
+    </div>
+</body>
+
+</html>
